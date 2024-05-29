@@ -5,9 +5,31 @@
 	<h1>@Model.Name</h1>
 
 	<p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget pharetra arcu. Maecenas vestibulum porta orci, convallis rhoncus velit tincidunt vitae. Cras mollis pellentesque tortor, quis tristique enim varius vel. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Morbi dolor odio, ultricies non mauris ut, dapibus pulvinar elit. Fusce mauris arcu, aliquam eget lobortis a, mollis aliquam neque. Aenean ac felis facilisis, tempor urna sit amet, tempus lorem. Quisque condimentum augue sed elit interdum lobortis. Fusce pretium fringilla vulputate. In dictum convallis diam, ac consequat justo hendrerit nec. Suspendisse iaculis at felis a volutpat. Morbi eget nibh eget nibh ultricies rhoncus ac nec mauris. Donec bibendum felis at sagittis scelerisque. Aenean dolor turpis, elementum at sollicitudin ac, hendrerit eget nisi. Curabitur at lectus ornare, tristique dui ut, sollicitudin erat. Sed laoreet turpis elit, id finibus velit commodo in.
-	</p>
-	<div class="opaque-box is-paddingless">
+		@Model.Description
+	</p> <br />
+
+	@foreach (var movie in Model.Movies)
+	{
+		<article class="media is-clickable" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(movie.Title)';" >
+			<figure class="media-left">
+				<h1>@movie.Ranking</h1>
+			</figure>
+			<div class="media-content">
+				<div class="content">
+					<h2>@movie.Title</h2>
+					<small>@movie.Genres</small><br /> 
+					<small>IMDB Rating: @movie.ImdbRating</small><br />
+					<p>@movie.Synopsis</p>
+				</div>
+			</div>
+			<figure class="media-right">
+				<img class="poster" src=@movie.PosterPath />
+			</figure>
+		</article>
+	}
+
+
+@* 	<div class="opaque-box is-paddingless">
 		<table class="table is-narrow is-fullwidth has-text-weight-bold has-text-centerd">
 			<thead class="is-white">
 				<tr>
@@ -40,7 +62,7 @@
 				}
 			</tbody>
 		</table>
-	</div>
+	</div> *@
 </div>
 @await Html.PartialAsync("_PaginationPartial", new PaginationViewModel
 	{

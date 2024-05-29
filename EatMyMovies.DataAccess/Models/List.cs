@@ -8,5 +8,7 @@ namespace EatMyMovies.DataAccess.Models
 		public Guid ListId { get; set; }
 
         public string Name { get; set; }
+
+        public string Description { get; set; }
     }
 }

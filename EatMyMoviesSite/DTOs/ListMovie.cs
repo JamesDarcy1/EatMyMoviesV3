@@ -10,7 +10,9 @@ namespace EatMyMoviesSite.DTOs
 
 		public int Ranking { get; set; }
 
-		public IEnumerable<string> Genres { get; set; } = new List<string>();
+		public string Synopsis { get; set; }
+
+		public string Genres { get; set; }
 
 		public Decimal ImdbRating {  get; set; }
 	}

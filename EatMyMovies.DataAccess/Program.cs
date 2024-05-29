@@ -8,8 +8,8 @@ namespace EatMyMovies.DataAccess
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
-			//delete me later 
-			// hello
+			builder.Configuration.AddJsonFile("Config/appsettings.json");
+
 			builder.Services.AddDbContext<EatMyMoviesContext>(options =>
 						options.UseSqlServer(
 							builder.Configuration.GetConnectionString("DbConnection")));

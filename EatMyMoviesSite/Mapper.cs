@@ -14,9 +14,10 @@ namespace EatMyMoviesSite
 			{
 				Title = tmdbMovie.Title,
 				PosterPath = $"https://image.tmdb.org/t/p/w154{tmdbMovie.PosterPath}",
-				Genres = tmdbMovie.Genres.Select(g => g.Name),
+				Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
 				ImdbRating = imdbRating,
-				Ranking = ranking
+				Ranking = ranking,
+				Synopsis = tmdbMovie.Overview
 			};
 		}
 

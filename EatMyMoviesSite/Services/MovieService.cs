@@ -1,6 +1,7 @@
 ﻿using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.DTOs;
 using OMDbSharp;
+using System.Collections.Specialized;
 using TMDbLib.Client;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
@@ -12,15 +13,17 @@ namespace EatMyMoviesSite.Services
 		private readonly TMDbClient _tmdbClient;
 		private readonly OMDbClient _omdbClient;
 		private readonly IRankingRepository _rankingRepository;
+		private readonly IListRepository _listRepository;
 		private readonly int _moviesPerPage = 10;
 		private readonly bool _isDevelopment;
 
-		public MovieService(IRankingRepository rankingRepository, IConfiguration configuration)
+		public MovieService(IRankingRepository rankingRepository, IConfiguration configuration, IListRepository listRepository)
 		{
 			_isDevelopment = configuration["ASPNETCORE_ENVIRONMENT"] == "Development";
 			_tmdbClient = new TMDbClient(configuration["Tmdb:ApiKey"]);
 			_omdbClient = new OMDbClient(configuration["Omdb:ApiKey"], false);
 			_rankingRepository = rankingRepository;
+			_listRepository = listRepository;
 		}
 
 		public async Task<Movie> GetMovieByTitle(string title)
@@ -56,7 +59,8 @@ namespace EatMyMoviesSite.Services
 
 		public async Task<MovieList> BuildMovieList(string listTitle, int page)
 		{
-			var list = new MovieList() { Name = listTitle, Movies = new List<ListMovie>() };
+			var list = _listRepository.GetListByName(listTitle);
+			var moviesList = new MovieList() { Name = list.Name, Description = list.Description, Movies = new List<ListMovie>() };
 			try
 			{
 				var storedMovies = _rankingRepository.GetMoviesForList(listTitle);
@@ -64,8 +68,8 @@ namespace EatMyMoviesSite.Services
 				var totalPages = (int)Math.Ceiling((double)totalMovies / _moviesPerPage);
 				page = Math.Max(1, Math.Min(page, totalPages));
 
-				list.TotalPages = totalPages;
-				list.CurrentPage = page;
+				moviesList.TotalPages = totalPages;
+				moviesList.CurrentPage = page;
 
 				var moviesForPage = storedMovies 
 					.Skip((page - 1) * _moviesPerPage)
@@ -79,20 +83,20 @@ namespace EatMyMoviesSite.Services
 					{
 						var tmdbMovie = await GetMoviesById(movie.TmdbId.Value);
 						var mappedMovie = Mapper.BuildListMovie(tmdbMovie, movie.ImdbRating, ranking);
-						list.Movies.Add(mappedMovie);
+						moviesList.Movies.Add(mappedMovie);
 					}
 					else
 					{
-						list.Movies.Add(new ListMovie() { Title = movie.Title, Ranking = ranking, ImdbRating = movie.ImdbRating });
+						moviesList.Movies.Add(new ListMovie() { Title = movie.Title, Ranking = ranking, ImdbRating = movie.ImdbRating });
 					}
 				}
 
-				list.Movies = list.Movies.OrderBy(x => x.Ranking).ToList();
+				moviesList.Movies = moviesList.Movies.OrderBy(x => x.Ranking).ToList();
 			} catch(Exception ex)
 			{
 				
 			}
-			return list;
+			return moviesList;
 		}
 	}
 }

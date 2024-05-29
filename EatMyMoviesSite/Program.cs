@@ -12,9 +12,6 @@ namespace EatMyMoviesSite
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // delete me now
-            // and me
-            // Adn this
 			builder.Services.AddDbContext<EatMyMoviesContext>(options =>
 						options.UseSqlServer(
 							builder.Configuration.GetConnectionString("DbConnection")));
@@ -22,7 +19,6 @@ namespace EatMyMoviesSite
             builder.Configuration.AddJsonFile("Config/appsettings.json")
                                   .AddJsonFile($"Config/appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", true);
 
-			// Add services to the container.
 			builder.Services.AddControllersWithViews();
             ConfigureServices(builder.Services);
 
