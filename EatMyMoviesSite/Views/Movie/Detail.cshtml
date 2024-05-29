@@ -1,0 +1,59 @@
+﻿@using EatMyMoviesSite.DTOs;
+@using System.Diagnostics;
+@model MovieDetail;
+
+@if (Model != null)
+{
+	<div class="opaque-box">
+		<div class="columns">
+			<div class="column is-three-fifths">
+				<h1>@Model.Title</h1>
+				<i class="tagline">@Model.Tagline</i>
+				<div class="columns is-mobile">
+					<div class="column">
+						<p class="release-date"><u>Released</u></p>
+						<i class="release-date">@Model.ReleaseDate</i>
+					</div>
+					<div class="column">
+						<p class="release-date"><u>Genres</u></p>
+						@foreach (var genre in Model.Genres)
+						{
+							<i class="release-date">@genre<br></i>
+						}
+					</div>
+					<div class="column">
+						<p class="release-date"><u>Imdb Rating</u></p>
+						<p class="release-date">@Model.ImdbRating</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="column is-two-fifths">
+				<img class="poster-on-detail" src=@("https://image.tmdb.org/t/p/w500" + Model.PosterPath) />
+			</div>
+		</div>
+		<div class="column">
+			<div class="columns is-mobile">
+				<h2>@Model.Overview</h2>
+			</div>
+		</div>
+	</div>
+
+	<div class="columns">
+		<div class="column has-text-centered trailer-container">
+			<iframe class="responsive-iframe"
+					src=@(Model.TrailerPath)>
+			</iframe>
+		</div>
+	</div>
+}
+else
+{
+	<div class="opaque-box">
+		<h1 class="text-danger">Movie not found</h1>
+		<h2 class="text-danger">Please go back and try again</h2>
+	</div>
+}
+
+
+

@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+    h1 {
+        font-size: 4vw;
+    }
+    h3{
+        font-size: 6vw;
+    }
+}
+@media (max-width: 768px) {
+    h1 {
+        font-size: 10vw;
+    }
+
+    h3{
+        margin: 15px;
+    }
+
+    .rounded-button {
+        margin: 15px;
+    }
+
+    .opaque-box {
+        width:fit-content;
+        margin: auto;
+    }
+    .container {
+        padding: 16px;
+    }
+
+}
+
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.detail-background {
+    background-size: auto 200px;
+    background-repeat: no-repeat;
+    background-position: center center
+}
+
+.red-backlit-button {
+    color: white;
+    padding: calc(0.75em - 1px);
+    margin: 0.5em;
+    background: #e71837;
+    box-shadow: 0px 0px 16px white;
+    cursor: pointer;
+    font-size: inherit;
+}
+
+.rounded-button {
+    color: white;
+    background: #e71837;
+    box-shadow: 0px 0px 16px white;
+    cursor: pointer;
+    font-size: 16px;
+    width: 150px;
+    color: white;
+    height: 40px;
+}
+
+.movieTitle {
+    color: #fff;
+    font-family: 'Malgun Gothic';
+    font-weight: bold;
+}
+
+.poster {
+    max-width: 230px;
+    max-height: 95px;
+    width: auto;
+    height: auto;
+    border: 2px solid #898989;
+    border-radius: 7px;
+}
+
+.poster-on-detail {
+    max-width: 154px;
+}
+
+.bg {
+    background-image: url('../../../movie-theater.jpg');
+    background-position: center;
+    background-attachment: fixed;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+h1 {
+    font-family: 'Bangers', cursive;
+    color: #e71837;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 800;
+    line-height: 1;
+    /*text-shadow: 2px 2px 0px #898989;*/
+    text-shadow: 0 1px 0px #CCCCCC, 1px 0 0px #EEEEEE, 1px 2px 0px #CCCCCC, 2px 1px 0px #EEEEEE, 2px 3px 0px #CCCCCC, 3px 2px 0px #EEEEEE, 3px 4px 0px #CCCCCC;
+    padding-bottom: 10px;
+}
+h2 {
+    color: white;
+    font-size: 24px;
+    margin: 5px;
+    font-weight: 600;
+}
+
+h3 {
+    color: white;
+    font-size: 20px;
+    margin: 10px;
+}
+
+.tagline {
+    color: white;
+    font-family: 'Malgun Gothic';
+    font-size: 1.5em;
+    font-weight: bold;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+.release-date {
+    color: white;
+    font-family: 'Malgun Gothic';
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.opaque-box {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 1.5em;
+    text-align: center;
+    /*width: fit-content;*/
+}
+
+
+.trailer-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
+    margin-top: 5%;
+}
+
+.responsive-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+}
+

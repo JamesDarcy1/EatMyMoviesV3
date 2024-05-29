@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Eat My Movies</title>
+	<link rel="stylesheet" href="~/lib/bulma/css/bulma.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/EatMyMoviesSite.styles.css" asp-append-version="true" />
+	<link rel="icon" href="~/LogoDesign1.png" type="image/x-icon">
+
+	<!-- Google Analytics Tracking Code -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-QGZDZJ5HW2"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+		gtag('config', 'G-QGZDZJ5HW2');
+	</script>
+</head>
+<body class="bg mb-0">
+	<header>
+		<nav class="navbar" role="navigation" aria-label="main navigation">
+			<div class="navbar-brand">
+				<a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-item p-0">
+					<img src="~/LogoDesign1.png" style="max-height:none" height="45.5" width="45.5">
+				</a>
+				<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-target">
+					<span aria-hidden="true"></span>
+					<span aria-hidden="true"></span>
+					<span aria-hidden="true"></span>
+				</a>
+			</div>
+
+			<div id="navbar-target" class="navbar-menu">
+				<div class="navbar-start">
+					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+					<div class="navbar-item has-dropdown is-hoverable">
+						<a class="navbar-item">
+							Lists
+						</a>
+						<div class="navbar-dropdown">
+							<a class="navbar-item" asp-area="" asp-controller="List" asp-action="Top50">
+								Top 50
+							</a>
+							<a class="navbar-item" asp-area="" asp-controller="List" asp-action="Comedies">
+								Comedy
+							</a>
+							<a class="navbar-item" asp-area="" asp-controller="List" asp-action="ForeignFilms">
+								Foreign Films
+							</a>
+							<a class="navbar-item" asp-area="" asp-controller="List" asp-action="Christmas">
+								Christmas
+							</a>
+						</div>
+					</div>
+					<a class="navbar-item" asp-area="" asp-controller="Movie" asp-action="Search">Search</a>
+					@if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+					{
+						<a class="navbar-item" asp-area="" asp-controller="Authentication" asp-action="Login">Login</a>
+					}
+				</div>
+			</div>
+		</nav>
+	</header>
+	<div class="container">
+		<main role="main" class="pb-3">
+			@RenderBody()
+		</main>
+	</div>
+
+	@*<footer class="border-top footer text-muted">
+	<div class="container">
+	&copy; 2023 - EatMyMoviesSite - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+	</div>
+	</footer>*@
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+
+		const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+		$navbarBurgers.forEach(el => {
+			el.addEventListener('click', () => {
+
+				const target = el.dataset.target;
+				const $target = document.getElementById(target);
+
+				el.classList.toggle('is-active');
+				$target.classList.toggle('is-active');
+
+			});
+		});
+
+	});
+</script>

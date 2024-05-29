@@ -1,0 +1,47 @@
+﻿@using EatMyMoviesSite.DTOs;
+@model MovieList
+
+<div class="has-text-centered">
+	<h1>@Model.Name</h1>
+
+	<div class="opaque-box is-paddingless">
+		<table class="table is-narrow is-fullwidth has-text-weight-bold has-text-centerd">
+			<thead class="is-white">
+				<tr>
+					<th></th>
+					<th class="has-text-centered">Title</th>
+					<th class="has-text-centered">Poster</th>
+					<th class="has-text-centered">IMDB Rating</th>
+					<th class="has-text-centered">Genre</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var movie in Model.Movies)
+				{
+					<tr onclick="window.location='@Url.Action("Detail", "Movie")?title=@(movie.Title)';" class="is-clickable">
+						<td class="is-center has-text-weight-bold">@movie.Ranking</td>
+						<td class="movieTitle">@movie.Title</td>
+						<td><img src="@movie.PosterPath" alt="Sample Photo" class="poster" /></td>
+						<td>
+							@movie.ImdbRating
+						</td>
+						<td>
+							@foreach (var genre in movie.Genres)
+							{
+								@genre
+
+								<br />
+							}
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+@await Html.PartialAsync("_PaginationPartial", new PaginationViewModel
+	{
+	CurrentPage = Model.CurrentPage,
+	TotalPages = Model.TotalPages,
+	ActionName = Model.Name.Replace( " ", "" )
+	})
