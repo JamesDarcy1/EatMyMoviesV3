@@ -20,10 +20,10 @@
 </head>
 <body class="bg mb-0">
 	<header>
-		<nav class="navbar" role="navigation" aria-label="main navigation">
-			<div class="navbar-brand">
-				<a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-item p-0">
-					<img src="~/LogoDesign1.png" style="max-height:none" height="45.5" width="45.5">
+		<nav class="navbar header-box-shadow" role="navigation" aria-label="main navigation">
+			<div class="navbar-brand has-text-centered">
+				<a asp-area="" asp-controller="Home" asp-action="Index">
+					<p class="logo-text">Eat My Movies</p>
 				</a>
 				<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-target">
 					<span aria-hidden="true"></span>
@@ -33,7 +33,7 @@
 			</div>
 
 			<div id="navbar-target" class="navbar-menu">
-				<div class="navbar-start">
+				<div class="navbar-end">
 					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
 					<div class="navbar-item has-dropdown is-hoverable">
 						<a class="navbar-item">

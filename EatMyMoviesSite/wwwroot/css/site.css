@@ -14,6 +14,9 @@ html {
     h3{
         font-size: 6vw;
     }
+    .logo-text {
+        font-size: 40px;
+    }
 }
 @media (max-width: 768px) {
     h1 {
@@ -34,6 +37,10 @@ html {
     }
     .container {
         padding: 16px;
+    }
+
+    .logo-text {
+        font-size: 30px;
     }
 
 }
@@ -64,19 +71,8 @@ body {
     font-size: inherit;
 }
 
-.rounded-button {
-    color: white;
-    background: #e71837;
-    box-shadow: 0px 0px 16px white;
-    cursor: pointer;
-    font-size: 16px;
-    width: 150px;
-    color: white;
-    height: 40px;
-}
-
-.movieTitle {
-    color: #fff;
+.movie-title {
+    color: #003049;
     font-family: 'Malgun Gothic';
     font-weight: bold;
 }
@@ -95,7 +91,8 @@ body {
 }
 
 .bg {
-    background-image: url('../../../movie-theater.jpg');
+    /*background-image: url('../../../movie-theater.jpg');*/
+    background-color: #FDF0D5;
     background-position: center;
     background-attachment: fixed;
     background-size: cover;
@@ -114,8 +111,9 @@ h1 {
     text-shadow: 0 1px 0px #CCCCCC, 1px 0 0px #EEEEEE, 1px 2px 0px #CCCCCC, 2px 1px 0px #EEEEEE, 2px 3px 0px #CCCCCC, 3px 2px 0px #EEEEEE, 3px 4px 0px #CCCCCC;
     padding-bottom: 10px;
 }
+
 h2 {
-    color: white;
+    color: #003049;
     font-size: 24px;
     margin: 5px;
     font-weight: 600;
@@ -125,6 +123,11 @@ h3 {
     color: white;
     font-size: 20px;
     margin: 10px;
+}
+
+p {
+    color: #003049;
+    font-size: 18px;
 }
 
 .tagline {
@@ -144,7 +147,7 @@ h3 {
 }
 
 .opaque-box {
-    background: rgba(0, 0, 0, 0.8);
+    /*background: rgba(0, 0, 0, 0.8);*/
     padding: 1.5em;
     text-align: center;
     /*width: fit-content;*/
@@ -168,4 +171,80 @@ h3 {
     width: 100%;
     height: 100%;
 }
+
+.header-box-shadow {
+    box-shadow: 0 1px 10px #e71837
+}
+
+.logo-text {
+    font-family: 'Bangers', cursive;
+    color: #e71837;
+    letter-spacing: 2px;
+    font-weight: 800;
+    text-shadow: 0 1px 0px #CCCCCC, 1px 0 0px #EEEEEE, 1px 2px 0px #CCCCCC, 2px 1px 0px #EEEEEE, 2px 3px 0px #CCCCCC, 3px 2px 0px #EEEEEE, 3px 4px 0px #CCCCCC;
+    padding: 10px;
+    margin: 0 auto;
+}
+
+/* Button*/
+
+.cool-button {
+    color: white;
+    background: linear-gradient(45deg, #e71837, #ff6f61);
+    box-shadow: 0px 0px 16px rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    width: 150px;
+    height: 50px;
+    border: 2px solid transparent;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    padding: 10px; /* Add padding */
+    margin: 10px; /* Add margin for spacing */
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+}
+
+.cool-button:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 10%);
+    transition: all 0.75s;
+    transform: translateX(-50%) scale(0.5);
+    opacity: 0;
+}
+
+.cool-button:hover:before {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+}
+
+.cool-button:hover {
+    background: linear-gradient(45deg, #ff6f61, #e71837);
+    box-shadow: 0px 0px 24px rgba(255, 255, 255, 0.7);
+    border-color: white;
+    transform: scale(1.05); /* Slightly increase size on hover */
+}
+
+.cool-button:active {
+    background: linear-gradient(45deg, #e71837, #d0162f);
+    box-shadow: 0px 0px 32px rgba(255, 255, 255, 0.9);
+}
+
+.cool-button span {
+    display: block;
+    position: relative;
+    z-index: 2;
+}
+
+
+
 
