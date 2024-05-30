@@ -23,6 +23,10 @@ namespace EatMyMovies.DataAccess.Repositories
 		public int GetRankingOfMovie(Guid movieId, string listName)
 		{
 			var listRanking = _dbContext.ListRankings.FirstOrDefault(r => r.List.Name == listName && r.Movie.MovieId == movieId);
+			if(listRanking == null)
+			{
+				throw new Exception("Film does not exist in list");
+			}
 			return listRanking.Ranking;
 		}
 
@@ -44,6 +48,11 @@ namespace EatMyMovies.DataAccess.Repositories
 		{
 			var listRanking = _dbContext.ListRankings.FirstOrDefault(lr => lr.List == list && lr.Ranking == ranking);
 			return listRanking;
+		}
+
+		public bool FilmExistsInList(Guid movieId, Guid listId)
+		{
+			return _dbContext.ListRankings.Any(lr => lr.Movie.MovieId == movieId && lr.List.ListId == listId);
 		}
 
 		public IEnumerable<ListRanking> GetAllRankingsInList(List list)

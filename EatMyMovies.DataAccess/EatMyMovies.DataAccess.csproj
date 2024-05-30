@@ -7,9 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\EatMyMoviesSite\Config\appsettings.Development.json" Link="Config\appsettings.Development.json" />
-    <Content Include="..\EatMyMoviesSite\Config\appsettings.json" Link="Config\appsettings.json" />
-    <Content Include="..\EatMyMoviesSite\Config\appsettings.Production.json" Link="Config\appsettings.Production.json" />
+    <Compile Remove="Config\**" />
+    <Content Remove="Config\**" />
+    <EmbeddedResource Remove="Config\**" />
+    <None Remove="Config\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,10 +20,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.8" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Config\" />
   </ItemGroup>
 
 </Project>

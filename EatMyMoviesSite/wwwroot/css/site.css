@@ -242,6 +242,46 @@ p {
     z-index: 2;
 }
 
+.synopsis {
+    text-align: justify;
+}
 
+.synopsis.desktop-only {
+    display: block;
+}
 
+.synopsis.mobile-only {
+    display: none;
+}
 
+@media (max-width: 768px) {
+    .synopsis.desktop-only {
+        display: none;
+    }
+
+    .synopsis.mobile-only {
+        display: block;
+    }
+}
+
+.find-out-more {
+    display: inline-block;
+    margin-top: 10px;
+    color: #3273dc; /* Bulma primary color */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.find-out-more:hover {
+    text-decoration: underline;
+}
+
+.movie-block {
+    border-top: 1px solid rgba(219, 219, 219, 0.5);
+    margin-top: 1rem;
+    padding-top: 1rem;
+}
+
+.tmdb-logo {
+    height: 15px;
+}

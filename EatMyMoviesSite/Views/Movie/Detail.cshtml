@@ -2,39 +2,42 @@
 @using System.Diagnostics;
 @model MovieDetail;
 
+<meta name="description" content=@Model.Overview />
+
 @if (Model != null)
 {
+	<title>Eat My Movies - @Model.Title</title>
 	<div class="opaque-box">
 		<div class="columns">
 			<div class="column is-three-fifths">
 				<h1>@Model.Title</h1>
-				<i class="tagline">@Model.Tagline</i>
+				<i class="tagline">@Model.Tagline</i><br />
 				<div class="columns is-mobile">
 					<div class="column">
-						<p class="release-date"><u>Release Date</u></p>
-						<i class="release-date">@Model.ReleaseDate</i>
+						<strong><u>Release Date</u></strong><br />
+						<strong>@Model.ReleaseDate</strong>
 					</div>
 					<div class="column">
-						<p class="release-date"><u>Genres</u></p>
+						<strong><u>Genres</u></strong><br />
 						@foreach (var genre in Model.Genres)
 						{
-							<i class="release-date">@genre<br></i>
+							<strong>@genre<br></strong>
 						}
 					</div>
 					<div class="column">
-						<p class="release-date"><u>Imdb Rating</u></p>
-						<p class="release-date">@Model.ImdbRating</p>
+						<strong><u>Imdb Rating</u></strong><br />
+						<strong>@Model.ImdbRating</strong>
 					</div>
 				</div>
 			</div>
 
 			<div class="column is-two-fifths">
-				<img class="poster-on-detail" src=@("https://image.tmdb.org/t/p/w500" + Model.PosterPath) />
+				<img class="poster-on-detail" src=@("https://image.tmdb.org/t/p/w500" + Model.PosterPath) alt="@Model.Title poster" />
 			</div>
 		</div>
 		<div class="column">
 			<div class="columns is-mobile">
-				<h2>@Model.Overview</h2>
+				<p class="synopsis">@Model.Overview</p>
 			</div>
 		</div>
 	</div>
