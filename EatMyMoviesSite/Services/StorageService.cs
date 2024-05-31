@@ -11,17 +11,17 @@ namespace EatMyMoviesSite.Services
 			_rankingRepository = rankingRepository;
 		}
 
-		public void ShuffleListDownIfNecessary(List list, int ranking)
+		public void ShuffleListDownIfNecessary(List list, int newRanking)
 		{
-			var listRanking = _rankingRepository.GetMovieAtRanking(list, ranking);
+			var listRanking = _rankingRepository.GetMovieAtRanking(list, newRanking);
 			if (listRanking is not null)
 			{
 				var moviesInList = _rankingRepository.GetAllRankingsInList(list);
 				foreach (var movie in moviesInList)
 				{
-					if (movie.Ranking >= ranking)
+					if (movie.Ranking >= newRanking)
 					{
-						_rankingRepository.UpdateRanking(movie, movie.Ranking++);
+						_rankingRepository.UpdateRanking(movie, movie.Ranking+1);
 					}
 				}
 

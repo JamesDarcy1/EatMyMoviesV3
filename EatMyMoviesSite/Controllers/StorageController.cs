@@ -59,7 +59,6 @@ namespace EatMyMoviesSite.Controllers
 			if (listRankings.Any(x => x.Ranking == ranking))
 			{
 				_storageService.ShuffleListDownIfNecessary(list, ranking);
-				_rankingRepository.InsertMovieToList(movie, list, ranking);
 			}
 
 			var listRanking = _rankingRepository.InsertMovieToList(movie, list, ranking);
@@ -79,12 +78,12 @@ namespace EatMyMoviesSite.Controllers
 			}
 
 			var currentRanking = _rankingRepository.GetRankingOfMovie(movie.MovieId, list.Name);
-			_storageService.ShuffleListDownIfNecessary(list, currentRanking);
-			_rankingRepository.InsertMovieToList(movie, list, newRanking);
+			_storageService.ShuffleListDownIfNecessary(list, newRanking);
+			var updatedListRanking = _rankingRepository.InsertMovieToList(movie, list, newRanking);
 
-			var listRanking = _rankingRepository.InsertMovieToList(movie, list, newRanking);
+			_rankingRepository.RemoveRanking(currentRanking, list.ListId);
 
-			return listRanking;
+			return updatedListRanking;
 
 		}
 

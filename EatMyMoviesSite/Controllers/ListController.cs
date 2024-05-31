@@ -15,9 +15,9 @@ namespace EatMyMoviesSite.Controllers
             _movieService = movieService;
 		}
 
-        public async Task<IActionResult> Top50(int page = 1)
+        public async Task<IActionResult> Top100(int page = 1)
         {
-            var list = await _movieService.BuildMovieList("Top 50", page);
+            var list = await _movieService.BuildMovieList("Top 100", page);
             return View("~/Views/List/List.cshtml", list);
         }
 

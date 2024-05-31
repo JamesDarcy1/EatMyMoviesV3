@@ -10,6 +10,7 @@ namespace EatMyMovies.DataAccess.Repositories
 		IEnumerable<Movie> GetMoviesForList(string listName);
 		int GetRankingOfMovie(Guid movieId, string listName);
 		ListRanking InsertMovieToList(Movie movie, List list, int ranking);
+		void RemoveRanking(int ranking, Guid listId);
 		ListRanking UpdateRanking(ListRanking listRanking, int newRanking);
 	}
 }

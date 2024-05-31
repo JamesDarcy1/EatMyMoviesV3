@@ -70,5 +70,15 @@ namespace EatMyMovies.DataAccess.Repositories
 
 			return updatedListRanking.Entity;
 		}
+
+		public void RemoveRanking(int ranking, Guid listId)
+		{
+			var listRanking = _dbContext.ListRankings.FirstOrDefault(lr => lr.List.ListId == listId && lr.Ranking == ranking);
+			if(listRanking != null)
+			{
+				_dbContext.ListRankings.Remove(listRanking);
+				_dbContext.SaveChanges();
+			}
+		}
 	}
 }
