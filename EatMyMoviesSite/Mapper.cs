@@ -36,5 +36,17 @@ namespace EatMyMoviesSite
 				ImdbRating = imdbRating
 			};
 		}
-	}
+
+        public static ListMovie MapToMovieSummary(Movie tmdbMovie, decimal imdbRating)
+        {
+            return new ListMovie
+            {
+                Title = tmdbMovie.Title,
+                PosterPath = $"https://image.tmdb.org/t/p/w154{tmdbMovie.PosterPath}",
+                Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
+                ImdbRating = imdbRating,
+                Synopsis = tmdbMovie.Overview
+            };
+        }
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using EatMyMoviesSite.Models;
+using EatMyMoviesSite.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -7,18 +8,26 @@ namespace EatMyMoviesSite.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IMovieService _movieService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IMovieService movieService)
         {
             _logger = logger;
+            _movieService = movieService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var movieOfTheWeek = "Sideways";
+            var tmdbMovie = await _movieService.GetMovieByTitle(movieOfTheWeek);
+            var imdbRating = await _movieService.GetImdbRating(tmdbMovie.Title);
+
+            var summary = Mapper.MapToMovieSummary(tmdbMovie, imdbRating);
+
+            return View(summary);
         }
 
-        public IActionResult Privacy()
+        public IActionResult About()
         {
             return View();
         }

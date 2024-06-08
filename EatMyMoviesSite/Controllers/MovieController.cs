@@ -1,4 +1,5 @@
-﻿using EatMyMoviesSite.Models;
+﻿using EatMyMoviesSite.DTOs;
+using EatMyMoviesSite.Models;
 using EatMyMoviesSite.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,12 +23,12 @@ namespace EatMyMoviesSite.Controllers
             try
             {
                 var movie = await _movieService.GetMovieByTitle(title);
-				var trailer = await _movieService.GetTrailer(movie.Id);
-				var rating = await _movieService.GetImdbRating(title);
-				var movieDetail = Mapper.MapToMovieDetail(movie, trailer, rating);
-				return View(movieDetail);
-			}
-			catch (Exception ex)
+                var trailer = await _movieService.GetTrailer(movie.Id);
+                var rating = await _movieService.GetImdbRating(title);
+                var movieDetail = Mapper.MapToMovieDetail(movie, trailer, rating);
+                return View(movieDetail);
+            }
+            catch (Exception ex)
             {
                 return View();
             }

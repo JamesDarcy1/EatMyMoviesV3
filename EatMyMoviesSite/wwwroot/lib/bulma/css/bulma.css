@@ -6603,7 +6603,7 @@ a.navbar-item:focus, a.navbar-item:focus-within, a.navbar-item:hover, a.navbar-i
     flex-shrink: 1;
   }
   .pagination-list li {
-    flex-grow: 1;
+/*    flex-grow: 1;*/
     flex-shrink: 1;
   }
 }

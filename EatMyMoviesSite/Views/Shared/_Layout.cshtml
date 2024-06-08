@@ -35,6 +35,7 @@
 			<div id="navbar-target" class="navbar-menu">
 				<div class="navbar-end">
 					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="About">About</a>
 					<div class="navbar-item has-dropdown is-hoverable">
 						<a class="navbar-item">
 							Lists
@@ -69,11 +70,16 @@
 		</main>
 	</div>
 
-	@*<footer class="border-top footer text-muted">
-	<div class="container">
-	&copy; 2023 - EatMyMoviesSite - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-	</div>
-	</footer>*@
+	<footer class="footer">
+		<div class="content has-text-centered">
+			<p>
+				<strong>Eat My Movies</strong>. All rights reserved. <br />
+				This product uses the TMDB API but is not endorsed or certified by TMDB
+				<img class="tmdb-logo" src="~/TMDB_logo.svg" alt="Tmdb logo" />
+			</p>
+		</div>
+	</footer>
+
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
 	@await RenderSectionAsync("Scripts", required: false)

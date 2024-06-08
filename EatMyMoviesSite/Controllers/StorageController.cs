@@ -31,7 +31,7 @@ namespace EatMyMoviesSite.Controllers
 		public async Task<Movie> SaveToDatabase(string title)
 		{
 			var tmdbMovie = await _movieService.GetMovieByTitle(title);
-			var rating = await _movieService.GetImdbRating(title);
+			var rating = await _movieService.GetImdbRating(tmdbMovie.Title);
 			var entity = _movieRepository.SaveTmdbMovie(tmdbMovie.Title, tmdbMovie.Id, rating);
 			return entity;
 		}

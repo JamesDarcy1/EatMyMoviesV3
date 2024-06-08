@@ -1,58 +1,64 @@
-﻿<title>Eat My Movies - Discover Your Next Cinematic Obsession</title>
+﻿@using EatMyMoviesSite.DTOs
+@model ListMovie;
+
+<title>Eat My Movies - Discover Your Next Cinematic Obsession</title>
 <meta name="description" content="Discover your next cinematic obsession with Eat My Movies – a curated compilation of top film rankings across diverse genres. Let our suggestions guide your movie nights and ignite your passion for storytelling. Explore a world of entertainment with random genre picks!" />
 
-<section class="section">
-    <div class="container">
-        <div class="columns">
-            <div class="column is-half is-offset-one-quarter">
-                <div class="box has-text-centered">
-                    <h1>Welcome</h1>
-                    <p class="content ">
-                        Discover your next cinematic obsession with Eat My Movies – a thrilling compilation of film rankings across diverse genres. Let our curated suggestions guide your movie nights and ignite your passion for unforgettable storytelling. Unleash a world of entertainment with our random genre picks!
-                    </p>
-                    <h2 class="subtitle">Popular lists right now</h2>
-                    <div class="buttons is-centered">
-                        <a class="button cool-button" asp-area="" asp-controller="List" asp-action="Top100">Top 100</a>
-                        <a class="button cool-button" asp-area="" asp-controller="List" asp-action="Comedies">Comedies</a>
-                        <a class="button cool-button" asp-area="" asp-controller="List" asp-action="ForeignFilms">Foreign Films</a>
+<form method="POST" action="/Movie/Detail">
+    <section class="hero is-medium">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <h1>
+                    Discover Your Next Cinematic Obsession
+                </h1>
+
+                <h2 class="subtitle has-text-weight-bold pt-5">
+                    Movie of the week
+                </h2>
+
+                <article class="movie-block mt-0 pb-6">
+                    <div class="columns is-mobile">
+                        <div class="column is-three-fifths">
+                            <div class="content">
+                                <h2>@Model.Title</h2>
+                                <small>@Model.Genres</small><br />
+                                <small>IMDB Rating: @Model.ImdbRating</small><br />
+                                <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
+                                <p class="synopsis desktop-only">@Model.Synopsis</p>
+                            </div>
+                        </div>
+                        <div class="column is-two-fifths">
+                            <img class="poster" src="@Model.PosterPath" alt="@Model.Title poster" />
+                        </div>
+                    </div>
+                    <div class="columns is-mobile">
+                        <div class="column">
+                            <p class="synopsis mobile-only">@Model.Synopsis</p>
+                        </div>
+                    </div>
+                </article>
+
+                <b class="subtitle has-text-weight-bold pt-5">
+                    Explore top-ranked films, personalized movie suggestions, and soon to be in-depth reviews.
+                </b>
+                <div class="buttons is-centered">
+                    <a class="button cool-button" asp-area="" asp-controller="List" asp-action="Top100">Top 100</a>
+                    <a class="button cool-button" asp-area="" asp-controller="List" asp-action="Comedies">Comedies</a>
+                    <a class="button cool-button" asp-area="" asp-controller="List" asp-action="ForeignFilms">Foreign Films</a>
+                </div>
+
+
+                <div class="field has-addons has-addons-centered">
+                    <div class="control">
+                        <input class="input" type="text" name="title" placeholder="Search for a movie...">
+                    </div>
+                    <div class="control">
+                        <button type="submit" class="button is-info">
+                            Search
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-<form method="POST" action="/Movie/Detail">
-<section class="hero is-medium">
-    <div class="hero-body">
-        <div class="container has-text-centered">
-            <h1>
-                Discover Your Next Cinematic Obsession
-            </h1>
-            <h2 class="subtitle">
-                Explore top-ranked films, personalized movie suggestions, and soon to be in-depth reviews.
-            </h2>
-            <div class="field has-addons has-addons-centered">
-                <div class="control">
-                    <input class="input" type="text" name="title" placeholder="Search for a movie...">
-                </div>
-                <div class="control">
-                    <button type="submit" class="button is-info">
-                        Search
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
 </form>
-
-<footer class="footer">
-    <div class="content has-text-centered">
-        <p>
-            <strong>Eat My Movies</strong>. All rights reserved. <br />
-            This product uses the TMDB API but is not endorsed or certified by TMDB
-            <img class="tmdb-logo" src="~/TMDB_logo.svg" alt="Tmdb logo" />
-        </p>
-    </div>
-</footer>
