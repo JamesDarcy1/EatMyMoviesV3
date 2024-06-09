@@ -36,6 +36,7 @@
 				<div class="navbar-end">
 					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
 					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="About">About</a>
+					<a class="navbar-item" asp-area="" asp-controller="Movie" asp-action="Search">Search</a>
 					<div class="navbar-item has-dropdown is-hoverable">
 						<a class="navbar-item">
 							Lists
@@ -55,7 +56,6 @@
 							</a>
 						</div>
 					</div>
-					<a class="navbar-item" asp-area="" asp-controller="Movie" asp-action="Search">Search</a>
 					@if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
 					{
 						<a class="navbar-item" asp-area="" asp-controller="Authentication" asp-action="Login">Login</a>
@@ -68,17 +68,17 @@
 		<main role="main" class="pb-3">
 			@RenderBody()
 		</main>
-	</div>
 
-	<footer class="footer">
-		<div class="content has-text-centered">
-			<p>
-				<strong>Eat My Movies</strong>. All rights reserved. <br />
-				This product uses the TMDB API but is not endorsed or certified by TMDB
-				<img class="tmdb-logo" src="~/TMDB_logo.svg" alt="Tmdb logo" />
-			</p>
-		</div>
-	</footer>
+		<footer class="footer mt-2">
+			<div class="content has-text-centered">
+				<p>
+					<strong>Eat My Movies</strong>. All rights reserved. <br />
+					This product uses the TMDB API but is not endorsed or certified by TMDB
+					<img class="tmdb-logo" src="~/TMDB_logo.svg" alt="Tmdb logo" />
+				</p>
+			</div>
+		</footer>
+	</div>
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>

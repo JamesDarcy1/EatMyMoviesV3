@@ -9,7 +9,7 @@ html {
         font-size: 16px;
     }
     h1 {
-        font-size: 4vw;
+        font-size: 3vw;
     }
     h3{
         font-size: 6vw;
@@ -20,7 +20,7 @@ html {
 }
 @media (max-width: 768px) {
     h1 {
-        font-size: 10vw;
+        font-size: 6vw;
     }
 
     h3{
@@ -97,17 +97,38 @@ body {
     min-height: 100vh;
 }
 
-h1 {
+.logo-text {
     font-family: 'Bangers', cursive;
+    color: #e71837;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 800;
+    line-height: 1.2;
+    text-shadow: 0 1px 0px #CCCCCC, 1px 0 0px #EEEEEE, 1px 2px 0px #CCCCCC, 2px 1px 0px #EEEEEE, 2px 3px 0px #CCCCCC, 3px 2px 0px #EEEEEE, 3px 4px 0px #CCCCCC;
+    padding-bottom: 15px;
+    font-size: 2.5rem; /* Adjust size as needed */
+}
+
+h1 {
+    /*font-family: 'Bangers', cursive;
     color: #e71837;
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 2px;
     font-weight: 800;
     line-height: 1;
-    /*text-shadow: 2px 2px 0px #898989;*/
     text-shadow: 0 1px 0px #CCCCCC, 1px 0 0px #EEEEEE, 1px 2px 0px #CCCCCC, 2px 1px 0px #EEEEEE, 2px 3px 0px #CCCCCC, 3px 2px 0px #EEEEEE, 3px 4px 0px #CCCCCC;
+    padding-bottom: 10px;*/
+    font-family: 'Roboto Slab', serif; /* Change to a distinct yet complementary font */
+    color: #e71837;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 h2 {
@@ -173,7 +194,7 @@ p {
     box-shadow: 0 1px 10px #e71837
 }
 
-.logo-text {
+/*.logo-text {
     font-family: 'Bangers', cursive;
     color: #e71837;
     letter-spacing: 2px;
@@ -181,7 +202,36 @@ p {
     text-shadow: 0 1px 0px #CCCCCC, 1px 0 0px #EEEEEE, 1px 2px 0px #CCCCCC, 2px 1px 0px #EEEEEE, 2px 3px 0px #CCCCCC, 3px 2px 0px #EEEEEE, 3px 4px 0px #CCCCCC;
     padding: 10px;
     margin: 0 auto;
+}*/
+
+.logo-text {
+    font-family: 'Bangers', cursive;
+    color: #e71837;
+    letter-spacing: 2px;
+    font-weight: 800;
+    text-shadow: 
+        0 1px 0px #CCCCCC, 
+        1px 0 0px #EEEEEE, 
+        1px 2px 0px #CCCCCC, 
+        2px 1px 0px #EEEEEE, 
+        2px 3px 0px #CCCCCC, 
+        3px 2px 0px #EEEEEE, 
+        3px 4px 0px #CCCCCC;
+    padding: 10px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 2.5rem; /* Adjust size for desktops */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
 }
+
+    /* Optional hover effect */
+    .logo-text:hover {
+        color: #ff002f; /* Slight color change on hover */
+        text-shadow: 
+            0 2px 2px rgba(0, 0, 0, 0.2), 
+            2px 2px 2px rgba(0, 0, 0, 0.2);
+    }
+
 
 /* Button*/
 
@@ -280,6 +330,8 @@ p {
     border-top: 1px solid rgba(219, 219, 219, 0.5);
     margin-top: 4rem;
     padding-top: 2rem;
+    height: auto; /* Maintains aspect ratio */
+    margin-top: 10px; /* Adds some space between text and logo */
 }
 
 .tmdb-logo {
