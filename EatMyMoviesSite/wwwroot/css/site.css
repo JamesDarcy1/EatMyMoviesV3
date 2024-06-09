@@ -37,6 +37,8 @@ html {
     }
     .container {
         padding: 16px;
+        max-width: 100%;
+        overflow-x: hidden;
     }
 
     .logo-text {
@@ -53,6 +55,7 @@ html {
 
 body {
     margin-bottom: 60px;
+    overflow-x: hidden;
 }
 
 .detail-background {
