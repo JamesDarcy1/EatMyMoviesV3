@@ -35,6 +35,7 @@
 			<div id="navbar-target" class="navbar-menu">
 				<div class="navbar-end">
 					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+					<a class="navbar-item" asp-area="" asp-controller="Movie" asp-action="Recommender">Recommender</a>
 					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="About">About</a>
 					<a class="navbar-item" asp-area="" asp-controller="Movie" asp-action="Search">Search</a>
 					<div class="navbar-item has-dropdown is-hoverable">
@@ -82,6 +83,7 @@
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
