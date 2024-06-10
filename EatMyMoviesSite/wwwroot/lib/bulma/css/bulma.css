@@ -470,12 +470,13 @@ table th {
 
 /* Bulma Elements */
 .box {
-  background-color: white;
-  border-radius: 6px;
-  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
-  color: #4a4a4a;
-  display: block;
-  padding: 1.25rem;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
+    color: #4a4a4a;
+    display: block;
+    padding: 1.25rem;
+    text-align: center;
 }
 
 a.box:hover, a.box:focus {
@@ -11840,5 +11841,8 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 .footer {
     background-color: #fafafa;
     padding: 3rem 1.5rem 6rem;
+/*    bottom: 0;
+    position: relative;
+    width: 100%;*/
 }
 /*# sourceMappingURL=bulma.css.map */
