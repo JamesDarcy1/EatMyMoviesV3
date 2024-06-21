@@ -59,10 +59,10 @@ namespace EatMyMoviesSite.Services
 
 		public async Task<MovieList> BuildMovieList(string listTitle, int page)
 		{
-			var list = _listRepository.GetListByName(listTitle);
-			var moviesList = new MovieList() { Name = list.Name, Description = list.Description, Movies = new List<ListMovie>() };
 			try
 			{
+				var list = _listRepository.GetListByName(listTitle);
+				var moviesList = new MovieList() { Name = list.Name, Description = list.Description, Movies = new List<ListMovie>() };
 				var storedMovies = _rankingRepository.GetMoviesForList(listTitle);
 				var totalMovies = storedMovies.Count();
 				var totalPages = (int)Math.Ceiling((double)totalMovies / _moviesPerPage);
@@ -79,24 +79,27 @@ namespace EatMyMoviesSite.Services
 				foreach (var movie in moviesForPage)
 				{
 					var ranking = _rankingRepository.GetRankingOfMovie(movie.MovieId, listTitle);
+					var imdbRating = await GetImdbRating(movie.Title);
 					if (!_isDevelopment)
 					{
 						var tmdbMovie = await GetMoviesById(movie.TmdbId.Value);
-						var mappedMovie = Mapper.BuildListMovie(tmdbMovie, movie.ImdbRating, ranking);
+						var mappedMovie = Mapper.BuildListMovie(tmdbMovie, imdbRating, ranking);
 						moviesList.Movies.Add(mappedMovie);
 					}
 					else
 					{
-						moviesList.Movies.Add(new ListMovie() { Title = movie.Title, Ranking = ranking, ImdbRating = movie.ImdbRating });
+						moviesList.Movies.Add(new ListMovie() { Title = movie.Title, Ranking = ranking, ImdbRating = imdbRating });
 					}
 				}
 
 				moviesList.Movies = moviesList.Movies.OrderBy(x => x.Ranking).ToList();
-			} catch(Exception ex)
-			{
-				
+				return moviesList;
+
 			}
-			return moviesList;
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message);
+			}
 		}
 	}
 }

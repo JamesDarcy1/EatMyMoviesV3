@@ -17,7 +17,6 @@ namespace EatMyMovies.DataAccess.Repositories
 			{
 				Title = title,
 				TmdbId = tmdbId,
-				ImdbRating = imdbRating
 			});
 
 			_dbContext.SaveChanges();
