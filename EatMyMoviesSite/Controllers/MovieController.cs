@@ -40,6 +40,11 @@ namespace EatMyMoviesSite.Controllers
             return View();
         }
 
+		public async Task<IActionResult> Recommender()
+		{
+			return View();
+		}
 
-    }
+
+	}
 }
