@@ -7,9 +7,12 @@ namespace EatMyMoviesSite.Services
 	public interface IMovieService
 	{
 		Task<MovieList> BuildMovieList(string listTitle, int page);
-		Task<decimal> GetImdbRating(string movieTitle);
+        List<EatMyMovies.DataAccess.Models.Genre> GetAllGenres();
+        Task<decimal> GetImdbRating(string movieTitle);
 		Task<Movie> GetMovieByTitle(string title);
 		Task<Movie> GetMoviesById(int id);
-		Task<Video> GetTrailer(int movieId);
-	}
+        EatMyMovies.DataAccess.Models.Movie GetRecommendationByGenre(string genre);
+        Task<Video> GetTrailer(int movieId);
+        IList<T> ShuffleList<T>(IList<T> list);
+    }
 }

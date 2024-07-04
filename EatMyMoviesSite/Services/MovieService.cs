@@ -1,10 +1,12 @@
-﻿using EatMyMovies.DataAccess.Repositories;
+﻿using EatMyMovies.DataAccess.Models;
+using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.DTOs;
 using OMDbSharp;
 using System.Collections.Specialized;
 using TMDbLib.Client;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
+using Movie = TMDbLib.Objects.Movies.Movie;
 
 namespace EatMyMoviesSite.Services
 {
@@ -14,16 +16,18 @@ namespace EatMyMoviesSite.Services
 		private readonly OMDbClient _omdbClient;
 		private readonly IRankingRepository _rankingRepository;
 		private readonly IListRepository _listRepository;
+		private readonly IMovieRepository _movieRepository;
 		private readonly int _moviesPerPage = 10;
 		private readonly bool _isDevelopment;
 
-		public MovieService(IRankingRepository rankingRepository, IConfiguration configuration, IListRepository listRepository)
+		public MovieService(IRankingRepository rankingRepository, IConfiguration configuration, IListRepository listRepository, IMovieRepository movieRepository)
 		{
 			_isDevelopment = configuration["ASPNETCORE_ENVIRONMENT"] == "Development";
 			_tmdbClient = new TMDbClient(configuration["Tmdb:ApiKey"]);
 			_omdbClient = new OMDbClient(configuration["Omdb:ApiKey"], false);
 			_rankingRepository = rankingRepository;
 			_listRepository = listRepository;
+			_movieRepository = movieRepository;
 		}
 
 		public async Task<Movie> GetMovieByTitle(string title)
@@ -102,9 +106,35 @@ namespace EatMyMoviesSite.Services
 			}
 		}
 
-		public async Task<List<string>> GetAllGenres()
+		public List<EatMyMovies.DataAccess.Models.Genre> GetAllGenres()
 		{
-			return new List<string> { "Drama", "Romance", "Adventure", "Comedy", "Science Fiction", "Crime" };
+		   return _movieRepository.GetAllGenres();
 		} 
-	}
+
+		public EatMyMovies.DataAccess.Models.Movie GetRecommendationByGenre(string genre)
+		{
+			var moviesOfGenre = _movieRepository.GetMoviesByGenre(genre);
+			Random random = new Random();
+			var randomMovieIndex = random.Next(moviesOfGenre.Count);
+			var recommendation = moviesOfGenre.ElementAt(randomMovieIndex);
+			return recommendation;
+		}
+
+        public IList<T> ShuffleList<T>(IList<T> list)
+        {
+            Random random = new Random();
+
+            // Step 4: Implement the Fisher-Yates shuffle
+            for (int i = list.Count - 1; i > 0; i--)
+            {
+                int j = random.Next(i + 1); 
+
+                T temp = list[i];
+                list[i] = list[j];
+                list[j] = temp;
+            }
+
+			return list;
+        }
+    }
 }

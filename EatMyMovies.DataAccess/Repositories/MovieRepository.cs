@@ -53,5 +53,17 @@ namespace EatMyMovies.DataAccess.Repositories
                 _dbContext.SaveChanges();
             }
         }
+
+		public List<Genre> GetAllGenres()
+		{
+			var genres = _dbContext.Genres.ToList();
+			return genres;
+		}
+
+		public List<Movie> GetMoviesByGenre(string genre)
+		{
+			var moviesOfGenre = _dbContext.MovieGenres.Where(x => x.Genre.Name == genre).Select(x => x.Movie).ToList();
+			return moviesOfGenre;
+		}
     }
 }
