@@ -1,4 +1,9 @@
-﻿<meta name="description" content="Search for movies with Eat My Movies – your ultimate destination for discovering films across all genres. Find detailed information, ratings, and personalized recommendations to enhance your movie-watching experience. Start your search now!" />
+﻿@page
+@{
+	Layout = "_Layout";
+}
+
+<meta name="description" content="Search for movies with Eat My Movies – your ultimate destination for discovering films across all genres. Find detailed information, ratings, and personalized recommendations to enhance your movie-watching experience. Start your search now!" />
 <title>Eat My Movies - Search</title>
 
 <form method="POST" action="/Movie/Detail">
@@ -10,10 +15,13 @@
 		</div>
 		<div class="column is-one-quarter">
 			<button class="button cool-button m-0" type="submit">
-				@*<i class="fa-solid fa-magnifying-glass"></i>*@
 				<span>Search</span>
 			</button>
 		</div>
 	</div>
+
+	Message from vue: <span v-text="appMessage"></span><br />
 </div>
 </form>
+
+

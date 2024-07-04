@@ -40,6 +40,26 @@ namespace EatMyMoviesSite.Controllers
             return View();
         }
 
+		public IActionResult Recommender()
+		{
+			return View();
+		}
 
-    }
+        public List<string> GetGenres()
+        {
+            return new List<string>() { "Drama", "Sci-Fi", "Comedy" };
+        }
+
+        public async Task<MovieDetail> GetRecommendation(string genre)
+		{
+			var movie = await _movieService.GetMovieByTitle("Die Hard");
+			var trailer = await _movieService.GetTrailer(movie.Id);
+			var rating = await _movieService.GetImdbRating(movie.Title);
+			var movieDetail = Mapper.MapToMovieDetail(movie, trailer, rating);
+			//await _movieService.GetMoviesByGenre(genre);
+			//var topRatedMovie = movies.OrderByDescending(m => m.Ranking).FirstOrDefault();
+			return movieDetail;
+		}
+
+	}
 }

@@ -36,6 +36,7 @@
 				<div class="navbar-end">
 					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
 					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="About">About</a>
+					<a class="navbar-item" asp-area="" asp-controller="Movie" asp-action="Recommender">Recommender</a>
 					<a class="navbar-item" asp-area="" asp-controller="Movie" asp-action="Search">Search</a>
 					<div class="navbar-item has-dropdown is-hoverable">
 						<a class="navbar-item">
@@ -64,7 +65,7 @@
 			</div>
 		</nav>
 	</header>
-	<div class="container">
+	<div class="container" id="vueAppTemplate">
 		<main role="main" class="pb-3">
 			@RenderBody()
 		</main>
@@ -80,9 +81,23 @@
 		</div>
 	</footer>
 
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js" asp-fallback-src="/js/vendor/vue-2.5.16.min.js" crossorigin="anonymous"></script>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
 	@await RenderSectionAsync("Scripts", required: false)
+
+	<script type="text/javascript">
+		const { createApp } = Vue;
+
+		createApp({
+			mixins: mixinArray,
+			data() {
+				return {
+					appMessage: 'Hello Vue 3!'
+				}
+			}
+		}).mount('#vueAppTemplate');
+	</script>
 </body>
 </html>
 

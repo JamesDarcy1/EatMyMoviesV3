@@ -101,5 +101,10 @@ namespace EatMyMoviesSite.Services
 				throw new Exception(ex.Message);
 			}
 		}
+
+		public async Task<List<string>> GetAllGenres()
+		{
+			return new List<string> { "Drama", "Romance", "Adventure", "Comedy", "Science Fiction", "Crime" };
+		} 
 	}
 }

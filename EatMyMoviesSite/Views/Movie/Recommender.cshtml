@@ -1,0 +1,99 @@
+﻿<title>Eat My Movies - Recommender</title>
+
+<h1 class="logo-text">Eat My Movies</h1>
+<div v-if="currentQuestionIndex < maxQuestions" class="box has-text-centered">
+    <div class="question-area">
+        <p>{{ currentQuestion }}</p>
+        <button class="button is-primary" v-on:click="handleYes">Yes</button>
+        <button class="button" v-on:click="handleNo">No</button>
+    </div>
+</div>
+
+<div v-else>
+    <p>Then I'm not recommending any more films.</p>
+</div>
+
+<div v-if="recommendedMovie" class="movie-area pt-3">
+    <div class="box">
+        <div class="columns">
+            <div class="column is-three-fifths">
+                <h1>{{ recommendedMovie.title }}</h1>
+                <i class="tagline">{{ recommendedMovie.tagline }}</i><br />
+                <div class="columns is-mobile">
+                    <div class="column">
+                        <strong><u>Release Date</u></strong><br />
+                        <strong>{{ recommendedMovie.releaseDate }}</strong>
+                    </div>
+                    <div class="column">
+                        <strong><u>Genres</u></strong><br />
+                        <strong v-for="genre in recommendedMovie.Genres" :key="genre">{{ genre }}<br></strong>
+                    </div>
+                    <div class="column">
+                        <strong><u>Imdb Rating</u></strong><br />
+                        <strong>{{ recommendedMovie.imdbRating }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-two-fifths">
+                <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
+            </div>
+        </div>
+        <div class="column">
+            <div class="columns is-mobile">
+                <p class="synopsis">{{ recommendedMovie.overview }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="column has-text-centered trailer-container">
+            <iframe class="responsive-iframe"
+                    :src="recommendedMovie.trailerPath">
+            </iframe>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        var pageMixin = {
+            data() {
+                return {
+                    genres: [],
+                    currentQuestionIndex: 0,
+                    maxQuestions: 5,
+                    recommendedMovie: null,
+                }
+            },
+            computed: {
+                currentQuestion() {
+                    if (this.genres.length > 0) {
+                        return `Are you feeling some ${this.genres[this.currentQuestionIndex]}?`;
+                    }
+                    return '';
+                }
+            },
+            methods: {
+                handleYes() {
+                    const genre = this.genres[this.currentQuestionIndex];
+                    fetch(`/Movie/GetRecommendation?genre=${genre}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            this.recommendedMovie = data;
+                        });
+                },
+                handleNo() {
+                    this.currentQuestionIndex++;
+                }
+            },
+            mounted() {
+                fetch('/Movie/GetGenres')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.genres = data;
+                    });
+            }
+        };
+        mixinArray.push(pageMixin);
+    </script>
+}
