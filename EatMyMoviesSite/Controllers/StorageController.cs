@@ -1,8 +1,8 @@
 ﻿using EatMyMovies.DataAccess.Models;
 using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace EatMyMoviesSite.Controllers
 {
@@ -32,8 +32,10 @@ namespace EatMyMoviesSite.Controllers
 		{
 			var tmdbMovie = await _movieService.GetMovieByTitle(title);
 			var rating = await _movieService.GetImdbRating(tmdbMovie.Title);
+			var genres = tmdbMovie.Genres.Select(x => x.Name);
 			var entity = _movieRepository.SaveTmdbMovie(tmdbMovie.Title, tmdbMovie.Id, rating);
-			return entity;
+            _movieRepository.SaveGenres(entity, genres);
+            return entity;
 		}
 
 		[HttpGet]
@@ -93,5 +95,24 @@ namespace EatMyMoviesSite.Controllers
 			var list = _listRepository.AddList(listName);
 			return list;
 		}
-	}
+
+        [HttpPost]
+        public async Task LoadGenres()
+        {
+			var movies = _movieRepository.GetAllMovies().ToList();
+			foreach (var movie in movies)
+			{
+				var tmdbMovie = await _movieService.GetMovieByTitle(movie.Title);
+				if(tmdbMovie != null)
+				{
+					Console.WriteLine("movie ", tmdbMovie.Title);
+                    var genres = tmdbMovie.Genres.Select(x => x.Name);
+                    _movieRepository.SaveGenres(movie, genres);
+                    Console.WriteLine("saved genres ", JsonSerializer.Serialize(tmdbMovie.Genres));
+                }
+            }
+        }
+
+
+    }
 }

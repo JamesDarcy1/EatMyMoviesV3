@@ -7,10 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Config\**" />
-    <Content Remove="Config\**" />
-    <EmbeddedResource Remove="Config\**" />
-    <None Remove="Config\**" />
+    <Content Include="..\EatMyMoviesSite\Config\appsettings.Development.json" />
+    <Content Include="..\EatMyMoviesSite\Config\appsettings.Production.json" />
+    <Content Include="..\EatMyMoviesSite\Config\appsettings.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +19,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.8" />
+    <PackageReference Include="OMDbSharp" Version="0.3.0" />
   </ItemGroup>
 
 </Project>

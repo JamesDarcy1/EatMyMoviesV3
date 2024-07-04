@@ -10,7 +10,5 @@ namespace EatMyMovies.DataAccess.Models
         public string Title { get; set; }
 
         public int? TmdbId { get; set; }
-
-        public decimal ImdbRating { get; set; }
     }
 }

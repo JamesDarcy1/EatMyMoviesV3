@@ -13,5 +13,7 @@ namespace EatMyMovies.DataAccess
 		public DbSet<Movie> Movies { get; set; } 
 		public DbSet<List> Lists { get; set; } 
 		public DbSet<ListRanking> ListRankings { get; set; } 
+		public DbSet<Genre> Genres { get; set; } 
+		public DbSet<MovieGenre> MovieGenres { get; set; } 
 	}
 }
