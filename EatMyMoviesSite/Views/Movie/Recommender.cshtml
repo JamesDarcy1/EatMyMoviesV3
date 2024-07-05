@@ -1,12 +1,17 @@
-﻿<title>Eat My Movies - Recommender</title>
+﻿@page
+@{
+    Layout = "_Layout";
+}
+
+<title>Eat My Movies - Recommender</title>
 <h1 class="logo-text">Recommender</h1>
 <div v-if="currentQuestionIndex < maxQuestions" class="box has-text-centered">
     <div class="question-area">
         <loading-spinner v-if="isQuestionLoading"></loading-spinner>
         <div v-else>
             <p>{{ currentQuestion }}</p>
-            <button class="button is-primary" v-on:click="handleYes">Yes</button>
-            <button class="button" v-on:click="handleNo">No</button>
+            <button class="button is-primary" v-on:click="handleYes">{{ yesButtonText }}</button>
+            <button class="button" v-on:click="handleNo">{{ noButtonText }}</button>
         </div>
     </div>
 </div>
@@ -75,7 +80,16 @@
                     maxQuestions: 5,
                     recommendedMovie: null,
                     isQuestionLoading: true,
-                    isMovieLoading: false
+                    isMovieLoading: false,
+                    yesButtonText: 'Yes',
+                    noButtonText: 'No',
+                    prompts: [
+                        'Are you feeling a',
+                        'Maybe it\'s the night for a',
+                        'How about a',
+                        'Up for a',
+                        'Probably has to be a'
+                    ]
                 };
             },
             methods: {
@@ -87,11 +101,15 @@
                         .then(data => {
                             this.recommendedMovie = data;
                             this.isMovieLoading = false;
+                            this.yesButtonText = 'Try again'; 
+                            this.noButtonText = `I don't want a ${this.genres[this.currentQuestionIndex]} anymore`;
                         });
                 },
                 handleNo() {
                     this.currentQuestionIndex++;
-                    this.currentQuestion = `Are you feeling some ${this.genres[this.currentQuestionIndex]}?`
+                    this.currentQuestion = `${this.prompts[this.currentQuestionIndex]} ${this.genres[this.currentQuestionIndex]}?`;
+                    this.yesButtonText = 'Yes';
+                    this.noButtonText = `No`;
                 }
             },
             mounted() {
