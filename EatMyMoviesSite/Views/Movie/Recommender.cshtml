@@ -1,11 +1,13 @@
 ﻿<title>Eat My Movies - Recommender</title>
-
 <h1 class="logo-text">Recommender</h1>
 <div v-if="currentQuestionIndex < maxQuestions" class="box has-text-centered">
     <div class="question-area">
-        <p>{{ currentQuestion }}</p>
-        <button class="button is-primary" v-on:click="handleYes">Yes</button>
-        <button class="button" v-on:click="handleNo">No</button>
+        <loading-spinner v-if="isQuestionLoading"></loading-spinner>
+        <div v-else>
+            <p>{{ currentQuestion }}</p>
+            <button class="button is-primary" v-on:click="handleYes">Yes</button>
+            <button class="button" v-on:click="handleNo">No</button>
+        </div>
     </div>
 </div>
 
@@ -13,8 +15,11 @@
     <p>Then I'm not recommending any more films.</p>
 </div>
 
-<div v-if="recommendedMovie" class="movie-area pt-3">
-    <div class="box">
+<div v-if="recommendedMovie || isMovieLoading" class="movie-area pt-3">
+    <div v-show="isMovieLoading" class="box">
+        <loading-spinner></loading-spinner>
+    </div>
+    <div v-if="recommendedMovie && !isMovieLoading" class="box">
         <div class="columns">
             <div class="column is-three-fifths">
                 <h1>{{ recommendedMovie.title }}</h1>
@@ -55,35 +60,38 @@
     </div>
 </div>
 @section Scripts {
+    <script src="/components/loading.js"></script>
     <script>
+
         var pageMixin = {
-            data() {
+            components: {
+                'loading-spinner': LoadingSpinner
+            },
+            data: function() {
                 return {
                     genres: [],
                     currentQuestionIndex: 0,
+                    currentQuestion: '',
                     maxQuestions: 5,
                     recommendedMovie: null,
-                }
-            },
-            computed: {
-                currentQuestion() {
-                    if (this.genres.length > 0) {
-                        return `Are you feeling some ${this.genres[this.currentQuestionIndex]}?`;
-                    }
-                    return '';
-                }
+                    isQuestionLoading: true,
+                    isMovieLoading: false
+                };
             },
             methods: {
                 handleYes() {
+                    this.isMovieLoading = true;
                     const genre = this.genres[this.currentQuestionIndex];
                     fetch(`/Movie/GetRecommendation?genre=${genre}`)
                         .then(response => response.json())
                         .then(data => {
                             this.recommendedMovie = data;
+                            this.isMovieLoading = false;
                         });
                 },
                 handleNo() {
                     this.currentQuestionIndex++;
+                    this.currentQuestion = `Are you feeling some ${this.genres[this.currentQuestionIndex]}?`
                 }
             },
             mounted() {
@@ -91,8 +99,12 @@
                     .then(response => response.json())
                     .then(data => {
                         this.genres = data;
+                        if (this.genres.length > 0) {
+                            this.currentQuestion = `Are you feeling some ${this.genres[this.currentQuestionIndex]}?`
+                            this.isQuestionLoading = false;
+                        }
                     });
-            }
+            }, 
         };
         mixinArray.push(pageMixin);
     </script>
