@@ -81,23 +81,11 @@
 		</div>
 	</footer>
 
-	<script src="https://unpkg.com/vue@3/dist/vue.global.js" asp-fallback-src="/js/vendor/vue-2.5.16.min.js" crossorigin="anonymous"></script>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
 	@await RenderSectionAsync("Scripts", required: false)
+	@RenderSection("VueComponents", required: false)
 
-	<script type="text/javascript">
-		const { createApp } = Vue;
-
-		createApp({
-			mixins: mixinArray,
-			data() {
-				return {
-					appMessage: 'Hello Vue 3!',
-				}
-			}
-		}).mount('#vueAppTemplate');
-	</script>
 </body>
 </html>
 

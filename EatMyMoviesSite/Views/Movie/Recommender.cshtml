@@ -5,74 +5,80 @@
 
 <title>Eat My Movies - Recommender</title>
 <h1 class="logo-text">Recommender</h1>
-<div v-if="currentQuestionIndex < maxQuestions" class="box has-text-centered">
-    <div class="question-area">
-        <loading-spinner v-if="isQuestionLoading"></loading-spinner>
-        <div v-else>
-            <p>{{ currentQuestion }}</p>
-            <button class="button is-primary" v-on:click="handleYes">{{ yesButtonText }}</button>
-            <button class="button" v-on:click="handleNo">{{ noButtonText }}</button>
+
+<div id="recommenderApp">
+    <div v-if="currentQuestionIndex < maxQuestions" class="box has-text-centered">
+        <div class="question-area">
+            <loading-spinner v-if="isQuestionLoading"></loading-spinner>
+            <div v-else>
+                <p>{{ currentQuestion }}</p>
+                <button class="button is-primary" v-on:click="handleYes">{{ yesButtonText }}</button>
+                <button class="button" v-on:click="handleNo">{{ noButtonText }}</button>
+            </div>
         </div>
     </div>
-</div>
 
-<div v-else>
-    <p>Then I'm not recommending any more films.</p>
-</div>
-
-<div v-if="recommendedMovie || isMovieLoading" class="movie-area pt-3">
-    <div v-show="isMovieLoading" class="box">
-        <loading-spinner></loading-spinner>
+    <div v-else>
+        <p>Then I'm not recommending any more films.</p>
     </div>
-    <div v-if="recommendedMovie && !isMovieLoading" class="box">
-        <div class="columns">
-            <div class="column is-three-fifths">
-                <h1>{{ recommendedMovie.title }}</h1>
-                <i class="tagline">{{ recommendedMovie.tagline }}</i><br />
-                <div class="columns is-mobile">
-                    <div class="column">
-                        <strong><u>Release Date</u></strong><br />
-                        <strong>{{ recommendedMovie.releaseDate }}</strong>
-                    </div>
-                    <div class="column">
-                        <strong><u>Genres</u></strong><br />
-                        <strong v-for="genre in recommendedMovie.Genres" :key="genre">{{ genre }}<br></strong>
-                    </div>
-                    <div class="column">
-                        <strong><u>Imdb Rating</u></strong><br />
-                        <strong>{{ recommendedMovie.imdbRating }}</strong>
+
+    <div v-if="recommendedMovie || isMovieLoading" class="movie-area pt-3">
+        <div v-show="isMovieLoading" class="box">
+            <loading-spinner></loading-spinner>
+        </div>
+        <div v-if="recommendedMovie && !isMovieLoading" class="box">
+            <div class="columns">
+                <div class="column is-three-fifths">
+                    <h1>{{ recommendedMovie.title }}</h1>
+                    <i class="tagline">{{ recommendedMovie.tagline }}</i><br />
+                    <div class="columns is-mobile">
+                        <div class="column">
+                            <strong><u>Release Date</u></strong><br />
+                            <strong>{{ recommendedMovie.releaseDate }}</strong>
+                        </div>
+                        <div class="column">
+                            <strong><u>Genres</u></strong><br />
+                            <strong v-for="genre in recommendedMovie.genres" :key="genre">{{ genre }}<br></strong>
+                        </div>
+                        <div class="column">
+                            <strong><u>Imdb Rating</u></strong><br />
+                            <strong>{{ recommendedMovie.imdbRating }}</strong>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="column is-two-fifths">
-                <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
+                <div class="column is-two-fifths">
+                    <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
+                </div>
+            </div>
+            <div class="column">
+                <div class="columns is-mobile">
+                    <p class="synopsis">{{ recommendedMovie.overview }}</p>
+                </div>
             </div>
         </div>
-        <div class="column">
-            <div class="columns is-mobile">
-                <p class="synopsis">{{ recommendedMovie.overview }}</p>
-            </div>
-        </div>
-    </div>
 
-    <div class="columns">
-        <div class="column has-text-centered trailer-container">
-            <iframe class="responsive-iframe"
-                    :src="recommendedMovie.trailerPath">
-            </iframe>
+        <div class="columns">
+            <div class="column has-text-centered trailer-container">
+                <iframe class="responsive-iframe"
+                        :src="recommendedMovie.trailerPath">
+                </iframe>
+            </div>
         </div>
     </div>
 </div>
+
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
     <script src="/components/loading.js"></script>
     <script>
-
-        var pageMixin = {
+        const { createApp } = Vue;
+        createApp({
+            el: "#recommenderApp",
             components: {
                 'loading-spinner': LoadingSpinner
             },
-            data: function() {
+            data: function () {
                 return {
                     genres: [],
                     currentQuestionIndex: 0,
@@ -101,7 +107,7 @@
                         .then(data => {
                             this.recommendedMovie = data;
                             this.isMovieLoading = false;
-                            this.yesButtonText = 'Try again'; 
+                            this.yesButtonText = 'Try again';
                             this.noButtonText = `I don't want a ${this.genres[this.currentQuestionIndex]} anymore`;
                         });
                 },
@@ -113,17 +119,18 @@
                 }
             },
             mounted() {
+                console.log('mounting');
                 fetch('/Movie/GetGenres')
                     .then(response => response.json())
                     .then(data => {
+                        console.log('we back');
                         this.genres = data;
                         if (this.genres.length > 0) {
                             this.currentQuestion = `Are you feeling some ${this.genres[this.currentQuestionIndex]}?`
                             this.isQuestionLoading = false;
                         }
                     });
-            }, 
-        };
-        mixinArray.push(pageMixin);
+            },
+        }).mount('#recommenderApp');
     </script>
 }
