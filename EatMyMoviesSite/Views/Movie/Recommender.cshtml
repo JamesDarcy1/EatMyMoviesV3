@@ -6,7 +6,7 @@
 <title>Eat My Movies - Recommender</title>
 <h1 class="logo-text">Recommender</h1>
 
-<div id="recommenderApp">
+<div id="recommenderApp" v-cloak>
     <div v-if="currentQuestionIndex < maxQuestions" class="box has-text-centered">
         <div class="question-area">
             <loading-spinner v-if="isQuestionLoading"></loading-spinner>
@@ -73,12 +73,12 @@
     <script src="/components/loading.js"></script>
     <script>
         const { createApp } = Vue;
+
         createApp({
-            el: "#recommenderApp",
             components: {
                 'loading-spinner': LoadingSpinner
             },
-            data: function () {
+            data() {
                 return {
                     genres: [],
                     currentQuestionIndex: 0,
@@ -119,11 +119,9 @@
                 }
             },
             mounted() {
-                console.log('mounting');
                 fetch('/Movie/GetGenres')
                     .then(response => response.json())
                     .then(data => {
-                        console.log('we back');
                         this.genres = data;
                         if (this.genres.length > 0) {
                             this.currentQuestion = `Are you feeling some ${this.genres[this.currentQuestionIndex]}?`
@@ -134,3 +132,10 @@
         }).mount('#recommenderApp');
     </script>
 }
+
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>
