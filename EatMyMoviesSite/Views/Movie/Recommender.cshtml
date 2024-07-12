@@ -22,43 +22,43 @@
         <p>Then I'm not recommending any more films.</p>
     </div>
 
-    <div v-if="recommendedMovie || isMovieLoading" class="movie-area pt-3">
-        <div v-show="isMovieLoading" class="box">
-            <loading-spinner></loading-spinner>
-        </div>
-        <div v-if="recommendedMovie && !isMovieLoading" class="box">
-            <div class="columns">
-                <div class="column is-three-fifths">
-                    <h1>{{ recommendedMovie.title }}</h1>
-                    <i class="tagline">{{ recommendedMovie.tagline }}</i><br />
-                    <div class="columns is-mobile">
-                        <div class="column">
-                            <strong><u>Release Date</u></strong><br />
-                            <strong>{{ recommendedMovie.releaseDate }}</strong>
-                        </div>
-                        <div class="column">
-                            <strong><u>Genres</u></strong><br />
-                            <strong v-for="genre in recommendedMovie.genres" :key="genre">{{ genre }}<br></strong>
-                        </div>
-                        <div class="column">
-                            <strong><u>Imdb Rating</u></strong><br />
-                            <strong>{{ recommendedMovie.imdbRating }}</strong>
+    <div v-if="showRecommendationBox" class="movie-area pt-3">
+        <div class="box">
+            <loading-spinner v-if="isMovieLoading"></loading-spinner>
+            <div v-else>
+                <div class="columns">
+                    <div class="column is-three-fifths">
+                        <h1>{{ recommendedMovie.title }}</h1>
+                        <i class="tagline">{{ recommendedMovie.tagline }}</i><br />
+                        <div class="columns is-mobile">
+                            <div class="column">
+                                <strong><u>Release Date</u></strong><br />
+                                <strong>{{ recommendedMovie.releaseDate }}</strong>
+                            </div>
+                            <div class="column">
+                                <strong><u>Genres</u></strong><br />
+                                <strong v-for="genre in recommendedMovie.genres" :key="genre">{{ genre }}<br></strong>
+                            </div>
+                            <div class="column">
+                                <strong><u>Imdb Rating</u></strong><br />
+                                <strong>{{ recommendedMovie.imdbRating }}</strong>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="column is-two-fifths">
-                    <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
+                    <div class="column is-two-fifths">
+                        <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
+                    </div>
                 </div>
-            </div>
-            <div class="column">
-                <div class="columns is-mobile">
-                    <p class="synopsis">{{ recommendedMovie.overview }}</p>
+                <div class="column">
+                    <div class="columns is-mobile">
+                        <p class="synopsis">{{ recommendedMovie.overview }}</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="columns">
+        <div v-if="recommendedMovie" class="columns">
             <div class="column has-text-centered trailer-container">
                 <iframe class="responsive-iframe"
                         :src="recommendedMovie.trailerPath">
@@ -87,6 +87,7 @@
                     recommendedMovie: null,
                     isQuestionLoading: true,
                     isMovieLoading: false,
+                    showRecommendationBox: false,
                     yesButtonText: 'Yes',
                     noButtonText: 'No',
                     prompts: [
@@ -100,6 +101,7 @@
             },
             methods: {
                 handleYes() {
+                    this.showRecommendationBox = true;
                     this.isMovieLoading = true;
                     const genre = this.genres[this.currentQuestionIndex];
                     fetch(`/Movie/GetRecommendation?genre=${genre}`)

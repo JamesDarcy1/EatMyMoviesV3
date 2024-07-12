@@ -12,6 +12,14 @@
                     Discover Your Next Cinematic Obsession
                 </h1>
 
+                <h2 class="subtitle has-text-weight-bold mb-0">
+                    Not sure what to watch? Try our new Recommender!
+                </h2>
+                <div class="buttons is-centered">
+                    <a class="button cool-button" asp-controller="Movie" asp-action="Recommender">Take me there</a>
+                </div>
+
+
                 <h2 class="subtitle has-text-weight-bold pt-5">
                     Movie of the week
                 </h2>
@@ -38,9 +46,9 @@
                     </div>
                 </article>
 
-                <b class="subtitle has-text-weight-bold pt-5">
+                <h2 class="subtitle has-text-weight-bold pt-5 mb-0">
                     Explore top-ranked films, personalised movie suggestions, and soon to be in-depth reviews.
-                </b>
+                </h2>
                 <div class="buttons is-centered">
                     <a class="button cool-button" asp-area="" asp-controller="List" asp-action="Top100">Top 100</a>
                     <a class="button cool-button" asp-area="" asp-controller="List" asp-action="Comedies">Comedies</a>
@@ -48,7 +56,7 @@
                 </div>
 
 
-                <div class="field has-addons has-addons-centered">
+@*                 <div class="field has-addons has-addons-centered">
                     <div class="control">
                         <input class="input" type="text" name="title" placeholder="Search for a movie...">
                     </div>
@@ -57,7 +65,7 @@
                             Search
                         </button>
                     </div>
-                </div>
+                </div> *@
             </div>
         </div>
     </section>
