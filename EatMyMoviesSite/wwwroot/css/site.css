@@ -227,15 +227,15 @@ p {
 
 .cool-button {
     color: white;
-    background: linear-gradient(45deg, #e71837, #ff6f61);
+    background: linear-gradient(45deg, #7DB54A, #9dd16a);
     box-shadow: 0px 0px 16px rgba(255, 255, 255, 0.5);
     cursor: pointer;
     font-size: 18px;
     font-weight: bold;
-    width: 150px;
+    min-width: 150px;
     height: 50px;
     border: 2px solid transparent;
-    border-radius: 0;
+    border-radius: 12px; /* Rounded corners */
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -257,6 +257,7 @@ p {
         transition: all 0.75s;
         transform: translateX(-50%) scale(0.5);
         opacity: 0;
+        border-radius: 12px; /* Ensure the pseudo-element also has rounded corners */
     }
 
     .cool-button:hover:before {
@@ -265,14 +266,14 @@ p {
     }
 
     .cool-button:hover {
-        background: linear-gradient(45deg, #ff6f61, #e71837);
+        background: linear-gradient(45deg, #9dd16a, #7DB54A);
         box-shadow: 0px 0px 24px rgba(255, 255, 255, 0.7);
         border-color: white;
         transform: scale(1.05); /* Slightly increase size on hover */
     }
 
     .cool-button:active {
-        background: linear-gradient(45deg, #e71837, #d0162f);
+        background: linear-gradient(45deg, #7DB54A, #67983f);
         box-shadow: 0px 0px 32px rgba(255, 255, 255, 0.9);
     }
 
@@ -281,6 +282,7 @@ p {
         position: relative;
         z-index: 2;
     }
+
 
 .synopsis {
     text-align: justify;
