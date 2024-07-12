@@ -1006,13 +1006,13 @@ fieldset[disabled] .button.is-dark.is-inverted.is-outlined {
 }
 
 .button.is-primary {
-  background-color: #7DB54A;
+  background-color: #3273dc;
   border-color: transparent;
   color: #fff;
 }
 
 .button.is-primary:hover, .button.is-primary.is-hovered {
-  background-color: #00c4a7;
+  background-color: #5a8dfc;
   border-color: transparent;
   color: #fff;
 }
@@ -1027,7 +1027,7 @@ fieldset[disabled] .button.is-dark.is-inverted.is-outlined {
 }
 
 .button.is-primary:active, .button.is-primary.is-active {
-  background-color: #00b89c;
+  background-color: #5a8dfc;
   border-color: transparent;
   color: #fff;
 }
