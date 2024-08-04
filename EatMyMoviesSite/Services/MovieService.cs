@@ -84,16 +84,16 @@ namespace EatMyMoviesSite.Services
 				{
 					var ranking = _rankingRepository.GetRankingOfMovie(movie.MovieId, listTitle);
 					var imdbRating = await GetImdbRating(movie.Title);
-					if (!_isDevelopment)
-					{
+					//if (!_isDevelopment)
+					//{
 						var tmdbMovie = await GetMoviesById(movie.TmdbId.Value);
 						var mappedMovie = Mapper.BuildListMovie(tmdbMovie, imdbRating, ranking);
 						moviesList.Movies.Add(mappedMovie);
-					}
-					else
-					{
-						moviesList.Movies.Add(new ListMovie() { Title = movie.Title, Ranking = ranking, ImdbRating = imdbRating });
-					}
+					//}
+					//else
+					//{
+					//	moviesList.Movies.Add(new ListMovie() { Title = movie.Title, Ranking = ranking, ImdbRating = imdbRating });
+					//}
 				}
 
 				moviesList.Movies = moviesList.Movies.OrderBy(x => x.Ranking).ToList();
