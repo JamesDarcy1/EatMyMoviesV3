@@ -12,7 +12,7 @@ namespace EatMyMoviesSite.Services
 		Task<Movie> GetMovieByTitle(string title);
 		Task<Movie> GetMoviesById(int id);
         EatMyMovies.DataAccess.Models.Movie GetRecommendationByGenre(string genre);
-        Task<List<string>> SearchMoviesByTitle(string titleSearch);
+        Task<List<MovieDropdown>> SearchMoviesByTitle(string titleSearch);
         Task<Video> GetTrailer(int movieId);
         IList<T> ShuffleList<T>(IList<T> list);
     }

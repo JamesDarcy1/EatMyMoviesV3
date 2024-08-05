@@ -1,16 +1,13 @@
-﻿using EatMyMovies.DataAccess.Models;
-using EatMyMovies.DataAccess.Repositories;
+﻿using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.DTOs;
 using OMDbSharp;
-using System.Collections.Specialized;
 using TMDbLib.Client;
 using TMDbLib.Objects.General;
-using TMDbLib.Objects.Movies;
 using Movie = TMDbLib.Objects.Movies.Movie;
 
 namespace EatMyMoviesSite.Services
 {
-	public class MovieService : IMovieService
+    public class MovieService : IMovieService
 	{
 		private readonly TMDbClient _tmdbClient;
 		private readonly OMDbClient _omdbClient;
@@ -41,10 +38,18 @@ namespace EatMyMoviesSite.Services
 			return movie;
 		}
 
-        public async Task<List<string>> SearchMoviesByTitle(string titleSearch)
+        public async Task<List<MovieDropdown>> SearchMoviesByTitle(string titleSearch)
         {
             var searchResults = await _tmdbClient.SearchMovieAsync(titleSearch, 1);
-            return searchResults.Results.Select(x => x.Title).Take(5).ToList();
+            var reducedList = searchResults.Results.Where(x => x.PosterPath != null)
+													.Select(x => 
+														new MovieDropdown() 
+														{ 
+															Id = x.Id, 
+															Title = x.Title, 
+															PosterPath = x.PosterPath 
+														}).Take(5).ToList();
+            return reducedList;
         }
 
         public async Task<Movie> GetMoviesById(int id)

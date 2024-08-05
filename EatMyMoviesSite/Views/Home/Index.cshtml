@@ -13,7 +13,7 @@
                 </h1>
 
                 <h2 class="subtitle has-text-weight-bold mb-0">
-                    Not sure what to watch? Try our new recommender!
+                    Not sure what to watch - Try our new recommender
                 </h2>
                 <div class="buttons is-centered">
                     <a class="button cool-button" asp-controller="Movie" asp-action="Recommender">Take Me There</a>
@@ -39,15 +39,11 @@
                             <img class="poster" src="@Model.PosterPath" alt="@Model.Title poster" />
                         </div>
                     </div>
-                    <div class="columns is-mobile">
-                        <div class="column">
-                            <p class="synopsis mobile-only">@Model.Synopsis</p>
-                        </div>
-                    </div>
+                    <p class="synopsis mobile-only">@Model.Synopsis</p>
                 </article>
 
                 <h2 class="subtitle has-text-weight-bold pt-5 mb-0">
-                    Explore top-ranked films, personalised movie suggestions, and soon to be in-depth reviews.
+                    Explore top-ranked films, personalised movie suggestions, and soon to be in-depth reviews
                 </h2>
                 <div class="buttons is-centered">
                     <a class="button cool-button" asp-area="" asp-controller="List" asp-action="Top100">Top 100</a>

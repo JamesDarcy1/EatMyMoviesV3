@@ -13,10 +13,11 @@
             <div class="column is-three-quarters">
                 <input class="textarea" placeholder="Enter movie title" rows="1" v-model="searchQuery" />
                 <div :class="{'dropdown is-active': searchResults.length > 0, 'dropdown': searchResults.length || searchSelected === true}">
-                    <div class="dropdown-menu">
+                    <div class="dropdown-menu has-text-left">
                         <div class="dropdown-content">
                             <a v-for="(movie, index) in searchResults" :key="index" class="dropdown-item" v-on:click="selectMovie(movie)">
-                                {{ movie }}
+                                <img :src="'https://image.tmdb.org/t/p/w92' + movie.posterPath" :alt="movie.title + ' poster'" class="dropdown-poster">
+                                <span class="dropdown-title">{{ movie.title }}</span>
                             </a>
                         </div>
                     </div>
@@ -31,7 +32,6 @@
     </div>
 </div>
 
-
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
     <script>
@@ -43,6 +43,7 @@
                     searchQuery: '',
                     searchResults: [],
                     searchSelected: false,
+                    selectedMovie: null,
                 };
             },
             watch: {
@@ -56,7 +57,6 @@
             },
             methods: {
                 performSearch() {
-                    console.log('searching ', this.searchQuery);
                     fetch(`/Movie/SearchForMovie?titleSearch=${encodeURIComponent(this.searchQuery)}`)
                         .then(response => response.json())
                         .then(data => {
@@ -67,17 +67,33 @@
                         });
                 },
                 selectMovie(movie) {
-                    this.searchQuery = movie;
+                    this.searchQuery = movie.title;
+                    this.selectedMovie = movie;
                     this.searchSelected = true;
                     this.searchResults = [];
                 },
                 handleSearch() {
-                    // Redirect or handle the search as needed
-                    console.log('redirecting to movie', this.searchQuery);
-                    window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}`;
+                    if (this.selectedMovie && this.selectedMovie.title === this.searchQuery) {
+                        window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}&tmdbId=${this.selectedMovie.id}`;
+                    } else {
+                        window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}`;
+                    }
                 }
             }
         }).mount('#searchApp');
     </script>
 }
+
+<style>
+    .dropdown-poster {
+        width: 40px; /* Adjust size as needed */
+        height: auto;
+        margin-right: 10px; /* Space between poster and title */
+        vertical-align: middle;
+    }
+
+    .dropdown-title {
+        vertical-align: middle; /* Align text with the poster */
+    }
+</style>
 

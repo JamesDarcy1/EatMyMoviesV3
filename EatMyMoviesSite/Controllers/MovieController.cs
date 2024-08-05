@@ -19,11 +19,18 @@ namespace EatMyMoviesSite.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Detail(string title)
+        public async Task<IActionResult> Detail(string title, int? tmdbId = null)
         {
             try
             {
-                var movie = await _movieService.GetMovieByTitle(title);
+                TMDbLib.Objects.Movies.Movie movie;
+                if(tmdbId != null)
+                {
+                    movie = await _movieService.GetMoviesById(tmdbId.Value);
+                }
+                else { 
+                    movie = await _movieService.GetMovieByTitle(title);
+                }
                 var trailer = await _movieService.GetTrailer(movie.Id);
                 var rating = await _movieService.GetImdbRating(title);
                 var movieDetail = Mapper.MapToMovieDetail(movie, trailer, rating);
@@ -40,7 +47,7 @@ namespace EatMyMoviesSite.Controllers
             return View();
         }
 
-        public async Task<List<string>> SearchForMovie(string titleSearch)
+        public async Task<List<MovieDropdown>> SearchForMovie(string titleSearch)
         {
             var results = await _movieService.SearchMoviesByTitle(titleSearch);
             return results;
