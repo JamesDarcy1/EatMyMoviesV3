@@ -12,7 +12,7 @@ namespace EatMyMovies.DataAccess.Repositories
 			_dbContext = dbContext;
 		}
 
-		public Movie SaveTmdbMovie(string title, int tmdbId, decimal imdbRating)
+		public Movie SaveTmdbMovie(string title, int tmdbId, decimal? imdbRating)
 		{
 			var movie = _dbContext.Movies.Add(new Movie()
 			{

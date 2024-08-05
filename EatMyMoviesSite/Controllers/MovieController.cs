@@ -37,11 +37,16 @@ namespace EatMyMoviesSite.Controllers
 
         public async Task<IActionResult> Search()
         {
-            //var results = await _movieService.GetMovieByTitle(title);
             return View();
         }
 
-		public IActionResult Recommender()
+        public async Task<List<string>> SearchForMovie(string titleSearch)
+        {
+            var results = await _movieService.SearchMoviesByTitle(titleSearch);
+            return results;
+        }
+
+        public IActionResult Recommender()
 		{
 			return View();
 		}

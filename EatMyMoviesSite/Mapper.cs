@@ -8,20 +8,20 @@ namespace EatMyMoviesSite
 {
 	public static class Mapper
 	{
-		public static ListMovie BuildListMovie(Movie tmdbMovie, decimal imdbRating, int ranking)
+		public static ListMovie BuildListMovie(Movie tmdbMovie, decimal? imdbRating, int ranking)
 		{
 			return new ListMovie
 			{
 				Title = tmdbMovie.Title,
 				PosterPath = $"https://image.tmdb.org/t/p/w154{tmdbMovie.PosterPath}",
 				Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
-				ImdbRating = imdbRating,
+				ImdbRating = imdbRating != null ? imdbRating : null,
 				Ranking = ranking,
 				Synopsis = tmdbMovie.Overview
 			};
 		}
 
-		public static MovieDetail MapToMovieDetail(Movie tmdbMovie, Video trailer, decimal imdbRating)
+		public static MovieDetail MapToMovieDetail(Movie tmdbMovie, Video trailer, decimal? imdbRating)
 		{
 			return new MovieDetail
 			{
@@ -30,14 +30,15 @@ namespace EatMyMoviesSite
 				BackdropPath = tmdbMovie.BackdropPath,
 				Overview = tmdbMovie.Overview,
 				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
-				TrailerPath = $"https://www.youtube.com/embed/{trailer.Key}",
+				TrailerPath = trailer != null ? $"https://www.youtube.com/embed/{trailer.Key}" : null,
 				Tagline = tmdbMovie.Tagline,
 				Genres = tmdbMovie.Genres.Select(g => g.Name),
-				ImdbRating = imdbRating
-			};
+				ImdbRating = imdbRating != null ? imdbRating : null
+
+            };
 		}
 
-        public static ListMovie MapToMovieSummary(Movie tmdbMovie, decimal imdbRating)
+        public static ListMovie MapToMovieSummary(Movie tmdbMovie, decimal? imdbRating)
         {
             return new ListMovie
             {

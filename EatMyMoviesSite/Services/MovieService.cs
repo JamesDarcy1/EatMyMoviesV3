@@ -41,7 +41,13 @@ namespace EatMyMoviesSite.Services
 			return movie;
 		}
 
-		public async Task<Movie> GetMoviesById(int id)
+        public async Task<List<string>> SearchMoviesByTitle(string titleSearch)
+        {
+            var searchResults = await _tmdbClient.SearchMovieAsync(titleSearch, 1);
+            return searchResults.Results.Select(x => x.Title).Take(5).ToList();
+        }
+
+        public async Task<Movie> GetMoviesById(int id)
 		{
 			var movie = await _tmdbClient.GetMovieAsync(id);
 			return movie;
@@ -54,12 +60,16 @@ namespace EatMyMoviesSite.Services
 			return trailer;
 		}
 
-		public async Task<decimal> GetImdbRating(string movieTitle)
+		public async Task<decimal?> GetImdbRating(string movieTitle)
 		{
 			var movie = await _omdbClient.GetItemByTitle(movieTitle);
-			var imdbRating = Decimal.Parse(movie?.IMDbRating);
-			return imdbRating;
-		}
+			if (movie.IMDbRating != null)
+			{
+				var imdbRating = Decimal.Parse(movie?.IMDbRating);
+                return imdbRating;
+            }
+			return null;
+        }
 
 		public async Task<MovieList> BuildMovieList(string listTitle, int page)
 		{

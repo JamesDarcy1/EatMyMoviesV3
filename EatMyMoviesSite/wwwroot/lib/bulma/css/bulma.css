@@ -4782,7 +4782,7 @@ fieldset[disabled] .select select:hover {
 }
 
 .dropdown {
-  display: inline-flex;
+/*  display: inline-flex;*/
   position: relative;
   vertical-align: top;
 }
@@ -4806,7 +4806,7 @@ fieldset[disabled] .select select:hover {
 .dropdown-menu {
   display: none;
   left: 0;
-  min-width: 12rem;
+  min-width: 100%;
   padding-top: 4px;
   position: absolute;
   top: 100%;

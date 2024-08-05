@@ -1,25 +1,83 @@
 ﻿@page
 @{
-	Layout = "_Layout";
+    Layout = "_Layout";
 }
 
 <meta name="description" content="Search for movies with Eat My Movies – your ultimate destination for discovering films across all genres. Find detailed information, ratings, and personalized recommendations to enhance your movie-watching experience. Start your search now!" />
 <title>Eat My Movies - Search</title>
 
-<form method="POST" action="/Movie/Detail">
-<div class="container has-text-centered">
-	<h1>Movie Search</h1>
-	<div class="columns mt-2">
-		<div class="column is-three-quarters">
-			<input class="textarea" placeholder="Enter movie title" rows="1" name="title"/>
-		</div>
-		<div class="column is-one-quarter">
-			<button class="button cool-button m-0" type="submit">
-				<span>Search</span>
-			</button>
-		</div>
-	</div>
+<div id="searchApp">
+    <div class="container has-text-centered">
+        <h1>Movie Search</h1>
+        <div class="columns mt-2">
+            <div class="column is-three-quarters">
+                <input class="textarea" placeholder="Enter movie title" rows="1" v-model="searchQuery" />
+                <div :class="{'dropdown is-active': searchResults.length > 0, 'dropdown': searchResults.length || searchSelected === true}">
+                    <div class="dropdown-menu">
+                        <div class="dropdown-content">
+                            <a v-for="(movie, index) in searchResults" :key="index" class="dropdown-item" v-on:click="selectMovie(movie)">
+                                {{ movie }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-one-quarter">
+                <button class="button cool-button m-0" v-on:click="handleSearch">
+                    <span>Search</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
-</form>
 
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    searchQuery: '',
+                    searchResults: [],
+                    searchSelected: false,
+                };
+            },
+            watch: {
+                searchQuery(newQuery) {
+                    if (newQuery.length > 0 && !this.searchSelected) {
+                        this.performSearch();
+                    } else {
+                        this.searchResults = [];
+                    }
+                }
+            },
+            methods: {
+                performSearch() {
+                    console.log('searching ', this.searchQuery);
+                    fetch(`/Movie/SearchForMovie?titleSearch=${encodeURIComponent(this.searchQuery)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            this.searchResults = data;
+                        })
+                        .catch(() => {
+                            this.searchResults = [];
+                        });
+                },
+                selectMovie(movie) {
+                    this.searchQuery = movie;
+                    this.searchSelected = true;
+                    this.searchResults = [];
+                },
+                handleSearch() {
+                    // Redirect or handle the search as needed
+                    console.log('redirecting to movie', this.searchQuery);
+                    window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}`;
+                }
+            }
+        }).mount('#searchApp');
+    </script>
+}
 
