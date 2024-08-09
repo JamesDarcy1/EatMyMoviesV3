@@ -33,6 +33,12 @@ namespace EatMyMoviesSite.Controllers
 			return View("~/Views/List/List.cshtml", list);
 		}
 
+		public async Task<IActionResult> Documentaries(int page = 1)
+		{
+			var list = await _movieService.BuildMovieList("Documentaries", page);
+			return View("~/Views/List/List.cshtml", list);
+		}
+
 		public async Task<IActionResult> Christmas(int page = 1)
 		{
 			var list = await _movieService.BuildMovieList("Christmas", page);

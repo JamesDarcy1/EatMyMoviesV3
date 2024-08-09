@@ -22,7 +22,7 @@
 	<header>
 		<nav class="navbar header-box-shadow" role="navigation" aria-label="main navigation">
 			<div class="navbar-brand has-text-centered">
-				<a asp-area="" asp-controller="Home" asp-action="Index">
+				<a asp-controller="Home" asp-action="Index">
 					<img class="logo" src="~/no_background_logo.png">
 				</a>
 				<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-target">
@@ -34,32 +34,35 @@
 
 			<div id="navbar-target" class="navbar-menu">
 				<div class="navbar-end">
-					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="About">About</a>
-					<a class="navbar-item" asp-area="" asp-controller="Movie" asp-action="Recommender">Recommender</a>
-					<a class="navbar-item" asp-area="" asp-controller="Movie" asp-action="Search">Search</a>
+					<a class="navbar-item" asp-controller="Home" asp-action="Index">Home</a>
+					<a class="navbar-item" asp-controller="Home" asp-action="About">About</a>
+					<a class="navbar-item" asp-controller="Movie" asp-action="Recommender">Recommender</a>
+					<a class="navbar-item" asp-controller="Movie" asp-action="Search">Search</a>
 					<div class="navbar-item has-dropdown is-hoverable">
 						<a class="navbar-item">
 							Lists
 						</a>
 						<div class="navbar-dropdown">
-							<a class="navbar-item" asp-area="" asp-controller="List" asp-action="Top100">
+							<a class="navbar-item" asp-controller="List" asp-action="Top100">
 								Top 100
 							</a>
-							<a class="navbar-item" asp-area="" asp-controller="List" asp-action="Comedies">
+							<a class="navbar-item" asp-controller="List" asp-action="Comedies">
 								Comedy
 							</a>
-							<a class="navbar-item" asp-area="" asp-controller="List" asp-action="ForeignFilms">
+							<a class="navbar-item" asp-controller="List" asp-action="ForeignFilms">
 								Foreign Films
 							</a>
-							<a class="navbar-item" asp-area="" asp-controller="List" asp-action="Christmas">
+							<a class="navbar-item" asp-controller="List" asp-action="Documentaries">
+								Documentaries
+							</a>
+							<a class="navbar-item" asp-controller="List" asp-action="Christmas">
 								Christmas
 							</a>
 						</div>
 					</div>
 					@if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
 					{
-						<a class="navbar-item" asp-area="" asp-controller="Authentication" asp-action="Login">Login</a>
+						<a class="navbar-item" asp-controller="Authentication" asp-action="Login">Login</a>
 					}
 				</div>
 			</div>

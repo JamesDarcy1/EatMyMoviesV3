@@ -90,9 +90,9 @@ namespace EatMyMoviesSite.Controllers
 		}
 
 		[HttpPost]
-		public List AddList(string listName)
+		public List AddList(string listName, string description)
 		{
-			var list = _listRepository.AddList(listName);
+			var list = _listRepository.AddList(listName, description);
 			return list;
 		}
 
