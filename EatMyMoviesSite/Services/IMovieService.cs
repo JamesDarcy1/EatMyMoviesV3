@@ -14,6 +14,6 @@ namespace EatMyMoviesSite.Services
         Task<List<MovieDropdown>> SearchMoviesByTitle(string titleSearch);
         Task<Video> GetTrailer(int movieId);
         IList<T> ShuffleList<T>(IList<T> list);
-        List<EatMyMovies.DataAccess.Models.Movie> GetRecommendationsByGenre(string genre);
+        Task<List<Movie>> GetRecommendations(string genres, string duration, bool openToForeignFilm, string yearRange);
     }
 }

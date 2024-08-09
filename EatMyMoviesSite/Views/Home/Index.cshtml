@@ -13,22 +13,24 @@
                 </h1>
 
                 <h2 class="subtitle has-text-weight-bold mb-0">
-                    Not sure what to watch - Try our new recommender
+                    Recommender
                 </h2>
-                <div class="buttons is-centered">
-                    <a class="button cool-button" asp-controller="Movie" asp-action="Recommender">Take Me There</a>
-                </div>
+                <button class="button mt-2"
+                        asp-controller="Movie" 
+                        asp-action="Recommender">
+                    Take Me There
+                </button>
 
 
                 <h2 class="subtitle has-text-weight-bold pt-5">
-                    Movie of the week
+                    Movie of the Week
                 </h2>
 
                 <article class="movie-block box mt-0 pb-6">
                     <div class="columns is-mobile">
                         <div class="column is-three-fifths">
                             <div class="content">
-                                <h2>@Model.Title</h2>
+                                <h1 class="film-title">@Model.Title</h1>
                                 <small>@Model.Genres</small><br />
                                 <small>IMDB Rating: @Model.ImdbRating</small><br />
                                 <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
@@ -43,25 +45,13 @@
                 </article>
 
                 <h2 class="subtitle has-text-weight-bold pt-5 mb-0">
-                    Explore top-ranked films, personalised movie suggestions, and soon to be in-depth reviews
+                    Popular Lists
                 </h2>
-                <div class="buttons is-centered">
-                    <a class="button cool-button" asp-area="" asp-controller="List" asp-action="Top100">Top 100</a>
-                    <a class="button cool-button" asp-area="" asp-controller="List" asp-action="Comedies">Comedies</a>
-                    <a class="button cool-button" asp-area="" asp-controller="List" asp-action="ForeignFilms">Foreign Films</a>
+                <div class="buttons is-centered mt-2">
+                    <button class="button" asp-controller="List" asp-action="Top100">Top 100</button>
+                    <button class="button" asp-controller="List" asp-action="Comedies">Comedies</button>
+                    <button class="button" asp-controller="List" asp-action="ForeignFilms">Foreign Films</button>
                 </div>
-
-
-@*                 <div class="field has-addons has-addons-centered">
-                    <div class="control">
-                        <input class="input" type="text" name="title" placeholder="Search for a movie...">
-                    </div>
-                    <div class="control">
-                        <button type="submit" class="button is-info">
-                            Search
-                        </button>
-                    </div>
-                </div> *@
             </div>
         </div>
     </section>

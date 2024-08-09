@@ -1,6 +1,7 @@
 ﻿using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.DTOs;
 using OMDbSharp;
+using System.Threading.Tasks;
 using TMDbLib.Client;
 using TMDbLib.Objects.General;
 using Movie = TMDbLib.Objects.Movies.Movie;
@@ -126,13 +127,52 @@ namespace EatMyMoviesSite.Services
 		   return _movieRepository.GetAllGenres();
 		} 
 
-		public List<EatMyMovies.DataAccess.Models.Movie> GetRecommendationsByGenre(string genre)
-		{
-			var moviesOfGenre = _movieRepository.GetMoviesByGenre(genre);
-			Random random = new Random();
-			var shuffledList = moviesOfGenre.OrderBy(_ => random.Next()).ToList();
-			return shuffledList;
-		}
+		public async Task<List<Movie>> GetRecommendations(string genres, string duration, bool openToForeignFilm, string yearRange)
+        {
+			var recommendations = new List<Movie>();
+
+			// Add by genre
+            var genresFormatted = genres.Split(',');
+            var tasks = new List<Task<Movie>>();
+            foreach (var genre in genresFormatted)
+            {
+                var moviesOfGenre = _movieRepository.GetMoviesByGenre(genre);
+                tasks.AddRange(moviesOfGenre.Select(movie => _tmdbClient.GetMovieAsync(movie.TmdbId.Value)));
+            }
+
+            var allMovies = await Task.WhenAll(tasks);
+
+            // Filter by duration
+            if (!duration.Contains("Any"))
+            {
+                allMovies = allMovies.Where(movie =>
+                    (duration.Contains("Short") && movie.Runtime <= 90) ||
+                    (duration.Contains("Medium") && movie.Runtime > 90 && movie.Runtime <= 120) ||
+                    (duration.Contains("Long") && movie.Runtime > 120)
+                ).ToArray();
+            }
+
+            // Filter by language
+            if (!openToForeignFilm)
+            {
+                allMovies = allMovies.Where(movie => movie.OriginalLanguage == "en").ToArray();
+            }
+
+
+            // Filter by year range
+            if (yearRange != "Anytime")
+            {
+                allMovies = allMovies.Where(movie =>
+                    (yearRange == "After 2000" && movie.ReleaseDate.Value.Year >= 2000) ||
+                    (yearRange == "Before 2000" && movie.ReleaseDate.Value.Year < 2000)
+                ).ToArray();
+            }
+
+            Random random = new Random();
+            recommendations = allMovies.OrderBy(_ => random.Next()).ToList();
+
+            return recommendations;
+        }
 
         public IList<T> ShuffleList<T>(IList<T> list)
         {

@@ -19,7 +19,7 @@
                 </div>
                 <div class="column is-two-fifths">
                     <div class="content">
-                        <h2>@movie.Title</h2>
+                        <h1 class="film-title">@movie.Title</h1>
                         <small>@movie.Genres</small><br />
                         <small>IMDB Rating: @movie.ImdbRating</small><br />
                         <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(movie.Title)';">Find Out More</a>
