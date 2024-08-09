@@ -65,14 +65,19 @@ namespace EatMyMoviesSite.Controllers
             return genres.Select(x => x.Name).ToList();
         }
 
-        public async Task<MovieDetail> GetRecommendation(string genre)
+        public async Task<List<MovieDetail>> GetRecommendationsByGenre(string genre)
 		{
-			var movie = _movieService.GetRecommendationByGenre(genre);
-            var tmdbMovie = await _movieService.GetMovieByTitle(movie.Title);
-			var trailer = await _movieService.GetTrailer(tmdbMovie.Id);
-			var rating = await _movieService.GetImdbRating(movie.Title);
-			var movieDetail = Mapper.MapToMovieDetail(tmdbMovie, trailer, rating);
-			return movieDetail;
+			var movies = _movieService.GetRecommendationsByGenre(genre);
+            var recommendations = new List<MovieDetail>();
+            foreach (var movie in movies)
+            {
+                var tmdbMovie = await _movieService.GetMovieByTitle(movie.Title);
+                var trailer = await _movieService.GetTrailer(tmdbMovie.Id);
+                var rating = await _movieService.GetImdbRating(movie.Title);
+                var movieDetail = Mapper.MapToMovieDetail(tmdbMovie, trailer, rating);
+                recommendations.Add(movieDetail);
+            }
+			return recommendations;
 		}
 
 	}

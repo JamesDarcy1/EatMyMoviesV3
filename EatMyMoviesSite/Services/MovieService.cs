@@ -126,13 +126,12 @@ namespace EatMyMoviesSite.Services
 		   return _movieRepository.GetAllGenres();
 		} 
 
-		public EatMyMovies.DataAccess.Models.Movie GetRecommendationByGenre(string genre)
+		public List<EatMyMovies.DataAccess.Models.Movie> GetRecommendationsByGenre(string genre)
 		{
 			var moviesOfGenre = _movieRepository.GetMoviesByGenre(genre);
 			Random random = new Random();
-			var randomMovieIndex = random.Next(moviesOfGenre.Count);
-			var recommendation = moviesOfGenre.ElementAt(randomMovieIndex);
-			return recommendation;
+			var shuffledList = moviesOfGenre.OrderBy(_ => random.Next()).ToList();
+			return shuffledList;
 		}
 
         public IList<T> ShuffleList<T>(IList<T> list)

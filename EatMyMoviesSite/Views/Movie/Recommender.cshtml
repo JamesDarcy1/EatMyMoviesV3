@@ -12,8 +12,14 @@
             <loading-spinner v-if="isQuestionLoading"></loading-spinner>
             <div v-else>
                 <p>{{ currentQuestion }}</p>
-                <button class="button is-primary" v-on:click="handleYes">{{ yesButtonText }}</button>
-                <button class="button" v-on:click="handleNo">{{ noButtonText }}</button>
+                <div v-if="!genreSelected">
+                    <button class="button is-primary" v-on:click="handleYes">Yes</button>
+                    <button class="button" v-on:click="handleNo">No</button>
+                </div>
+                <div v-else>
+                    <button class="button is-primary" v-on:click="tryAgain">Try Again</button>
+                    <button class="button" v-on:click="handleNo">I don't want a {{ this.genres[this.currentQuestionIndex] }} anymore</button>
+                </div>
             </div>
         </div>
     </div>
@@ -85,11 +91,11 @@
                     currentQuestion: '',
                     maxQuestions: 5,
                     recommendedMovie: null,
+                    chosenGenreOptions: [],
+                    genreSelected: false,
                     isQuestionLoading: true,
                     isMovieLoading: false,
                     showRecommendationBox: false,
-                    yesButtonText: 'Yes',
-                    noButtonText: 'No',
                     prompts: [
                         'Are you feeling a',
                         'Maybe it\'s the night for a',
@@ -104,20 +110,24 @@
                     this.showRecommendationBox = true;
                     this.isMovieLoading = true;
                     const genre = this.genres[this.currentQuestionIndex];
-                    fetch(`/Movie/GetRecommendation?genre=${genre}`)
+                    fetch(`/Movie/GetRecommendationsByGenre?genre=${genre}`)
                         .then(response => response.json())
                         .then(data => {
-                            this.recommendedMovie = data;
+                            this.chosenGenreOptions = data
+                            this.recommendedMovie = data[0];
                             this.isMovieLoading = false;
-                            this.yesButtonText = 'Try again';
-                            this.noButtonText = `I don't want a ${this.genres[this.currentQuestionIndex]} anymore`;
+                            this.genreSelected = true;
                         });
                 },
                 handleNo() {
                     this.currentQuestionIndex++;
                     this.currentQuestion = `${this.prompts[this.currentQuestionIndex]} ${this.genres[this.currentQuestionIndex]}?`;
-                    this.yesButtonText = 'Yes';
-                    this.noButtonText = `No`;
+                    this.genreSelected = false;
+                },
+                tryAgain() {
+                    const currentIndex = this.chosenGenreOptions.indexOf(this.recommendedMovie);
+                    const nextIndex = (currentIndex + 1) % this.chosenGenreOptions.length; 
+                    this.recommendedMovie = this.chosenGenreOptions[nextIndex];
                 }
             },
             mounted() {

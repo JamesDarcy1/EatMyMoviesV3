@@ -6098,19 +6098,18 @@ body.has-navbar-fixed-bottom {
   position: relative;
   width: 3.25rem;
   margin-left: auto;
+  margin-right: 10px;
 }
 
 .navbar-burger span {
-  background-color: currentColor;
+  background-color: #ffffff;
   display: block;
-  height: 1px;
-  left: calc(50% - 8px);
+  height: 3px;
+  left: calc(50% - 10px);
   position: absolute;
   transform-origin: center;
-  transition-duration: 86ms;
-  transition-property: background-color, opacity, transform;
-  transition-timing-function: ease-out;
-  width: 16px;
+  transition: all 0.3s ease;
+  width: 20px;
 }
 
 .navbar-burger span:nth-child(1) {
@@ -6125,12 +6124,10 @@ body.has-navbar-fixed-bottom {
   top: calc(50% + 4px);
 }
 
-.navbar-burger:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
+/* Circle morph to X */
 .navbar-burger.is-active span:nth-child(1) {
-  transform: translateY(5px) rotate(45deg);
+  transform: translateY(5px) rotate(45deg) scale(1.2);
+  border-radius: 50%;
 }
 
 .navbar-burger.is-active span:nth-child(2) {
@@ -6138,7 +6135,8 @@ body.has-navbar-fixed-bottom {
 }
 
 .navbar-burger.is-active span:nth-child(3) {
-  transform: translateY(-5px) rotate(-45deg);
+  transform: translateY(-5px) rotate(-45deg) scale(1.2);
+  border-radius: 50%;
 }
 
 .navbar-menu {
@@ -6251,6 +6249,16 @@ a.navbar-item:focus, a.navbar-item:focus-within, a.navbar-item:hover, a.navbar-i
   .navbar > .container {
     display: block;
   }
+
+  .navbar-dropdown .navbar-item {
+    padding-left: 2.5rem;
+  }
+
+  .navbar-item,
+  .navbar-link {
+      padding: 0.5rem 1.5rem;
+  }
+
   .navbar-brand .navbar-item,
   .navbar-tabs .navbar-item {
     align-items: center;
