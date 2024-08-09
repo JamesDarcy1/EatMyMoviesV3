@@ -8,7 +8,7 @@
 
 <div id="recommenderApp" v-cloak>
     <transition name="fade">
-        <div v-if="!showRecommendationBox" class="box has-text-centered">
+        <div v-show="!showRecommendationBox" class="box has-text-centered">
             <div class="question-area">
                 <loading-spinner v-if="isLoading"></loading-spinner>
                 <div v-else>
@@ -65,55 +65,54 @@
                 </div>
             </div>
         </div>
-        <div v-if="showRecommendationBox">
-            <!-- Recommendation Actions -->
-            <div class="buttons is-centered mt-4">
-                <button class="button" v-on:click="loadNextRecommendation">Try Again</button>
-                <button class="button" v-on:click="startOver">Start Over</button>
-            </div>
-        </div>
     </transition>
 
 
     <!-- Movie Recommendation Box -->
     <transition name="slide">
-        <div v-if="showRecommendationBox" class="movie-area pt-3">
-            <div class="box">
-                <loading-spinner v-if="isLoading"></loading-spinner>
-                <div v-else>
-                    <div class="columns">
-                        <div class="column is-three-fifths">
-                            <h1 class="film-title">{{ recommendedMovie.title }}</h1>
-                            <i class="tagline">{{ recommendedMovie.tagline }}</i><br />
-                            <div class="columns is-mobile">
-                                <div class="column">
-                                    <strong><u>Release Date</u></strong><br />
-                                    <strong>{{ recommendedMovie.releaseDate }}</strong>
-                                </div>
-                                <div class="column">
-                                    <strong><u>Genres</u></strong><br />
-                                    <strong v-for="genre in recommendedMovie.genres" :key="genre">{{ genre }}<br></strong>
-                                </div>
-                                <div class="column">
-                                    <strong><u>Imdb Rating</u></strong><br />
-                                    <strong>{{ recommendedMovie.imdbRating }}</strong>
+        <div v-if="showRecommendationBox">
+            <div class="buttons is-centered mt-4">
+                <button class="button" v-on:click="loadNextRecommendation">Try Again</button>
+                <button class="button" v-on:click="startOver">Start Over</button>
+            </div>
+            <div class="movie-area pt-3">
+                <div class="box">
+                    <loading-spinner v-if="isLoading"></loading-spinner>
+                    <div v-else>
+                        <div class="columns">
+                            <div class="column is-three-fifths">
+                                <h1 class="film-title">{{ recommendedMovie.title }}</h1>
+                                <i class="tagline">{{ recommendedMovie.tagline }}</i><br />
+                                <div class="columns is-mobile">
+                                    <div class="column">
+                                        <strong><u>Release Date</u></strong><br />
+                                        <strong>{{ recommendedMovie.releaseDate }}</strong>
+                                    </div>
+                                    <div class="column">
+                                        <strong><u>Genres</u></strong><br />
+                                        <strong v-for="genre in recommendedMovie.genres" :key="genre">{{ genre }}<br></strong>
+                                    </div>
+                                    <div class="column">
+                                        <strong><u>Imdb Rating</u></strong><br />
+                                        <strong>{{ recommendedMovie.imdbRating }}</strong>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="column is-two-fifths">
+                                <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
+                            </div>
                         </div>
-                        <div class="column is-two-fifths">
-                            <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="columns is-mobile">
-                            <p class="synopsis">{{ recommendedMovie.overview }}</p>
+                        <div class="column">
+                            <div class="columns is-mobile">
+                                <p class="synopsis">{{ recommendedMovie.overview }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div v-if="recommendedMovie" class="columns">
-                <div class="column has-text-centered trailer-container">
-                    <iframe class="responsive-iframe" :src="recommendedMovie.trailerPath"></iframe>
+                <div v-if="recommendedMovie" class="columns">
+                    <div class="column has-text-centered trailer-container">
+                        <iframe class="responsive-iframe" :src="recommendedMovie.trailerPath"></iframe>
+                    </div>
                 </div>
             </div>
         </div>
@@ -217,11 +216,6 @@
                             this.recommendationCollection = data;
                             this.recommendedMovie = data[0];
                             this.currentRecommendationIndex = 0; // Reset recommendation index
-                        })
-                        .catch(error => {
-                            console.error('Fetch error:', error);
-                        })
-                        .finally(() => {
                             this.isLoading = false;
                             this.showRecommendationBox = true;
                         });
@@ -235,20 +229,13 @@
                     }
                 },
                 startOver() {
+                    this.showRecommendationBox = false;
                     this.currentQuestionIndex = 0;
                     this.selectedGenres = [];
                     this.allQuestionsAnswered = false;
-                    this.showRecommendationBox = false;
                     this.recommendedMovie = null;
                     this.recommendationCollection = [];
                     this.currentRecommendationIndex = 0;
-                    this.isLoading = true;
-                    this.fetch('/Movie/GetGenres')
-                        .then(response => response.json())
-                        .then(data => {
-                            this.genres = data;
-                            this.isLoading = false;
-                        });
                 }
             },
             mounted() {
