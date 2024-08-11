@@ -1,4 +1,5 @@
-﻿using EatMyMovies.DataAccess.Repositories;
+﻿using EatMyMovies.DataAccess.Models;
+using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.DTOs;
 using OMDbSharp;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace EatMyMoviesSite.Services
 		private readonly IMovieRepository _movieRepository;
 		private readonly int _moviesPerPage = 10;
 		private readonly bool _isDevelopment;
+		private readonly Guid ChristmasListId;
 
 		public MovieService(IRankingRepository rankingRepository, IConfiguration configuration, IListRepository listRepository, IMovieRepository movieRepository)
 		{
@@ -26,6 +28,7 @@ namespace EatMyMoviesSite.Services
 			_rankingRepository = rankingRepository;
 			_listRepository = listRepository;
 			_movieRepository = movieRepository;
+			ChristmasListId = _listRepository.GetListByName("Christmas").ListId;
 		}
 
 		public async Task<Movie> GetMovieByTitle(string title)
@@ -133,21 +136,28 @@ namespace EatMyMoviesSite.Services
 
 			// Add by genre
             var genresFormatted = genres.Split(',');
+			var storeMovies = new List<EatMyMovies.DataAccess.Models.Movie>();
             var tasks = new List<Task<Movie>>();
             foreach (var genre in genresFormatted)
             {
                 var moviesOfGenre = _movieRepository.GetMoviesByGenre(genre);
-                tasks.AddRange(moviesOfGenre.Select(movie => _tmdbClient.GetMovieAsync(movie.TmdbId.Value)));
+				foreach (var movie in moviesOfGenre) 
+				{
+					if (!storeMovies.Contains(movie) && !IsChristmasMovie(movie))
+					{
+						storeMovies.Add(movie);
+					}
+				}
             }
 
+            tasks.AddRange(storeMovies.Select(movie => _tmdbClient.GetMovieAsync(movie.TmdbId.Value)));
             var allMovies = await Task.WhenAll(tasks);
 
             // Filter by duration
             if (!duration.Contains("Any"))
             {
                 allMovies = allMovies.Where(movie =>
-                    (duration.Contains("Short") && movie.Runtime <= 90) ||
-                    (duration.Contains("Medium") && movie.Runtime > 90 && movie.Runtime <= 120) ||
+                    (duration.Contains("Short") && movie.Runtime <= 120) ||
                     (duration.Contains("Long") && movie.Runtime > 120)
                 ).ToArray();
             }
@@ -172,6 +182,11 @@ namespace EatMyMoviesSite.Services
             recommendations = allMovies.OrderBy(_ => random.Next()).ToList();
 
             return recommendations;
+        }
+
+        private bool IsChristmasMovie(EatMyMovies.DataAccess.Models.Movie movie)
+        {
+			return _rankingRepository.FilmExistsInList(movie.MovieId, ChristmasListId);
         }
 
         public IList<T> ShuffleList<T>(IList<T> list)
