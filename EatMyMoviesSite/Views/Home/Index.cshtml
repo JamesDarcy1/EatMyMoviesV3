@@ -31,6 +31,7 @@
                                 <h1 class="film-title">@Model.Title</h1>
                                 <small>@Model.Genres</small><br />
                                 <small>IMDB Rating: @Model.ImdbRating</small><br />
+                                <small>@Model.Runtime minutes</small><br />
                                 <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
                                 <p class="synopsis desktop-only">@Model.Synopsis</p>
                             </div>

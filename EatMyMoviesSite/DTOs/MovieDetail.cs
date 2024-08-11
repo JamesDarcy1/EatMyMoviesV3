@@ -12,6 +12,7 @@ namespace EatMyMoviesSite.DTOs
 		public string TrailerPath { get; set; }
 		public string Overview { get; set; }
 		public decimal? ImdbRating { get; set; }
-		public IEnumerable<string> Genres { get; set; }
+		public string Genres { get; set; }
+		public int? Runtime {  get; set; }
 	}
 }

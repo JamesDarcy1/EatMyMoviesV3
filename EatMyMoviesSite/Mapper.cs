@@ -17,7 +17,8 @@ namespace EatMyMoviesSite
 				Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
 				ImdbRating = imdbRating != null ? imdbRating : null,
 				Ranking = ranking,
-				Synopsis = tmdbMovie.Overview
+				Synopsis = tmdbMovie.Overview,
+				Runtime = tmdbMovie.Runtime,
 			};
 		}
 
@@ -32,9 +33,9 @@ namespace EatMyMoviesSite
 				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
 				TrailerPath = trailer != null ? $"https://www.youtube.com/embed/{trailer.Key}" : null,
 				Tagline = tmdbMovie.Tagline,
-				Genres = tmdbMovie.Genres.Select(g => g.Name),
-				ImdbRating = imdbRating != null ? imdbRating : null
-
+				Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
+				ImdbRating = imdbRating != null ? imdbRating : null,
+				Runtime = tmdbMovie.Runtime,
             };
 		}
 
@@ -46,7 +47,8 @@ namespace EatMyMoviesSite
                 PosterPath = $"https://image.tmdb.org/t/p/w154{tmdbMovie.PosterPath}",
                 Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
                 ImdbRating = imdbRating,
-                Synopsis = tmdbMovie.Overview
+                Synopsis = tmdbMovie.Overview,
+				Runtime = tmdbMovie.Runtime
             };
         }
     }

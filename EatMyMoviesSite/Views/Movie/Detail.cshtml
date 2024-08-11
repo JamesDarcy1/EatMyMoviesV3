@@ -2,10 +2,9 @@
 @using System.Diagnostics;
 @model MovieDetail;
 
-<meta name="description" content=@Model.Overview />
-
 @if (Model != null)
 {
+	<meta name="description" content=@Model.Overview />
 	<title>Eat My Movies - @Model.Title</title>
 	<div class="box">
 		<div class="columns">
@@ -18,15 +17,18 @@
 						<strong>@Model.ReleaseDate</strong>
 					</div>
 					<div class="column">
-						<strong><u>Genres</u></strong><br />
-						@foreach (var genre in Model.Genres)
-						{
-							<strong>@genre<br></strong>
-						}
-					</div>
-					<div class="column">
 						<strong><u>Imdb Rating</u></strong><br />
 						<strong>@Model.ImdbRating</strong>
+					</div>
+					<div class="column">
+						<strong><u>Runtime</u></strong><br />
+						<strong>@Model.Runtime minutes</strong>
+					</div>
+				</div>
+				<div class="columns is-mobile">
+					<div class="column">
+						<strong><u>Genres</u></strong><br />
+						<strong>@Model.Genres</strong>
 					</div>
 				</div>
 			</div>

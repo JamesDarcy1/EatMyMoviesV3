@@ -22,6 +22,7 @@
                         <h1 class="film-title">@movie.Title</h1>
                         <small>@movie.Genres</small><br />
                         <small>IMDB Rating: @movie.ImdbRating</small><br />
+                        <small>@movie.Runtime minutes</small><br />
                         <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(movie.Title)';">Find Out More</a>
                         <p class="synopsis desktop-only">@movie.Synopsis</p> 
                     </div>

@@ -74,6 +74,7 @@
             <div class="buttons is-centered mt-4">
                 <button class="button" v-on:click="loadNextRecommendation">Try Again</button>
                 <button class="button" v-on:click="startOver">Start Over</button>
+                <button class="button is-success" v-on:click="shareOnWhatsApp">Share on WhatsApp</button>
             </div>
             <div class="movie-area pt-3">
                 <div class="box">
@@ -89,12 +90,18 @@
                                         <strong>{{ recommendedMovie.releaseDate }}</strong>
                                     </div>
                                     <div class="column">
-                                        <strong><u>Genres</u></strong><br />
-                                        <strong v-for="genre in recommendedMovie.genres" :key="genre">{{ genre }}<br></strong>
+                                        <strong><u>Runtime</u></strong><br />
+                                        <strong>{{ recommendedMovie.runtime }} minutes</strong>
                                     </div>
                                     <div class="column">
                                         <strong><u>Imdb Rating</u></strong><br />
                                         <strong>{{ recommendedMovie.imdbRating }}</strong>
+                                    </div>
+                                </div>
+                                <div class="columns is-mobile">
+                                    <div class="column">
+                                        <strong><u>Genres</u></strong><br />
+                                        <strong>{{ recommendedMovie.genres }}<br></strong>
                                     </div>
                                 </div>
                             </div>
@@ -236,7 +243,14 @@
                     this.recommendedMovie = null;
                     this.recommendationCollection = [];
                     this.currentRecommendationIndex = 0;
+                },
+                shareOnWhatsApp() {
+                    const message = `Check out this movie: ${this.recommendedMovie.title} - ${this.recommendedMovie.overview}`;
+                    const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+                    console.log('opening ', url)
+                    window.open(url, '_blank');
                 }
+
             },
             mounted() {
                 fetch('/Movie/GetGenres')

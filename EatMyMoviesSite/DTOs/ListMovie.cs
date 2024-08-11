@@ -15,5 +15,7 @@ namespace EatMyMoviesSite.DTOs
 		public string Genres { get; set; }
 
 		public decimal? ImdbRating {  get; set; }
+
+		public int? Runtime { get; set; }
 	}
 }

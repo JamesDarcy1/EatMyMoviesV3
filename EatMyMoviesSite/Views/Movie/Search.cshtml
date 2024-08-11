@@ -67,17 +67,14 @@
                         });
                 },
                 selectMovie(movie) {
-                    this.searchQuery = movie.title;
-                    this.selectedMovie = movie;
-                    this.searchSelected = true;
-                    this.searchResults = [];
+                    window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}&tmdbId=${movie.id}`;
+                    // this.searchQuery = movie.title;
+                    // this.selectedMovie = movie;
+                    // this.searchSelected = true;
+                    // this.searchResults = [];
                 },
                 handleSearch() {
-                    if (this.selectedMovie && this.selectedMovie.title === this.searchQuery) {
-                        window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}&tmdbId=${this.selectedMovie.id}`;
-                    } else {
-                        window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}`;
-                    }
+                    window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}`;
                 }
             }
         }).mount('#searchApp');
