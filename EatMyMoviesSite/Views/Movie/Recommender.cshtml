@@ -245,9 +245,10 @@
                     this.currentRecommendationIndex = 0;
                 },
                 shareOnWhatsApp() {
-                    const message = `Check out this movie: ${this.recommendedMovie.title} - ${this.recommendedMovie.overview}`;
+                    const releaseYear = this.recommendedMovie.releaseDate.slice(-4);
+                    const movieUrl = `www.eatmymovies.com/movie/detail?tmdbId=${this.recommendedMovie.tmdbId}`;
+                    const message = `Check out this movie: ${this.recommendedMovie.title} (${releaseYear}) - ${movieUrl}`;
                     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-                    console.log('opening ', url)
                     window.open(url, '_blank');
                 }
 

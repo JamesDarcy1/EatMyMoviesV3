@@ -36,6 +36,7 @@ namespace EatMyMoviesSite
 				Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
 				ImdbRating = imdbRating != null ? imdbRating : null,
 				Runtime = tmdbMovie.Runtime,
+				TmdbId = tmdbMovie.Id,
             };
 		}
 
