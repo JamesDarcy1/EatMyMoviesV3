@@ -34,7 +34,7 @@
                 </h1>
 
                 <article class="movie-block box mt-0">
-                    <div class="columns is-mobile">
+                    <div class="columns is-mobile is-hidden-desktop">
                         <div class="column is-one-third">
                             <img class="poster" src="@Model.PosterPath" alt="@Model.Title poster" />
                         </div>
@@ -45,6 +45,23 @@
                             <small>@Model.ImdbRating IMDB Rating</small>
                             <small>@Model.Runtime Minutes</small>
                             <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
+                        </div>
+                    </div>
+
+                    <div class="columns is-desktop is-hidden-mobile">
+                        <div class="column is-one-third">
+                            <img class="poster" src="@Model.PosterPath" alt="@Model.Title poster" />
+                        </div>
+                        <div class="column is-one-thirds is-flex is-flex-direction-column is-justify-content-center">
+                            <h4 class="movie-title mb-0">@Model.Title</h4>
+                            <small class="release-date">@Model.ReleaseDate</small>
+                            <small>@Model.Genres</small>
+                            <small>@Model.ImdbRating IMDB Rating</small>
+                            <small>@Model.Runtime Minutes</small>
+                            <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
+                        </div>
+                        <div class="column is-one-third is-flex is-flex-direction-column is-justify-content-center">
+                            <small>@Model.Synopsis</small>
                         </div>
                     </div>
                 </article>

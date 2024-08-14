@@ -28,6 +28,23 @@ html {
     .logo {
         width: 20vw;
     }
+
+    .movie-block {
+        width: 60%;
+        margin: 20%;
+    }
+
+    .list-button {
+        width: 35%;
+    }
+
+    button:hover {
+        transform: scale(1.05); /* Slight grow effect */
+    }
+
+    .tagline {
+        font-size: 22px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -74,6 +91,22 @@ html {
     .recommendation-button {
         width: 105px;
         font-size: 10px;
+    }
+
+    button:hover {
+        transform: scale(1.1); /* Slight grow effect */
+    }
+
+    .find-out-more {
+        font-size: 0.7rem;
+    }
+
+    .synopsis {
+        font-size: 12px;
+    }
+
+    .tagline {
+        font-size: 14px;
     }
 }
 
@@ -185,7 +218,6 @@ p {
 
 .tagline {
     color: rgba(0, 0, 0, 0.8);
-    font-size: 14px;
     font-weight: bold;
     display: block;
     text-align: center;
@@ -310,7 +342,6 @@ p {
 
 .synopsis {
     text-align: center;
-    font-size: 12px;
     font-weight: normal;
 }
 
@@ -334,7 +365,6 @@ p {
 
 .find-out-more {
     display: inline-block;
-    font-size: 0.7rem;
     color: #e71837; /* Bulma primary color */
     text-decoration: none;
     font-weight: bold;
@@ -396,7 +426,6 @@ button {
     button:hover {
         background-color: #e71837;
         color: #fff;
-        transform: scale(1.1); /* Slight grow effect */
     }
 
 select {

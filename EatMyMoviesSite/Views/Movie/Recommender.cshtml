@@ -94,11 +94,24 @@
     <transition name="slide">
         <div v-if="showRecommendationBox">
             <article class="movie-block box mt-0">
-                <div class="columns is-mobile">
+                <div class="columns is-mobile is-hidden-desktop">
                     <div class="column is-one-third">
                         <img :src="'https://image.tmdb.org/t/p/w154' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
                     </div>
                     <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
+                        <h4 class="movie-title mb-0">{{ recommendedMovie.title }}</h4>
+                        <small class="release-date">{{ recommendedMovie.releaseDate }}</small>
+                        <small>{{ recommendedMovie.genres }}</small>
+                        <small>{{ recommendedMovie.imdbRating }} IMDB Rating</small>
+                        <small>{{ recommendedMovie.runtime }} Minutes</small>
+                    </div>
+                </div>
+
+                <div class="columns is-desktop is-hidden-mobile">
+                    <div class="column">
+                        <img :src="'https://image.tmdb.org/t/p/w154' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
+                    </div>
+                    <div class="column is-flex is-flex-direction-column is-justify-content-center">
                         <h4 class="movie-title mb-0">{{ recommendedMovie.title }}</h4>
                         <small class="release-date">{{ recommendedMovie.releaseDate }}</small>
                         <small>{{ recommendedMovie.genres }}</small>

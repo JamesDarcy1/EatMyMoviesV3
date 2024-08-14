@@ -72,7 +72,7 @@ namespace EatMyMoviesSite.Services
 		public async Task<decimal?> GetImdbRating(string movieTitle)
 		{
 			var movie = await _omdbClient.GetItemByTitle(movieTitle);
-			if (movie.IMDbRating != null)
+			if (movie?.IMDbRating != null)
 			{
 				var imdbRating = Decimal.Parse(movie?.IMDbRating);
                 return imdbRating;
