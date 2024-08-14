@@ -12,46 +12,50 @@
                 <h1>
                     Discover Your Next Cinematic Obsession
                 </h1>
-
-                <button class="button is-large is-primary mt-2"
-                        asp-controller="Movie" 
+                <p>
+                    Don't know what to watch tonight?
+                </p>
+                <button class="button is-primary"
+                        asp-controller="Movie"
                         asp-action="Recommender">
-                    Recommender
+                    Find me a movie
                 </button>
 
+                <h1 class="pt-6">
+                    How it works
+                </h1>
+                <p>
+                    We ask several questions, you tell us what you're looking for and we find the perfect recommendation
+                </p>
 
-                <h2 class="subtitle has-text-weight-bold pt-5">
+
+                <h1 class="pt-6">
                     Movie of the Week
-                </h2>
+                </h1>
 
-                <article class="movie-block box mt-0 pb-6">
+                <article class="movie-block box mt-0">
                     <div class="columns is-mobile">
-                        <div class="column is-three-fifths">
-                            <div class="content">
-                                <h1 class="film-title">@Model.Title</h1>
-                                <small>@Model.Genres</small><br />
-                                <small>IMDB Rating: @Model.ImdbRating</small><br />
-                                <small>@Model.Runtime minutes</small><br />
-                                <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
-                                <p class="synopsis desktop-only">@Model.Synopsis</p>
-                            </div>
-                        </div>
-                        <div class="column is-two-fifths">
+                        <div class="column is-one-third">
                             <img class="poster" src="@Model.PosterPath" alt="@Model.Title poster" />
                         </div>
+                        <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
+                            <h4 class="movie-title mb-0">@Model.Title</h4>
+                            <small class="release-date">@Model.ReleaseDate</small>
+                            <small>@Model.Genres</small>
+                            <small>@Model.ImdbRating IMDB Rating</small>
+                            <small>@Model.Runtime Minutes</small>
+                            <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
+                        </div>
                     </div>
-                    <p class="synopsis mobile-only">@Model.Synopsis</p>
                 </article>
 
-                <h2 class="subtitle has-text-weight-bold pt-5 mb-0">
-                    Popular Lists
-                </h2>
-                <div class="buttons is-centered mt-2">
-                    <button class="button is-large is-primary" asp-controller="List" asp-action="Top100">Top 100</button>
-                    <button class="button is-large is-primary" asp-controller="List" asp-action="Comedies">Comedies</button>
-                    <button class="button is-large is-primary" asp-controller="List" asp-action="ForeignFilms">Foreign Films</button>
-                    <button class="button is-large is-primary" asp-controller="List" asp-action="Documentaries">Documentaries</button>
-                </div>
+                <h1 class="pt-6">
+                    Movie Lists
+                </h1>
+                <button class="button list-button" asp-controller="List" asp-action="Top100">Top 100</button>
+                <button class="button list-button" asp-controller="List" asp-action="Comedies">Comedies</button>
+                <button class="button list-button" asp-controller="List" asp-action="ForeignFilms">Foreign Films</button>
+                <button class="button list-button" asp-controller="List" asp-action="Documentaries">Documentaries</button>
             </div>
         </div>
     </section>

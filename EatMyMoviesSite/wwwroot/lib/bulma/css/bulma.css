@@ -475,7 +475,7 @@ table th {
     box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
     color: #4a4a4a;
     display: block;
-    padding: 1.25rem;
+    padding: 1rem;
     text-align: center;
 }
 
@@ -500,6 +500,7 @@ a.box:active {
   padding-top: calc(0.5em - 1px);
   text-align: center;
   white-space: nowrap;
+      box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
 }
 
 .button strong {
@@ -1006,13 +1007,13 @@ fieldset[disabled] .button.is-dark.is-inverted.is-outlined {
 }
 
 .button.is-primary {
-  background-color: #3273dc;
+  background-color: #e71837;
   border-color: transparent;
   color: #fff;
 }
 
 .button.is-primary:hover, .button.is-primary.is-hovered {
-  background-color: #5a8dfc;
+  background-color: #e71837;
   border-color: transparent;
   color: #fff;
 }
@@ -1027,7 +1028,7 @@ fieldset[disabled] .button.is-dark.is-inverted.is-outlined {
 }
 
 .button.is-primary:active, .button.is-primary.is-active {
-  background-color: #5a8dfc;
+  background-color: #e71837;
   border-color: transparent;
   color: #fff;
 }
@@ -11847,10 +11848,8 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 }
 
 .footer {
-    background-color: #fafafa;
+    background-color: rgba(0, 0, 0, 0.8);
     padding: 3rem 1.5rem 6rem;
-/*    bottom: 0;
-    position: relative;
-    width: 100%;*/
+    color: #e71837
 }
 /*# sourceMappingURL=bulma.css.map */

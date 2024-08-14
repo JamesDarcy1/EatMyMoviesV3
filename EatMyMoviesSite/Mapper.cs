@@ -19,7 +19,8 @@ namespace EatMyMoviesSite
 				Ranking = ranking,
 				Synopsis = tmdbMovie.Overview,
 				Runtime = tmdbMovie.Runtime,
-			};
+				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("yyyy", CultureInfo.InvariantCulture),
+            };
 		}
 
 		public static MovieDetail MapToMovieDetail(Movie tmdbMovie, Video trailer, decimal? imdbRating)
@@ -30,7 +31,7 @@ namespace EatMyMoviesSite
 				PosterPath = tmdbMovie.PosterPath,
 				BackdropPath = tmdbMovie.BackdropPath,
 				Overview = tmdbMovie.Overview,
-				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("yyyy", CultureInfo.InvariantCulture),
 				TrailerPath = trailer != null ? $"https://www.youtube.com/embed/{trailer.Key}" : null,
 				Tagline = tmdbMovie.Tagline,
 				Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
@@ -49,7 +50,8 @@ namespace EatMyMoviesSite
                 Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
                 ImdbRating = imdbRating,
                 Synopsis = tmdbMovie.Overview,
-				Runtime = tmdbMovie.Runtime
+				Runtime = tmdbMovie.Runtime,
+				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("yyyy", CultureInfo.InvariantCulture),
             };
         }
     }

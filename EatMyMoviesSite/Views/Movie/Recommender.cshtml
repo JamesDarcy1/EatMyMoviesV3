@@ -4,21 +4,36 @@
 }
 
 <title>Eat My Movies - Recommender</title>
-<h1 class="logo-text">Recommender</h1>
 
 <div id="recommenderApp" v-cloak>
+    <h1 v-if="!recommendedMovie">Discover your next cinematic obsession</h1>
+    <h1 v-if="recommendedMovie">Tonight's pick</h1>
+
     <transition name="fade">
         <div v-show="!showRecommendationBox" class="box has-text-centered">
             <div class="question-area">
-                <loading-spinner v-if="isLoading"></loading-spinner>
+                <div v-if="isLoading">
+                    <p v-if="allQuestionsAnswered">Finding you a match</p>
+                    <loading-spinner></loading-spinner>
+                </div>
                 <div v-else>
+
+                    <div class="progress-indicator">
+                        <span v-for="(question, index) in prompts"
+                              :key="index"
+                              :class="['progress-step', { 'is-current': currentQuestionIndex === index, 'is-clickable': index <= currentQuestionIndex }]"
+                              v-on:click="goToQuestion(index)">
+                            {{ index + 1 }}
+                        </span>
+                    </div>
+
                     <p v-if="!allQuestionsAnswered">{{ prompts[currentQuestionIndex] }}</p>
                     <div v-if="currentQuestionIndex === 0">
                         <!-- Genre Buttons -->
                         <div class="buttons is-centered mt-2">
                             <button v-for="genre in genres"
                                     :key="genre"
-                                    :class="['button', { 'is-primary': selectedGenres.includes(genre) }]"
+                                    :class="['button genre-button', { 'is-primary': selectedGenres.includes(genre) }]"
                                     v-on:click="toggleGenre(genre)">
                                 {{ genre }}
                             </button>
@@ -31,25 +46,31 @@
                         <div class="buttons is-centered">
                             <button v-for="(duration, index) in durations"
                                     :key="index"
-                                    :class="['button', { 'is-primary': durationPreference === duration }]"
+                                    :class="['button wide-button', { 'is-primary': duration.includes(durationPreference)}]"
                                     v-on:click="selectDuration(index)">
                                 {{ duration }}
                             </button>
                         </div>
+                        <button class="button is-primary mt-2" v-on:click="nextQuestion()">Next</button>
                     </div>
+
                     <div v-if="currentQuestionIndex === 2">
                         <!-- Foreign Film Question -->
-                        <button class="button"
-                                :class="{ 'is-selected is-primary': openToForeignFilm === true }"
-                                v-on:click="selectForeignFilm(true)">
-                            Yes
-                        </button>
-                        <button class="button"
-                                :class="{ 'is-selected is-primary': openToForeignFilm === false }"
-                                v-on:click="selectForeignFilm(false)">
-                            No
-                        </button>
+                        <div class="buttons is-centered">
+                            <button class="button"
+                                    :class="{ 'is-selected is-primary': openToForeignFilm === true }"
+                                    v-on:click="selectForeignFilm(true)">
+                                Yes
+                            </button>
+                            <button class="button"
+                                    :class="{ 'is-selected is-primary': openToForeignFilm === false }"
+                                    v-on:click="selectForeignFilm(false)">
+                                No
+                            </button>
+                        </div>
+                        <button class="button is-primary mt-2" v-on:click="nextQuestion()">Next</button>
                     </div>
+
                     <div v-if="currentQuestionIndex === 3 && !allQuestionsAnswered">
                         <!-- Year Range Question -->
                         <div class="buttons is-centered">
@@ -60,8 +81,9 @@
                                 {{ yearRange }}
                             </button>
                         </div>
+                        <button class="button is-primary mt-2" v-on:click="fetchRecommendedMovie()">Find me a movie</button>
                     </div>
-                    <p v-if="allQuestionsAnswered && !loading && !recommendedMovie">No movie found matching your critia</p>
+                    @*  <p v-if="allQuestionsAnswered && !loading && !recommendedMovie">No movie found matching your critia</p> *@
                 </div>
             </div>
         </div>
@@ -71,56 +93,39 @@
     <!-- Movie Recommendation Box -->
     <transition name="slide">
         <div v-if="showRecommendationBox">
-            <div class="buttons is-centered mt-4">
-                <button class="button" v-on:click="loadNextRecommendation">Try Again</button>
-                <button class="button" v-on:click="startOver">Start Over</button>
-                <button class="button is-success" v-on:click="shareOnWhatsApp">Share on WhatsApp</button>
+            <article class="movie-block box mt-0">
+                <div class="columns is-mobile">
+                    <div class="column is-one-third">
+                        <img :src="'https://image.tmdb.org/t/p/w154' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
+                    </div>
+                    <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
+                        <h4 class="movie-title mb-0">{{ recommendedMovie.title }}</h4>
+                        <small class="release-date">{{ recommendedMovie.releaseDate }}</small>
+                        <small>{{ recommendedMovie.genres }}</small>
+                        <small>{{ recommendedMovie.imdbRating }} IMDB Rating</small>
+                        <small>{{ recommendedMovie.runtime }} Minutes</small>
+                    </div>
+                </div>
+            </article>
+
+            <div class="column">
+                <h1>{{ recommendedMovie.title }}</h1>
+                <h4 class="tagline">"{{ recommendedMovie.tagline }}"</h4>
+                <div class="columns">
+                    <p class="synopsis">{{ recommendedMovie.overview }}</p>
+                </div>
             </div>
-            <div class="movie-area pt-3">
-                <div class="box">
-                    <loading-spinner v-if="isLoading"></loading-spinner>
-                    <div v-else>
-                        <div class="columns">
-                            <div class="column is-three-fifths">
-                                <h1 class="film-title">{{ recommendedMovie.title }}</h1>
-                                <i class="tagline">{{ recommendedMovie.tagline }}</i><br />
-                                <div class="columns is-mobile">
-                                    <div class="column">
-                                        <strong><u>Release Date</u></strong><br />
-                                        <strong>{{ recommendedMovie.releaseDate }}</strong>
-                                    </div>
-                                    <div class="column">
-                                        <strong><u>Runtime</u></strong><br />
-                                        <strong>{{ recommendedMovie.runtime }} minutes</strong>
-                                    </div>
-                                    <div class="column">
-                                        <strong><u>Imdb Rating</u></strong><br />
-                                        <strong>{{ recommendedMovie.imdbRating }}</strong>
-                                    </div>
-                                </div>
-                                <div class="columns is-mobile">
-                                    <div class="column">
-                                        <strong><u>Genres</u></strong><br />
-                                        <strong>{{ recommendedMovie.genres }}<br></strong>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="column is-two-fifths">
-                                <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
-                            </div>
-                        </div>
-                        <div class="column">
-                            <div class="columns is-mobile">
-                                <p class="synopsis">{{ recommendedMovie.overview }}</p>
-                            </div>
-                        </div>
-                    </div>
+
+            <div v-if="recommendedMovie" class="columns">
+                <div class="column has-text-centered trailer-container">
+                    <iframe class="responsive-iframe" :src="recommendedMovie.trailerPath"></iframe>
                 </div>
-                <div v-if="recommendedMovie" class="columns">
-                    <div class="column has-text-centered trailer-container">
-                        <iframe class="responsive-iframe" :src="recommendedMovie.trailerPath"></iframe>
-                    </div>
-                </div>
+            </div>
+
+            <div class="buttons is-centered">
+                <button class="button recommendation-button" style="font-size: 10px" v-on:click="loadNextRecommendation">Load another</button>
+                <button class="button recommendation-button" style="font-size: 10px" v-on:click="startOver">Start Over</button>
+                <button class="button recommendation-button" style="font-size: 10px" v-on:click="shareOnWhatsApp">Share on WhatsApp</button>
             </div>
         </div>
     </transition>
@@ -152,9 +157,9 @@
                     openToForeignFilm: null,
                     releaseYearRange: null,
                     prompts: [
-                        'Choose the 3 genres that appeal to you most right now.',
-                        'Do you prefer a short movie or something longer?',
-                        'Are you open to a film in a different language?',
+                        'Choose the 3 genres that appeal to you most right now',
+                        'How long do you want to watch for?',
+                        'Are you open to a movie in another language?',
                         'Do you want a movie from a specific release year range?'
                     ],
                     durations: ['Short (less than 2 hours)', 'Long (over 2 hours)', 'Any length'],
@@ -201,20 +206,16 @@
                 },
                 selectDuration(index) {
                     this.durationPreference = this.durations[index];
-                    this.nextQuestion();
                 },
                 selectForeignFilm(value) {
                     this.openToForeignFilm = value;
-                    this.nextQuestion();
                 },
                 selectYearRange(index) {
                     this.releaseYearRange = this.yearRanges[index];
-                    this.allQuestionsAnswered = true;
-                    this.fetchRecommendedMovie();
                 },
                 fetchRecommendedMovie() {
-                    if (!this.allQuestionsAnswered) return;
-
+                    // add check here
+                    this.allQuestionsAnswered = true;
                     this.isLoading = true;
                     const url = `/Movie/GetRecommendations?genres=${this.selectedGenres.join(',')}&duration=${this.durationPreference}&openToForeignFilm=${this.openToForeignFilm}&yearRange=${this.releaseYearRange}`;
                     fetch(url)
@@ -250,7 +251,12 @@
                     const message = `Check out this movie: ${this.recommendedMovie.title} (${releaseYear}) - ${movieUrl}`;
                     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
                     window.open(url, '_blank');
-                }
+                },
+                goToQuestion(index) {
+                    if (index <= this.currentQuestionIndex) {
+                        this.currentQuestionIndex = index;
+                    }
+                },
 
             },
             mounted() {

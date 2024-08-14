@@ -33,8 +33,7 @@
 			</div>
 
 			<div id="navbar-target" class="navbar-menu">
-				<div class="navbar-end">
-					<a class="navbar-item" asp-controller="Home" asp-action="Index">Home</a>
+				<div class="navbar-start">
 					<a class="navbar-item" asp-controller="Home" asp-action="About">About</a>
 					<a class="navbar-item" asp-controller="Movie" asp-action="Recommender">Recommender</a>
 					<a class="navbar-item" asp-controller="Movie" asp-action="Search">Search</a>
@@ -76,11 +75,9 @@
 
 	<footer class="footer">
 		<div class="has-text-centered">
-			<p>
-				<strong>Eat My Movies</strong>. All rights reserved. <br />
+			<strong style="color:#e71837">Eat My Movies</strong>. All rights reserved. <br />
 				This product uses the TMDB API but is not endorsed or certified by TMDB
-				<img class="tmdb-logo" src="~/TMDB_logo.svg" alt="Tmdb logo" />
-			</p>
+				<img class="tmdb-logo mt-3" src="~/TMDB_logo.svg" alt="Tmdb logo" />
 		</div>
 	</footer>
 
