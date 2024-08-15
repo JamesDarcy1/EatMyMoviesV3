@@ -31,10 +31,12 @@ html {
 
     .list-button {
         width: 35%;
+        height: 4vw;
     }
 
     .recommendation-button {
         font-size: 1vw;
+        height: 4vw;
     }
 
     button:hover {
@@ -65,7 +67,6 @@ html {
     .genre-button {
         font-size: 1vw;
     }
-
 }
 
 @media (max-width: 768px) {
@@ -106,6 +107,7 @@ html {
 
     .recommendation-button {
         font-size: 2.5vw;
+        height: 10vw;
     }
 
     button:hover {
@@ -132,8 +134,8 @@ html {
         font-size: 4vw;
     }
 
-    .genre-button {
-        font-size: 1vw;
+    .list-button {
+        height: 10vw;
     }
 }
 
@@ -469,6 +471,7 @@ select {
 
 .recommendation-button {
     width: 30%;
+    border: 2px solid #e71837;
 }
 
 .wide-button {
