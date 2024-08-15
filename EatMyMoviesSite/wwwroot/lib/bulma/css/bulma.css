@@ -1035,8 +1035,6 @@ fieldset[disabled] .button.is-dark.is-inverted.is-outlined {
 
 .button.is-primary[disabled],
 fieldset[disabled] .button.is-primary {
-  background-color: #00d1b2;
-  border-color: #00d1b2;
   box-shadow: none;
 }
 
@@ -1766,7 +1764,6 @@ fieldset[disabled] .button.is-danger.is-inverted.is-outlined {
 
 .button[disabled],
 fieldset[disabled] .button {
-  background-color: white;
   border-color: #dbdbdb;
   box-shadow: none;
   opacity: 0.5;

@@ -18,7 +18,7 @@ namespace EatMyMoviesSite.Services
 		private readonly IMovieRepository _movieRepository;
 		private readonly int _moviesPerPage = 10;
 		private readonly bool _isDevelopment;
-		private readonly Guid ChristmasListId;
+		private Guid ChristmasListId;
 
 		public MovieService(IRankingRepository rankingRepository, IConfiguration configuration, IListRepository listRepository, IMovieRepository movieRepository)
 		{
@@ -28,7 +28,6 @@ namespace EatMyMoviesSite.Services
 			_rankingRepository = rankingRepository;
 			_listRepository = listRepository;
 			_movieRepository = movieRepository;
-			ChristmasListId = _listRepository.GetListByName("Christmas").ListId;
 		}
 
 		public async Task<Movie> GetMovieByTitle(string title)
@@ -133,8 +132,9 @@ namespace EatMyMoviesSite.Services
 		public async Task<List<Movie>> GetRecommendations(string genres, string duration, bool openToForeignFilm, string yearRange)
         {
 			var recommendations = new List<Movie>();
+            ChristmasListId = _listRepository.GetListByName("Christmas").ListId;
 
-			// Add by genre
+            // Add by genre
             var genresFormatted = genres.Split(',');
 			var storeMovies = new List<EatMyMovies.DataAccess.Models.Movie>();
             var tasks = new List<Task<Movie>>();

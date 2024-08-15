@@ -60,8 +60,8 @@ html {
     }
 
     .movie-block {
-        margin: 10%;
-        width: 80%;
+        margin: 25%;
+        width: 50%;
     }
 
     .genre-button {
@@ -136,6 +136,10 @@ html {
 
     .list-button {
         height: 10vw;
+    }
+
+    .loading-spinner {
+        width: 2%;
     }
 }
 
@@ -465,9 +469,23 @@ select {
 }
 
 .list-button {
-    width:45%;
+    width: 45%;
     margin: 5px;
+    padding: 10px 20px;
+    background-color: white;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
+
+    .list-button:active {
+        box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.3);
+        transform: translateY(2px);
+    }
 
 .recommendation-button {
     width: 30%;

@@ -38,7 +38,7 @@
                                 {{ genre }}
                             </button>
                         </div>
-                        <button class="button is-primary mt-2" v-on:click="handleYes">Next</button>
+                        <button class="button is-primary mt-2" :disabled="selectedGenres.length !== 3" v-on:click="handleYes">Next</button>
                     </div>
 
                     <div v-if="currentQuestionIndex === 1">
@@ -51,7 +51,7 @@
                                 {{ duration }}
                             </button>
                         </div>
-                        <button class="button is-primary mt-2" v-on:click="nextQuestion()">Next</button>
+                        <button class="button is-primary mt-2" :disabled="!durationPreference" v-on:click="nextQuestion()">Next</button>
                     </div>
 
                     <div v-if="currentQuestionIndex === 2">
@@ -68,7 +68,7 @@
                                 No
                             </button>
                         </div>
-                        <button class="button is-primary mt-2" v-on:click="nextQuestion()">Next</button>
+                        <button class="button is-primary mt-2" :disabled="openToForeignFilm === null" v-on:click="nextQuestion()">Next</button>
                     </div>
 
                     <div v-if="currentQuestionIndex === 3 && !allQuestionsAnswered">
@@ -81,7 +81,7 @@
                                 {{ yearRange }}
                             </button>
                         </div>
-                        <button class="button is-primary mt-2" v-on:click="fetchRecommendedMovie()">Find me a movie</button>
+                        <button class="button is-primary mt-2" :disabled="!releaseYearRange" v-on:click="fetchRecommendedMovie()">Find me a movie</button>
                     </div>
                 </div>
             </div>
@@ -108,7 +108,7 @@
                 </div>
 
                 <div class="columns is-desktop is-hidden-mobile">
-                    <div class="column">
+                    <div class="column is-one-third">
                         <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
                     </div>
                     <div class="column is-flex is-flex-direction-column is-justify-content-center">
