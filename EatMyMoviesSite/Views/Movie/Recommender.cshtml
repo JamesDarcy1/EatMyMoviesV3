@@ -10,7 +10,7 @@
     <h1 v-if="recommendedMovie">Tonight's pick</h1>
 
     <transition name="fade">
-        <div v-show="!showRecommendationBox" class="box has-text-centered">
+        <div v-if="!showRecommendationBox" class="box has-text-centered">
             <div class="question-area">
                 <div v-if="isLoading">
                     <p v-if="allQuestionsAnswered">Finding you a match</p>
@@ -83,19 +83,19 @@
                         </div>
                         <button class="button is-primary mt-2" v-on:click="fetchRecommendedMovie()">Find me a movie</button>
                     </div>
-                    @*  <p v-if="allQuestionsAnswered && !loading && !recommendedMovie">No movie found matching your critia</p> *@
                 </div>
             </div>
         </div>
     </transition>
 
+    <p v-show="showRecommendationBox && !isLoading && !recommendedMovie">No movie found matching your critias</p>
 
     <!-- Movie Recommendation Box -->
     <transition name="slide">
         <div v-if="showRecommendationBox">
-            <article class="movie-block box mt-0">
-                <div class="columns is-mobile is-hidden-desktop">
-                    <div class="column is-one-third">
+            <article class="movie-block box mt-0 pb-0">
+                <div class="columns is-mobile is-hidden-desktop mb-0">
+                    <div class="column is-one-third column is-one-third is-flex is-align-items-center is-justify-content-center">
                         <img :src="'https://image.tmdb.org/t/p/w154' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
                     </div>
                     <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
@@ -109,7 +109,7 @@
 
                 <div class="columns is-desktop is-hidden-mobile">
                     <div class="column">
-                        <img :src="'https://image.tmdb.org/t/p/w154' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
+                        <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
                     </div>
                     <div class="column is-flex is-flex-direction-column is-justify-content-center">
                         <h4 class="movie-title mb-0">{{ recommendedMovie.title }}</h4>
@@ -125,7 +125,9 @@
                 <h1>{{ recommendedMovie.title }}</h1>
                 <h4 class="tagline">"{{ recommendedMovie.tagline }}"</h4>
                 <div class="columns">
-                    <p class="synopsis">{{ recommendedMovie.overview }}</p>
+                    <div class="column">
+                        <p class="synopsis">{{ recommendedMovie.overview }}</p>
+                    </div>
                 </div>
             </div>
 
@@ -136,9 +138,9 @@
             </div>
 
             <div class="buttons is-centered">
-                <button class="button recommendation-button" style="font-size: 10px" v-on:click="loadNextRecommendation">Load another</button>
-                <button class="button recommendation-button" style="font-size: 10px" v-on:click="startOver">Start Over</button>
-                <button class="button recommendation-button" style="font-size: 10px" v-on:click="shareOnWhatsApp">Share on WhatsApp</button>
+                <button class="button recommendation-button" v-on:click="loadNextRecommendation">Load another</button>
+                <button class="button recommendation-button" v-on:click="startOver">Start Over</button>
+                <button class="button recommendation-button" v-on:click="shareOnWhatsApp">Share on WhatsApp</button>
             </div>
         </div>
     </transition>

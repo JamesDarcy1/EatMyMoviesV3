@@ -33,10 +33,10 @@
                     Movie of the Week
                 </h1>
 
-                <article class="movie-block box mt-0">
-                    <div class="columns is-mobile is-hidden-desktop">
-                        <div class="column is-one-third">
-                            <img class="poster" src="@Model.PosterPath" alt="@Model.Title poster" />
+                <article class="movie-block box mt-0 pb-0">
+                    <div class="columns is-mobile is-hidden-desktop mb-0">
+                        <div class="column is-one-third column is-one-third is-flex is-align-items-center is-justify-content-center">
+                            <img class="poster" src="@Model.SmallPosterPath" alt="@Model.Title poster" />
                         </div>
                         <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
                             <h4 class="movie-title mb-0">@Model.Title</h4>
@@ -50,7 +50,7 @@
 
                     <div class="columns is-desktop is-hidden-mobile">
                         <div class="column is-one-third">
-                            <img class="poster" src="@Model.PosterPath" alt="@Model.Title poster" />
+                            <img class="poster-on-detail" src="@Model.LargePosterPath" alt="@Model.Title poster" />
                         </div>
                         <div class="column is-one-thirds is-flex is-flex-direction-column is-justify-content-center">
                             <h4 class="movie-title mb-0">@Model.Title</h4>
