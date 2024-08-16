@@ -1,76 +1,96 @@
-﻿@using EatMyMoviesSite.DTOs
-@model ListMovie;
-
-<title>Eat My Movies - Discover Your Next Cinematic Obsession</title>
+﻿<title>Eat My Movies - Discover Your Next Cinematic Obsession</title>
 <meta name="description" content="Discover your next cinematic obsession with Eat My Movies – a curated compilation of top film rankings across diverse genres. Let our suggestions guide your movie nights and ignite your passion for storytelling. Explore a world of entertainment with random genre picks!" />
-<link rel="canonical" href="https://www.eatmymovies.com/" />.
+<link rel="canonical" href="https://www.eatmymovies.com/" />
 
-<form method="POST" action="/Movie/Detail">
-    <section class="hero is-medium">
-        <div>
-            <div class="container has-text-centered">
-                <h1>
-                    Discover Your Next Cinematic Obsession
-                </h1>
-                <p>
-                    Don't know what to watch tonight?
-                </p>
-                <button class="button is-primary"
-                        asp-controller="Movie"
-                        asp-action="Recommender">
-                    Find me a movie
-                </button>
+<div id="indexApp">
+    <div class="container has-text-centered">
+        <section class="hero is-medium">
+            <div>
+                <h1>Discover Your Next Cinematic Obsession</h1>
+                <p>Don't know what to watch tonight?</p>
+                <button class="button is-primary" v-on:click="findMovie">Find me a movie</button>
 
-                <h1 class="pt-6">
-                    How it works
-                </h1>
+                <h1 class="pt-6">How it works</h1>
                 <p>
                     We ask several questions, you tell us what you're looking for and we find the perfect recommendation
                 </p>
 
-
-                <h1 class="pt-6">
-                    Movie of the Week
-                </h1>
+                <h1 class="pt-6">Movie of the Week</h1>
 
                 <article class="movie-block box mt-0 pb-0">
                     <div class="columns is-mobile is-hidden-desktop mb-0">
-                        <div class="column is-one-third column is-one-third is-flex is-align-items-center is-justify-content-center">
-                            <img class="poster" src="@Model.SmallPosterPath" alt="@Model.Title poster" />
+                        <div class="column is-one-third is-flex is-align-items-center is-justify-content-center" v-if="movieOftheWeek">
+                            <img class="poster" :src="'https://image.tmdb.org/t/p/w154' + movieOftheWeek.posterPath" :alt="`${movieOftheWeek.movieTitle} poster`" />
                         </div>
-                        <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
-                            <h4 class="movie-title mb-0">@Model.Title</h4>
-                            <small class="release-date">@Model.ReleaseDate</small>
-                            <small>@Model.Genres</small>
-                            <small>@Model.ImdbRating IMDB Rating</small>
-                            <small>@Model.Runtime Minutes</small>
-                            <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
+                        <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center" v-if="movieOftheWeek">
+                            <h4 class="movie-title mb-0">{{ movieOftheWeek.title }}</h4>
+                            <small class="release-date">{{ movieOftheWeek.releaseDate }}</small>
+                            <small>{{ movieOftheWeek.genres }}</small>
+                            <small>{{ movieOftheWeek.imdbRating }} IMDB Rating</small>
+                            <small>{{ movieOftheWeek.runtime }} Minutes</small>
+                            <a class="find-out-more" v-on:click="goToDetail">Find Out More</a>
                         </div>
                     </div>
 
-                    <div class="columns is-desktop is-hidden-mobile">
+                    <div class="columns is-desktop is-hidden-mobile" v-if="movieOftheWeek">
                         <div class="column is-one-third">
-                            <img class="poster-on-detail" src="@Model.LargePosterPath" alt="@Model.Title poster" />
+                            <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + movieOftheWeek.posterPath" :alt="`${movieOftheWeek.movieTitle} poster`" />
                         </div>
                         <div class="column is-one-thirds is-flex is-flex-direction-column is-justify-content-center">
-                            <h4 class="movie-title mb-0">@Model.Title</h4>
-                            <small class="release-date">@Model.ReleaseDate</small>
-                            <small>@Model.Genres</small>
-                            <small>@Model.ImdbRating IMDB Rating</small>
-                            <small>@Model.Runtime Minutes</small>
-                            <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
+                            <h4 class="movie-title mb-0">{{ movieOftheWeek.title }}</h4>
+                            <small class="release-date">{{ movieOftheWeek.releaseDate }}</small>
+                            <small>{{ movieOftheWeek.genres }}</small>
+                            <small>{{ movieOftheWeek.imdbRating }} IMDB Rating</small>
+                            <small>{{ movieOftheWeek.runtime }} Minutes</small>
+                            <a class="find-out-more" v-on:click="goToDetail">Find Out More</a>
                         </div>
                     </div>
                 </article>
 
-                <h1 class="pt-6">
-                    Movie Lists
-                </h1>
-                <button class="button list-button" asp-controller="List" asp-action="Top100">Top 100</button>
-                <button class="button list-button" asp-controller="List" asp-action="Comedies">Comedies</button>
-                <button class="button list-button" asp-controller="List" asp-action="ForeignFilms">Foreign Films</button>
-                <button class="button list-button" asp-controller="List" asp-action="Documentaries">Documentaries</button>
+                <h1 class="pt-6">Movie Lists</h1>
+                <button class="button list-button" v-on:click="goToList('Top100')">Top 100</button>
+                <button class="button list-button" v-on:click="goToList('Comedies')">Comedies</button>
+                <button class="button list-button" v-on:click="goToList('ForeignFilms')">Foreign Films</button>
+                <button class="button list-button" v-on:click="goToList('Documentaries')">Documentaries</button>
             </div>
-        </div>
-    </section>
-</form>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    movieOftheWeek: null
+                };
+            },
+            methods: {
+                findMovie() {
+                    window.location.href = '/Movie/Recommender';
+                },
+
+                goToDetail() {
+                    console.log('going to detail of', this.movieOftheWeek.title);
+                    if (this.movieOftheWeek) {
+                        window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.movieOftheWeek.title)}`;
+                    }
+                },
+                goToList(listName) {
+                    console.log('list name', listName);
+                    window.location.href = `/List/${listName}`;
+                },
+            },
+            mounted() {
+                fetch('/Home/GetMovieOfTheWeek')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.movieOftheWeek = data;
+                    });
+            },
+        }).mount('#indexApp');
+    </script>
+}

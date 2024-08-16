@@ -532,5 +532,14 @@ select {
     background-color: #cccccc;
 }
 
+.dropdown-poster {
+    width: 40px; /* Adjust size as needed */
+    height: auto;
+    margin-right: 10px; /* Space between poster and title */
+    vertical-align: middle;
+}
 
+.dropdown-title {
+    vertical-align: middle; /* Align text with the poster */
+}
 

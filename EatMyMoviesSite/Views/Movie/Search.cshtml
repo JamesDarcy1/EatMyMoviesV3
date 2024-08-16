@@ -68,10 +68,6 @@
                 },
                 selectMovie(movie) {
                     window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}&tmdbId=${movie.id}`;
-                    // this.searchQuery = movie.title;
-                    // this.selectedMovie = movie;
-                    // this.searchSelected = true;
-                    // this.searchResults = [];
                 },
                 handleSearch() {
                     window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}`;
@@ -80,17 +76,4 @@
         }).mount('#searchApp');
     </script>
 }
-
-<style>
-    .dropdown-poster {
-        width: 40px; /* Adjust size as needed */
-        height: auto;
-        margin-right: 10px; /* Space between poster and title */
-        vertical-align: middle;
-    }
-
-    .dropdown-title {
-        vertical-align: middle; /* Align text with the poster */
-    }
-</style>
 

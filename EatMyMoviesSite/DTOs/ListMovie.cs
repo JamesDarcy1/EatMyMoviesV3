@@ -6,9 +6,7 @@ namespace EatMyMoviesSite.DTOs
 	{
 		public string Title { get; set; }
 
-		public string SmallPosterPath { get; set; }
-
-		public string LargePosterPath { get; set; }
+		public string PosterPath { get; set; }
 
 		public int Ranking { get; set; }
 
