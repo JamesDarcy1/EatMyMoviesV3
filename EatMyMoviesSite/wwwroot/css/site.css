@@ -138,8 +138,8 @@ html {
         height: 10vw;
     }
 
-    .loading-spinner {
-        width: 2%;
+    .poster-on-detail {
+        max-height: 100vw;
     }
 }
 
