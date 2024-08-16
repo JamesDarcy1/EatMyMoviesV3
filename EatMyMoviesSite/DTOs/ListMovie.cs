@@ -21,5 +21,7 @@ namespace EatMyMoviesSite.DTOs
 		public int? Runtime { get; set; }
 
         public string ReleaseDate { get; set; }
+
+		public string Language { get; set; }
     }
 }

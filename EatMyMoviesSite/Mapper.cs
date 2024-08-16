@@ -1,4 +1,5 @@
 ﻿using EatMyMoviesSite.DTOs;
+using EatMyMoviesSite.Services;
 using Newtonsoft.Json;
 using System.Globalization;
 using TMDbLib.Objects.General;
@@ -21,6 +22,7 @@ namespace EatMyMoviesSite
 				Synopsis = tmdbMovie.Overview,
 				Runtime = tmdbMovie.Runtime,
 				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("yyyy", CultureInfo.InvariantCulture),
+				Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage)
             };
 		}
 
@@ -39,6 +41,7 @@ namespace EatMyMoviesSite
 				ImdbRating = imdbRating != null ? imdbRating : null,
 				Runtime = tmdbMovie.Runtime,
 				TmdbId = tmdbMovie.Id,
+                Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage)
             };
 		}
 
@@ -54,6 +57,7 @@ namespace EatMyMoviesSite
                 Synopsis = tmdbMovie.Overview,
 				Runtime = tmdbMovie.Runtime,
 				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("yyyy", CultureInfo.InvariantCulture),
+                Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage)
             };
         }
     }

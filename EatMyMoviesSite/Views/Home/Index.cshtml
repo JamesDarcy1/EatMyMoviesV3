@@ -2,7 +2,7 @@
 @model ListMovie;
 
 <title>Eat My Movies - Discover Your Next Cinematic Obsession</title>
-<meta name="description" content="Discover your next cinematic obsession with Eat My Movies – a curated compilation of top film rankings across diverse genres. Let our suggestions guide your movie nights and ignite your passion for storytelling. Explore a world of entertainment with random genre picks!" />
+<meta name="description" content="Welcome to Eat My Movies - the place to discover your next cinematic obsession. By answering a few quetions we aim to find you the perfect movie for your night's viewing. Please enjoy our recommendations and have fun exploring our carefully curated lists." />
 <link rel="canonical" href="https://www.eatmymovies.com/" />.
 
 <form method="POST" action="/Movie/Detail">
@@ -44,6 +44,7 @@
                             <small>@Model.Genres</small>
                             <small>@Model.ImdbRating IMDB Rating</small>
                             <small>@Model.Runtime Minutes</small>
+                            <small>@Model.Language</small>
                             <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
                         </div>
                     </div>
@@ -58,6 +59,7 @@
                             <small>@Model.Genres</small>
                             <small>@Model.ImdbRating IMDB Rating</small>
                             <small>@Model.Runtime Minutes</small>
+                            <small>@Model.Language</small>
                             <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
                         </div>
                     </div>

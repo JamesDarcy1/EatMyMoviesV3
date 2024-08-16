@@ -24,12 +24,13 @@
                     <small>@movie.Genres</small>
                     <small>@movie.ImdbRating IMDB Rating</small>
                     <small>@movie.Runtime Minutes</small>
+                    <small>@movie.Language</small>
                     <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(movie.Title)';">Find Out More</a>
                 </div>
             </div>
 
             <div class="columns is-desktop is-hidden-mobile">
-                <div class="column is-one-third">
+                <div class="column is-one-third is-flex is-align-items-center is-justify-content-center">
                     <img class="poster-on-detail" src="@movie.LargePosterPath" alt="@movie.Title poster" />
                 </div>
                 <div class="column is-one-thirds is-flex is-flex-direction-column is-justify-content-center">
@@ -38,6 +39,7 @@
                     <small>@movie.Genres</small>
                     <small>@movie.ImdbRating IMDB Rating</small>
                     <small>@movie.Runtime Minutes</small>
+                    <small>@movie.Language</small>
                     <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(movie.Title)';">Find Out More</a>
                 </div>
                 <div class="column is-one-third is-flex is-flex-direction-column is-justify-content-center">

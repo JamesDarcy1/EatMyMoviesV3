@@ -39,7 +39,7 @@
                                 {{ genre }}
                             </button>
                         </div>
-                        <button class="button is-primary mt-2" :disabled="selectedGenres.length !== 3" v-on:click="handleYes">Next</button>
+                        <button class="button is-primary mt-2" :disabled="selectedGenres.length === 0" v-on:click="nextQuestion()">Next</button>
                     </div>
 
                     <div v-if="currentQuestionIndex === 1">
@@ -165,7 +165,6 @@
                     maxQuestions: 4, // Number of questions after genre selection
                     recommendedMovie: null,
                     recommendationCollection: [],
-                    genreSelected: false,
                     isLoading: true,
                     showRecommendationBox: false,
                     mood: null,
@@ -173,7 +172,7 @@
                     openToForeignFilm: null,
                     releaseYearRange: null,
                     prompts: [
-                        'Choose the 3 genres that appeal to you most right now',
+                        'Choose the genre(s) that appeals to you most right now',
                         'How long do you want to watch for?',
                         'Are you open to a movie in another language?',
                         'Do you want a movie from a specific release year range?'
@@ -185,34 +184,15 @@
                 };
             },
             methods: {
-                handleYes() {
-                    if (this.currentQuestionIndex === 0) { // Genre selection
-                        if (this.selectedGenres.length < 3) {
-                            alert('Please select 3 genres.');
-                            return;
-                        }
-                        this.genreSelected = true;
-                        this.nextQuestion();
-                    } else {
-                        this.nextQuestion();
-                        if (this.currentQuestionIndex === this.maxQuestions - 1) {
-                            this.allQuestionsAnswered = true;
-                            this.fetchRecommendedMovie();
-                        }
-                    }
-                },
                 toggleGenre(genre) {
                     const index = this.selectedGenres.indexOf(genre);
                     if (index > -1) {
                         // Remove genre
                         this.selectedGenres.splice(index, 1);
-                    } else if (this.selectedGenres.length < 3) {
+                    } else {
                         // Add genre
                         this.selectedGenres.push(genre);
                     }
-                },
-                handleNo() {
-                    this.nextQuestion();
                 },
                 nextQuestion() {
                     this.currentQuestionIndex++;
