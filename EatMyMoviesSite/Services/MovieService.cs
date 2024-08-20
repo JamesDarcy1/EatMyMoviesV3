@@ -79,11 +79,12 @@ namespace EatMyMoviesSite.Services
 			return null;
         }
 
-		public async Task<MovieList> BuildMovieList(string listTitle, int page)
+		public async Task<MovieList> BuildMovieList(string listTitle, int page = 1)
 		{
 			try
 			{
-				var list = _listRepository.GetListByName(listTitle);
+				listTitle = StringHelpers.AddSpacesToSentence(listTitle);
+                var list = _listRepository.GetListByName(listTitle);
 				var moviesList = new MovieList() { Name = list.Name, Description = list.Description, Movies = new List<ListMovie>() };
 				var storedMovies = _rankingRepository.GetMoviesForList(listTitle);
 				var totalMovies = storedMovies.Count();

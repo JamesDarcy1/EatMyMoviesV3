@@ -15,34 +15,10 @@ namespace EatMyMoviesSite.Controllers
             _movieService = movieService;
 		}
 
-        public async Task<IActionResult> Top100(int page = 1)
-        {
-            var list = await _movieService.BuildMovieList("Top 100", page);
-            return View("~/Views/List/List.cshtml", list);
-        }
-
-        public async Task<IActionResult> Comedies(int page = 1)
-        {
-			var list = await _movieService.BuildMovieList("Comedies", page);
-			return View("~/Views/List/List.cshtml", list);
-		}
-
-		public async Task<IActionResult> ForeignFilms(int page = 1)
+		public IActionResult Open(string listName)
 		{
-			var list = await _movieService.BuildMovieList("Foreign Films", page);
-			return View("~/Views/List/List.cshtml", list);
-		}
-
-		public async Task<IActionResult> Documentaries(int page = 1)
-		{
-			var list = await _movieService.BuildMovieList("Documentaries", page);
-			return View("~/Views/List/List.cshtml", list);
-		}
-
-		public async Task<IActionResult> Christmas(int page = 1)
-		{
-			var list = await _movieService.BuildMovieList("Christmas", page);
-			return View("~/Views/List/List.cshtml", list);
+			ViewBag.ListName = StringHelpers.AddSpacesToSentence(listName);
+			return View("~/Views/List/List.cshtml");
 		}
 
 		public async Task<MovieList> GetListData(string listName) {

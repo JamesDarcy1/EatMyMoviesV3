@@ -1,66 +1,83 @@
-﻿<title>Eat My Movies - {{ pageTitle }}</title>
+﻿<title>Eat My Movies - {{ listName }}</title>
 <meta name="description" :content="pageDescription" />
 
 <div id="movieListApp">
     <div class="has-text-centered">
-        <h1>{{ pageTitle }}</h1>
+        <h1>{{ listName }}</h1>
         <p>{{ pageDescription }}</p>
         <br />
 
-        <div v-for="movie in movies" :key="movie.title">
-            <h1>{{ movie.ranking }}</h1>
-            <article class="movie-block box mt-0 pb-0">
-                <div class="columns is-mobile is-hidden-desktop mb-0">
-                    <div class="column is-one-third is-flex is-align-items-center is-justify-content-center">
-                        <img class="poster" :src="'https://image.tmdb.org/t/p/w500' + movie.posterPath" :alt="`${movie.title} poster`" />
-                    </div>
-                    <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
-                        <h4 class="movie-title mb-0">{{ movie.title }}</h4>
-                        <small class="release-date">{{ movie.releaseDate }}</small>
-                        <small>{{ movie.genres }}</small>
-                        <small>{{ movie.imdbRating }} IMDB Rating</small>
-                        <small>{{ movie.runtime }} Minutes</small>
-                        <a class="find-out-more" v-on:click="goToDetail(movie.title)">Find Out More</a>
-                    </div>
-                </div>
-
-                <div class="columns is-desktop is-hidden-mobile">
-                    <div class="column is-one-third">
-                        <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + movie.posterPath" :alt="`${movie.title} poster`" />
-                    </div>
-                    <div class="column is-one-third is-flex is-flex-direction-column is-justify-content-center">
-                        <h4 class="movie-title mb-0">{{ movie.title }}</h4>
-                        <small class="release-date">{{ movie.releaseDate }}</small>
-                        <small>{{ movie.genres }}</small>
-                        <small>{{ movie.imdbRating }} IMDB Rating</small>
-                        <small>{{ movie.runtime }} Minutes</small>
-                        <a class="find-out-more" v-on:click="goToDetail(movie.title)">Find Out More</a>
-                    </div>
-                    <div class="column is-one-third is-flex is-flex-direction-column is-justify-content-center">
-                        <small>{{ movie.synopsis }}</small>
-                    </div>
-                </div>
-            </article>
+        <div v-if="loading">
+            <p>Loading movies...</p>
+            <loading-spinner></loading-spinner>
         </div>
 
-        <div v-if="pagination">
-            <pagination :currentPage="pagination.currentPage" :totalPages="pagination.totalPages" :actionName="pagination.actionName"></pagination>
+        <div v-if="!loading">
+            <div v-for="movie in movies" :key="movie.title">
+                <h1>{{ movie.ranking }}</h1>
+                <article class="movie-block box mt-0 pb-0">
+                    <div class="columns is-mobile is-hidden-desktop mb-0">
+                        <div class="column is-one-third is-flex is-align-items-center is-justify-content-center">
+                            <img class="poster" :src="'https://image.tmdb.org/t/p/w500' + movie.posterPath" :alt="`${movie.title} poster`" />
+                        </div>
+                        <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
+                            <h4 class="movie-title mb-0">{{ movie.title }}</h4>
+                            <small class="release-date">{{ movie.releaseDate }}</small>
+                            <small>{{ movie.genres }}</small>
+                            <small>{{ movie.imdbRating }} IMDB Rating</small>
+                            <small>{{ movie.runtime }} Minutes</small>
+                            <a class="find-out-more" v-on:click="goToDetail(movie.title)">Find Out More</a>
+                        </div>
+                    </div>
+
+                    <div class="columns is-desktop is-hidden-mobile">
+                        <div class="column is-one-third">
+                            <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + movie.posterPath" :alt="`${movie.title} poster`" />
+                        </div>
+                        <div class="column is-one-third is-flex is-flex-direction-column is-justify-content-center">
+                            <h4 class="movie-title mb-0">{{ movie.title }}</h4>
+                            <small class="release-date">{{ movie.releaseDate }}</small>
+                            <small>{{ movie.genres }}</small>
+                            <small>{{ movie.imdbRating }} IMDB Rating</small>
+                            <small>{{ movie.runtime }} Minutes</small>
+                            <a class="find-out-more" v-on:click="goToDetail(movie.title)">Find Out More</a>
+                        </div>
+                        <div class="column is-one-third is-flex is-flex-direction-column is-justify-content-center">
+                            <small>{{ movie.synopsis }}</small>
+                        </div>
+                    </div>
+                </article>
+            </div>
         </div>
+
+      @*   <div v-if="pagination">
+            <Pagination :currentPage="pagination.currentPage"
+                        :totalPages="pagination.totalPages"
+                        :actionName="pagination.actionName">
+            </Pagination>
+        </div> *@
     </div>
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <script src="/components/loading.js"></script>
+    <script src="/components/pagination.js"></script>
     <script>
         const { createApp } = Vue;
 
         createApp({
+            components: {
+                'loading-spinner': LoadingSpinner,
+                // 'pagination': Pagination
+            },
             data() {
                 return {
-                    pageTitle: '',
+                    listName: '@ViewBag.ListName',
                     pageDescription: '',
                     movies: [],
-                    pagination: null
+                    pagination: null,
+                    loading: true
                 };
             },
             methods: {
@@ -69,21 +86,22 @@
                 }
             },
             mounted() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const listName = urlParams.get('listName');
-
-                if (listName) {
-                    fetch(`/List/GetListData?listName=${encodeURIComponent(listName)}`)
+                if (this.listName) {
+                    fetch(`/List/GetListData?listName=${encodeURIComponent(this.listName)}`)
                         .then(response => response.json())
                         .then(data => {
-                            this.pageTitle = data.description || listName;
                             this.pageDescription = data.description || '';
                             this.movies = data.movies || [];
                             this.pagination = data.pagination || null;
                         })
                         .catch(error => {
                             console.error('Error fetching list data:', error);
+                        }).finally(() => {
+                            this.loading = false;
                         });
+                }
+                else {
+                    this.loading = false;
                 }
             }
         }).mount('#movieListApp');
