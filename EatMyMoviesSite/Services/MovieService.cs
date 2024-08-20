@@ -124,11 +124,10 @@ namespace EatMyMoviesSite.Services
 
         public async Task<List<Movie>> GetRecommendations(string genres, string duration, bool openToForeignFilm, string yearRange)
         {
-            var recommendations = new List<Movie>();
             ChristmasListId = _listRepository.GetListByName("Christmas").ListId;
 
             // Add by genre
-            var genresFormatted = genres.Split(',');
+            var genresFormatted = genres.Split(',').ToList();
             var storeMovies = new List<EatMyMovies.DataAccess.Models.Movie>();
             var tasks = new List<Task<Movie>>();
             foreach (var genre in genresFormatted)
@@ -171,10 +170,17 @@ namespace EatMyMoviesSite.Services
                 ).ToArray();
             }
 
-            Random random = new Random();
-            recommendations = allMovies.OrderBy(_ => random.Next()).ToList();
+			// Order films by genre match strength
+			var random = new Random();
 
-            return recommendations;
+			var sortedMovies = allMovies
+				.OrderByDescending(movie =>
+					movie.Genres.Select(x => x.Name).Count(genre => genresFormatted.Contains(genre)))
+				.ThenBy(movie =>
+					movie.Genres.Select(x => x.Name).Count(genre => genresFormatted.Contains(genre)) == 1 ? random.Next() : 0)
+				.ToList();
+
+			return sortedMovies;
         }
 
         private bool IsChristmasMovie(EatMyMovies.DataAccess.Models.Movie movie)
