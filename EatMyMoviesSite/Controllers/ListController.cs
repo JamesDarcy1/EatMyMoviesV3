@@ -44,5 +44,17 @@ namespace EatMyMoviesSite.Controllers
 			var list = await _movieService.BuildMovieList("Christmas", page);
 			return View("~/Views/List/List.cshtml", list);
 		}
-	}
+
+        public async Task<IActionResult> StandoutSoundtracks(int page = 1)
+        {
+            var list = await _movieService.BuildMovieList("Standout Soundtracks", page);
+            return View("~/Views/List/List.cshtml", list);
+        }
+
+        public async Task<IActionResult> Iconic80s(int page = 1)
+        {
+            var list = await _movieService.BuildMovieList("Iconic 80s", page);
+            return View("~/Views/List/List.cshtml", list);
+        }
+    }
 }
