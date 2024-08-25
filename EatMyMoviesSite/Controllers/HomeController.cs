@@ -18,7 +18,7 @@ namespace EatMyMoviesSite.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var movieOfTheWeek = "Along came polly";
+            var movieOfTheWeek = "Only the brave";
             var tmdbMovie = await _movieService.GetMovieByTitle(movieOfTheWeek);
             var imdbRating = await _movieService.GetImdbRating(tmdbMovie.Title);
 
