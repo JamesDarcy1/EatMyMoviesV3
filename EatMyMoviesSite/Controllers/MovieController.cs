@@ -66,17 +66,28 @@ namespace EatMyMoviesSite.Controllers
         }
 
         public async Task<List<MovieDetail>> GetRecommendations(string genres, string duration, bool openToForeignFilm, string yearRange)
-		{
-			var recommendations = await _movieService.GetRecommendations(genres, duration, openToForeignFilm, yearRange);
-            var movieDetails = new List<MovieDetail>();
-            foreach (var movie in recommendations)
+        {
+            var recommendations = await _movieService.GetRecommendations(genres, duration, openToForeignFilm, yearRange);
+
+            var movieDetailTasks = recommendations.Select(async movie =>
             {
-                var trailer = await _movieService.GetTrailer(movie.Id);
-                var rating = await _movieService.GetImdbRating(movie.Title);
-                var movieDetail = Mapper.MapToMovieDetail(movie, trailer, rating);
-                movieDetails.Add(movieDetail);
-            }
-			return movieDetails;
-		}
-	}
+                // Run the async operations in parallel
+                var trailerTask = _movieService.GetTrailer(movie.Id);
+                var ratingTask = _movieService.GetImdbRating(movie.Title);
+
+                // Await both tasks to complete
+                var trailer = await trailerTask;
+                var rating = await ratingTask;
+
+                // Map to MovieDetail
+                return Mapper.MapToMovieDetail(movie, trailer, rating);
+            });
+
+            // Wait for all tasks to complete
+            var movieDetails = await Task.WhenAll(movieDetailTasks);
+
+            return movieDetails.ToList();
+        }
+
+    }
 }

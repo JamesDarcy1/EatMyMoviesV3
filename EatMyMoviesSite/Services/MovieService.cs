@@ -130,15 +130,13 @@ namespace EatMyMoviesSite.Services
             var genresFormatted = genres.Split(',').ToList();
             var storeMovies = new List<EatMyMovies.DataAccess.Models.Movie>();
             var tasks = new List<Task<Movie>>();
-            foreach (var genre in genresFormatted)
+
+            var moviesBeloningToGenres = _movieRepository.GetMoviesOfGenres(genresFormatted);
+            foreach (var movie in moviesBeloningToGenres)
             {
-                var moviesOfGenre = _movieRepository.GetMoviesByGenre(genre);
-                foreach (var movie in moviesOfGenre)
+                if (!storeMovies.Contains(movie) && !IsChristmasMovie(movie))
                 {
-                    if (!storeMovies.Contains(movie) && !IsChristmasMovie(movie))
-                    {
-                        storeMovies.Add(movie);
-                    }
+                    storeMovies.Add(movie);
                 }
             }
 
@@ -170,17 +168,17 @@ namespace EatMyMoviesSite.Services
                 ).ToArray();
             }
 
-			// Order films by genre match strength
-			var random = new Random();
+            // Order films by genre match strength
+            var random = new Random();
 
-			var sortedMovies = allMovies
-				.OrderByDescending(movie =>
-					movie.Genres.Select(x => x.Name).Count(genre => genresFormatted.Contains(genre)))
-				.ThenBy(movie =>
-					movie.Genres.Select(x => x.Name).Count(genre => genresFormatted.Contains(genre)) == 1 ? random.Next() : 0)
-				.ToList();
+            var sortedMovies = allMovies
+                .OrderByDescending(movie =>
+                    movie.Genres.Select(x => x.Name).Count(genre => genresFormatted.Contains(genre)))
+                .ThenBy(movie =>
+                    movie.Genres.Select(x => x.Name).Count(genre => genresFormatted.Contains(genre)) == 1 ? random.Next() : 0)
+                .ToList();
 
-			return sortedMovies;
+            return sortedMovies;
         }
 
         private bool IsChristmasMovie(EatMyMovies.DataAccess.Models.Movie movie)
