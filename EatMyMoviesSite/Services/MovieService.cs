@@ -85,18 +85,13 @@ namespace EatMyMoviesSite.Services
             {
                 var list = _listRepository.GetListByName(listTitle);
                 var moviesList = new MovieList() { Name = list.Name, Description = list.Description, Movies = new List<ListMovie>() };
-                var storedMovies = _rankingRepository.GetMoviesForList(listTitle);
-                var totalMovies = storedMovies.Count();
+                var moviesForPage =  _rankingRepository.GetMoviesForListByPage(listTitle, page).ToList();
+                var totalMovies = _rankingRepository.GetListCount(listTitle);
                 var totalPages = (int)Math.Ceiling((double)totalMovies / _moviesPerPage);
                 page = Math.Max(1, Math.Min(page, totalPages));
 
                 moviesList.TotalPages = totalPages;
                 moviesList.CurrentPage = page;
-
-                var moviesForPage = storedMovies
-                    .Skip((page - 1) * _moviesPerPage)
-                    .Take(_moviesPerPage)
-                    .ToList();
 
                 foreach (var movie in moviesForPage)
                 {
