@@ -34,35 +34,37 @@
                 </h1>
 
                 <article class="movie-block box mt-0 pb-0">
-                    <div class="columns is-mobile is-hidden-desktop mb-0">
-                        <div class="column is-one-third column is-one-third is-flex is-align-items-center is-justify-content-center">
-                            <img class="poster" src="@Model.SmallPosterPath" alt="@Model.Title poster" />
-                        </div>
-                        <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
-                            <h4 class="movie-title mb-0">@Model.Title</h4>
-                            <small class="release-date">@Model.ReleaseDate</small>
-                            <small>@Model.Genres</small>
-                            <small>@Model.ImdbRating IMDB Rating</small>
-                            <small>@Model.Runtime Minutes</small>
-                            <small>@Model.Language</small>
-                            <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
-                        </div>
-                    </div>
+                    <a class="clickable-card" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">
 
-                    <div class="columns is-desktop is-hidden-mobile">
-                        <div class="column is-one-third">
-                            <img class="poster-on-detail" src="@Model.LargePosterPath" alt="@Model.Title poster" />
+                        <div class="columns is-mobile is-hidden-desktop mb-0">
+                            <div class="column is-one-third column is-one-third is-flex is-align-items-center is-justify-content-center">
+                                <img class="poster" src="@Model.SmallPosterPath" alt="@Model.Title poster" />
+                            </div>
+                            <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
+                                <h4 class="movie-title mb-0">@Model.Title</h4>
+                                <small class="release-date">@Model.ReleaseDate</small>
+                                <small>@Model.Genres</small>
+                                <small>@Model.ImdbRating IMDB Rating</small>
+                                <small>@Model.Runtime Minutes</small>
+                                <small>@Model.Language</small>
+                            </div>
                         </div>
-                        <div class="column is-one-thirds is-flex is-flex-direction-column is-justify-content-center">
-                            <h4 class="movie-title mb-0">@Model.Title</h4>
-                            <small class="release-date">@Model.ReleaseDate</small>
-                            <small>@Model.Genres</small>
-                            <small>@Model.ImdbRating IMDB Rating</small>
-                            <small>@Model.Runtime Minutes</small>
-                            <small>@Model.Language</small>
-                            <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
+
+                        <div class="columns is-desktop is-hidden-mobile">
+                            <div class="column is-one-third">
+                                <img class="poster-on-detail" src="@Model.LargePosterPath" alt="@Model.Title poster" />
+                            </div>
+                            <div class="column is-one-thirds is-flex is-flex-direction-column is-justify-content-center">
+                                <h4 class="movie-title mb-0">@Model.Title</h4>
+                                <small class="release-date">@Model.ReleaseDate</small>
+                                <small>@Model.Genres</small>
+                                <small>@Model.ImdbRating IMDB Rating</small>
+                                <small>@Model.Runtime Minutes</small>
+                                <small>@Model.Language</small>
+                            </div>
                         </div>
-                    </div>
+                    </a>
+
                 </article>
 
                 <h1 class="pt-6">

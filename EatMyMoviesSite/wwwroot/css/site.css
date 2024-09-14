@@ -60,7 +60,7 @@ html {
     }
 
     .movie-block {
-        margin: 25%;
+        margin-left: 25%;
         width: 50%;
     }
 
@@ -530,6 +530,11 @@ select {
 
 .progress-step.is-clickable:hover {
     background-color: #cccccc;
+}
+
+.clickable-card {
+    cursor: pointer;
+    color: #4a4a4a;
 }
 
 
