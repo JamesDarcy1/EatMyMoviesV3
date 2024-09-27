@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EatMyMoviesSite.Controllers
 {
+
+    [Route("movie")]
     public class MovieController : Controller
     {
         private readonly IMovieService _movieService;
@@ -19,6 +21,8 @@ namespace EatMyMoviesSite.Controllers
             return View();
         }
 
+
+        [Route("detail")]
         public async Task<IActionResult> Detail(string title, int? tmdbId = null)
         {
             try
@@ -42,6 +46,8 @@ namespace EatMyMoviesSite.Controllers
             }
         }
 
+
+        [Route("search")]
         public async Task<IActionResult> Search()
         {
             return View();
@@ -53,6 +59,8 @@ namespace EatMyMoviesSite.Controllers
             return results;
         }
 
+
+        [Route("recommender")]
         public IActionResult Recommender()
 		{
 			return View();

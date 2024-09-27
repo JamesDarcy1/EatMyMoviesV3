@@ -45,7 +45,7 @@ namespace EatMyMoviesSite
 					name: "default",
 					pattern: "{controller=Home}/{action=Index}/{id?}");
 
-				endpoints.MapFallbackToController("Index", "Home");
+                endpoints.MapFallbackToController("Index", "Home");
 			});
 
 			app.Run();

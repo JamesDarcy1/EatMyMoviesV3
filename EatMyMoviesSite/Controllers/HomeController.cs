@@ -27,11 +27,15 @@ namespace EatMyMoviesSite.Controllers
             return View(summary);
         }
 
+
+        [Route("about")]
         public IActionResult About()
         {
             return View();
         }
 
+
+        [Route("contact")]
         public IActionResult Contact()
         {
             return View();
