@@ -67,6 +67,10 @@ html {
     .genre-button {
         font-size: 1vw;
     }
+
+    .card-content {
+        padding: 1rem;
+    }
 }
 
 @media (max-width: 768px) {
@@ -102,7 +106,7 @@ html {
     }
 
     small {
-        font-size: 3vw;
+        font-size: 3.5vw;
     }
 
     .recommendation-button {
@@ -126,12 +130,12 @@ html {
         font-size: 14px;
     }
 
-    .movie-title {
-        font-size: 5vw;
-    }
-
     .release-date {
         font-size: 4vw;
+    }
+
+    .movie-title {
+        font-size: 5vw;
     }
 
     .list-button {
@@ -140,6 +144,10 @@ html {
 
     .poster-on-detail {
         max-height: 100vw;
+    }
+
+    .card-content {
+        padding: 0.25rem;
     }
 }
 
@@ -184,6 +192,11 @@ small {
     color: rgba(0, 0, 0, 0.8);
     font-family: 'Malgun Gothic';
     font-weight: bold;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .poster {
@@ -240,7 +253,7 @@ h2 {
 p {
     color: rgba(0, 0, 0, 0.8);
     font-weight: 600;
-    font-size: 16px;
+    font-size: 18px;
     padding: 6px;
 }
 
@@ -404,7 +417,6 @@ p {
     }
 
 .movie-block {
-    border-top: 1px solid rgba(219, 219, 219, 0.5);
     height: auto; /* Maintains aspect ratio */
     margin-top: 10px; /* Adds some space between text and logo */
     text-align: left;
@@ -535,7 +547,37 @@ select {
 .clickable-card {
     cursor: pointer;
     color: #4a4a4a;
+    width: 100%;
+    height: 100%;
+    position: relative;
 }
 
+.card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center vertically */
+    height: auto; /* Auto height for flexibility */
+}
+
+.card-synopsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 10; /* Show 3 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-poster {
+    border-radius: 6px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow */
+    transition: transform 0.3s ease; /* Animation for hover effect */
+}
+
+.columns.is-mobile.is-hidden-desktop {
+    display: flex; /* Enable flexbox */
+    justify-content: center; /* Center horizontally */
+    height: 100%; /* Ensure it takes the full height of the card */
+    margin: 0; /* Reset margin to avoid extra spacing */
+}
 
 

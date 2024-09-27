@@ -2,7 +2,7 @@
 @model MovieList
 
 <meta name="description" content=@Model.Description />
-<title>@Model.Name - Eat My Movies</title>
+<title>@Model.Name</title>
 
 <div class="has-text-centered">
     <h1>@Model.Name</h1>
@@ -15,35 +15,36 @@
         <h1>@movie.Ranking</h1>
         <article class="movie-block box mt-0 pb-0">
             <a class="clickable-card" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(movie.Title)';">
+                <div class="card-content">
+                    <div class="columns is-mobile is-hidden-desktop mb-0">
+                        <div class="column is-two-fifths is-flex is-align-items-center is-justify-content-center">
+                            <img class="card-poster" src="@movie.SmallPosterPath" alt="@movie.Title poster" />
+                        </div>
+                        <div class="column is-justify-content-center">
+                            <h4 class="movie-title mb-0">@movie.Title</h4>
+                            <small class="release-date">@movie.ReleaseDate</small>
+                            <small>@movie.Genres</small>
+                            <small>@movie.ImdbRating IMDB Rating</small>
+                            <small>@movie.Runtime Minutes</small>
+                            <small>@movie.Language</small>
+                        </div>
+                    </div>
 
-                <div class="columns is-mobile is-hidden-desktop mb-0">
-                    <div class="column is-one-third column is-one-third is-flex is-align-items-center is-justify-content-center">
-                        <img class="poster" src="@movie.SmallPosterPath" alt="@movie.Title poster" />
-                    </div>
-                    <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
-                        <h4 class="movie-title mb-0">@movie.Title</h4>
-                        <small class="release-date">@movie.ReleaseDate</small>
-                        <small>@movie.Genres</small>
-                        <small>@movie.ImdbRating IMDB Rating</small>
-                        <small>@movie.Runtime Minutes</small>
-                        <small>@movie.Language</small>
-                    </div>
-                </div>
-
-                <div class="columns is-desktop is-hidden-mobile">
-                    <div class="column is-one-third is-flex is-align-items-center is-justify-content-center">
-                        <img class="poster-on-detail" src="@movie.LargePosterPath" alt="@movie.Title poster" />
-                    </div>
-                    <div class="column is-one-thirds is-flex is-flex-direction-column is-justify-content-center">
-                        <h4 class="movie-title mb-0">@movie.Title</h4>
-                        <small class="release-date">@movie.ReleaseDate</small>
-                        <small>@movie.Genres</small>
-                        <small>@movie.ImdbRating IMDB Rating</small>
-                        <small>@movie.Runtime Minutes</small>
-                        <small>@movie.Language</small>
-                    </div>
-                    <div class="column is-one-third is-flex is-flex-direction-column is-justify-content-center">
-                        <small>@movie.Synopsis</small>
+                    <div class="columns is-desktop is-hidden-mobile">
+                        <div class="column is-one-third ">
+                            <img class="poster-on-detail" src="@movie.LargePosterPath" alt="@movie.Title poster" />
+                        </div>
+                        <div class="column is-one-third is-flex is-flex-direction-column is-justify-content-center">
+                            <h4 class="movie-title mb-0">@movie.Title</h4>
+                            <small class="release-date">@movie.ReleaseDate</small>
+                            <small>@movie.Genres</small>
+                            <small>@movie.ImdbRating IMDB Rating</small>
+                            <small>@movie.Runtime Minutes</small>
+                            <small>@movie.Language</small>
+                        </div>
+                        <div class="column is-one-third is-flex is-flex-direction-column is-justify-content-center">
+                            <small class="card-synopsis">@movie.Synopsis</small>
+                        </div>
                     </div>
                 </div>
             </a>
