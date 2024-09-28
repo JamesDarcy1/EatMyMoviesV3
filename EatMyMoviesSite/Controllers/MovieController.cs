@@ -74,6 +74,7 @@ namespace EatMyMoviesSite.Controllers
             return genres.Select(x => x.Name).ToList();
         }
 
+        [HttpGet("GetRecommendations")]
         public async Task<List<MovieDetail>> GetRecommendations(string genres, string duration, bool openToForeignFilm, string yearRange)
         {
             var recommendations = await _movieService.GetRecommendations(genres, duration, openToForeignFilm, yearRange);
