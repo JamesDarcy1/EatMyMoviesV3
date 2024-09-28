@@ -7,6 +7,7 @@
 
     <transition name="fade">
         <div v-if="!showRecommendationBox" class="box has-text-centered">
+            <div class="card-content">
             <div class="question-area">
                 <div v-if="isLoading">
                     <p v-if="allQuestionsAnswered">Finding you a match</p>
@@ -141,6 +142,7 @@
                 <button class="button recommendation-button" v-on:click="shareOnWhatsApp">Share on WhatsApp</button>
             </div>
         </div>
+        </div>
     </transition>
 </div>
 
@@ -253,7 +255,7 @@
 
             },
             mounted() {
-                fetch('/Movie/GetGenres')
+                fetch('/movie/GetGenres')
                     .then(response => response.json())
                     .then(data => {
                         this.genres = data;

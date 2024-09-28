@@ -66,6 +66,7 @@ namespace EatMyMoviesSite.Controllers
 			return View();
 		}
 
+        [HttpGet("GetGenres")]
         public List<string> GetGenres()
         {
             var genres = _movieService.GetAllGenres();
