@@ -14,8 +14,7 @@ namespace EatMyMoviesSite
 			return new ListMovie
 			{
 				Title = tmdbMovie.Title,
-				SmallPosterPath = $"https://image.tmdb.org/t/p/w154{tmdbMovie.PosterPath}",
-				LargePosterPath = $"https://image.tmdb.org/t/p/w500{tmdbMovie.PosterPath}",
+				PosterPath = $"https://image.tmdb.org/t/p/w500{tmdbMovie.PosterPath}",
 				Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
 				ImdbRating = imdbRating != null ? imdbRating : null,
 				Ranking = ranking,
@@ -50,8 +49,7 @@ namespace EatMyMoviesSite
             return new ListMovie
             {
                 Title = tmdbMovie.Title,
-                SmallPosterPath = $"https://image.tmdb.org/t/p/w154{tmdbMovie.PosterPath}",
-                LargePosterPath = $"https://image.tmdb.org/t/p/w500{tmdbMovie.PosterPath}",
+                PosterPath = $"https://image.tmdb.org/t/p/w500{tmdbMovie.PosterPath}",
                 Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
                 ImdbRating = imdbRating,
                 Synopsis = tmdbMovie.Overview,

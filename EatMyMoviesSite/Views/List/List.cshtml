@@ -17,7 +17,7 @@
             <a class="clickable-card" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(movie.Title)';">
                 <div class="columns is-mobile is-hidden-desktop mb-0">
                     <div class="column is-two-fifths is-flex is-align-items-center is-justify-content-center">
-                        <img class="poster" src="@movie.SmallPosterPath" alt="@movie.Title poster" />
+                        <img class="poster" src="@movie.PosterPath" alt="@movie.Title poster" />
                     </div>
                     <div class="column is-justify-content-center">
                         <h4 class="movie-title mb-0">@movie.Title</h4>
@@ -31,7 +31,7 @@
 
                 <div class="columns is-desktop is-hidden-mobile">
                     <div class="column is-one-third ">
-                        <img class="poster poster-on-detail" src="@movie.LargePosterPath" alt="@movie.Title poster" />
+                        <img class="poster poster-on-detail" src="@movie.PosterPath" alt="@movie.Title poster" />
                     </div>
                     <div class="column is-one-third is-flex is-flex-direction-column is-justify-content-center">
                         <h4 class="movie-title mb-0">@movie.Title</h4>
