@@ -7,7 +7,7 @@
 
     <transition name="fade">
         <div v-if="!showRecommendationBox" class="box has-text-centered">
-            <div class="question-area card-content">
+            <div class="question-area">
                 <div v-if="isLoading">
                     <p v-if="allQuestionsAnswered">Finding you a match</p>
                     <loading-spinner></loading-spinner>
@@ -89,8 +89,7 @@
     <!-- Movie Recommendation Box -->
     <transition name="slide">
         <div v-if="showRecommendationBox">
-            <article class="movie-block box mt-0 pb-0">
-                <div class="card-content">
+            <article class="movie-block mt-0">
 
                     <div class="columns is-mobile is-hidden-desktop mb-0">
                         <div class="column is-one-third column is-one-third is-flex is-align-items-center is-justify-content-center">
@@ -108,7 +107,7 @@
 
                     <div class="columns is-desktop is-hidden-mobile">
                         <div class="column is-one-third">
-                            <img class="poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
+                            <img class="poster poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
                         </div>
                         <div class="column is-flex is-flex-direction-column is-justify-content-center">
                             <h4 class="movie-title mb-0">{{ recommendedMovie.title }}</h4>
@@ -118,7 +117,6 @@
                             <small>{{ recommendedMovie.runtime }} Minutes</small>
                             <small>{{ recommendedMovie.language }}</small>
                         </div>
-                    </div>
             </article>
 
             <div class="column">

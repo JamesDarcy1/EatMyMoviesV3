@@ -62,14 +62,11 @@ html {
     .movie-block {
         margin-left: 25%;
         width: 50%;
+        padding: 1rem;
     }
 
     .genre-button {
         font-size: 1vw;
-    }
-
-    .card-content {
-        padding: 1rem;
     }
 }
 
@@ -140,14 +137,11 @@ html {
 
     .list-button {
         height: 10vw;
+        font-size: 0.8rem; 
     }
 
     .poster-on-detail {
         max-height: 100vw;
-    }
-
-    .card-content {
-        padding: 0.25rem;
     }
 }
 
@@ -202,6 +196,9 @@ small {
 .poster {
     width: auto;
     height: auto;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    transition: transform 0.3s ease; 
 }
 
 .bg {
@@ -420,6 +417,12 @@ p {
     height: auto; /* Maintains aspect ratio */
     margin-top: 10px; /* Adds some space between text and logo */
     text-align: left;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center vertically */
 }
 
 .tmdb-logo {
@@ -483,12 +486,13 @@ select {
 .list-button {
     width: 45%;
     margin: 5px;
-    padding: 10px 20px;
+    font-weight: bold; /* Make text bold */
+    overflow: hidden;
     background-color: white;
     border: 2px solid #ccc;
     border-radius: 5px;
     box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
-    font-family: 'Arial', sans-serif;
+    font-family: 'Poppins', sans-serif;
     color: #333;
     cursor: pointer;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
@@ -552,25 +556,12 @@ select {
     position: relative;
 }
 
-.card-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Center vertically */
-    height: auto; /* Auto height for flexibility */
-}
-
 .card-synopsis {
     display: -webkit-box;
     -webkit-line-clamp: 10; /* Show 3 lines */
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.card-poster {
-    border-radius: 6px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow */
-    transition: transform 0.3s ease; /* Animation for hover effect */
 }
 
 .columns.is-mobile.is-hidden-desktop {
