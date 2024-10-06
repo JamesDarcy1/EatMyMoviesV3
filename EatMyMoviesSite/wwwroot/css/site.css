@@ -143,6 +143,11 @@ html {
     .poster-on-detail {
         max-height: 100vw;
     }
+
+    .genre-button {
+        font-size: 10px;
+        overflow: hidden;
+    }
 }
 
 
