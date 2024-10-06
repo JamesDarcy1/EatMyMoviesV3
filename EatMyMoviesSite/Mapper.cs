@@ -1,4 +1,5 @@
 ﻿using EatMyMoviesSite.DTOs;
+using EatMyMoviesSite.Enums;
 using EatMyMoviesSite.Services;
 using Newtonsoft.Json;
 using System.Globalization;
@@ -21,7 +22,8 @@ namespace EatMyMoviesSite
 				Synopsis = tmdbMovie.Overview,
 				Runtime = tmdbMovie.Runtime,
 				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("yyyy", CultureInfo.InvariantCulture),
-				Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage)
+				Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage),
+                TmdbId = tmdbMovie.Id,
             };
 		}
 
@@ -55,8 +57,28 @@ namespace EatMyMoviesSite
                 Synopsis = tmdbMovie.Overview,
 				Runtime = tmdbMovie.Runtime,
 				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("yyyy", CultureInfo.InvariantCulture),
-                Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage)
+                Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage),
+                TmdbId= tmdbMovie.Id,
             };
+        }
+
+        public static Dictionary<Feeling, List<string>> GetFeelingToGenreMapping()
+        {
+            return new Dictionary<Feeling, List<string>>
+        {
+            { Feeling.FeelGood, new List<string> { "Comedy", "Family", "Romance", "Animation" } },
+            { Feeling.Emotional, new List<string> { "Drama", "Romance", "Music", "History" } },
+            { Feeling.Exciting, new List<string> { "Action", "Adventure", "Thriller", "War", "Science Fiction" } },
+            { Feeling.ThoughtProvoking, new List<string> { "Drama", "Mystery", "Science Fiction", "Documentary" } },
+            { Feeling.Funny, new List<string> { "Comedy", "Family", "Animation" } },
+            { Feeling.Romantic, new List<string> { "Romance", "Drama" } },
+            { Feeling.Adventurous, new List<string> { "Adventure", "Fantasy", "Action", "Animation" } },
+            { Feeling.Mysterious, new List<string> { "Mystery", "Thriller", "Crime" } },
+            { Feeling.Scary, new List<string> { "Horror", "Thriller" } },
+            { Feeling.Nostalgic, new List<string> { "Family", "History", "Western", "War" } },
+            { Feeling.Musical, new List<string> { "Music", "Romance", "Drama" } },
+            { Feeling.Inspiring, new List<string> { "Documentary", "Drama", "History", "War" } }
+        };
         }
     }
 }

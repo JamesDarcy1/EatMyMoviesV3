@@ -25,16 +25,16 @@
 
                     <p v-if="!allQuestionsAnswered">{{ prompts[currentQuestionIndex] }}</p>
                     <div v-if="currentQuestionIndex === 0">
-                        <!-- Genre Buttons -->
+                        <!-- Feeling Buttons -->
                         <div class="buttons is-centered mt-2">
-                            <button v-for="genre in genres"
-                                    :key="genre"
-                                    :class="['button genre-button', { 'is-primary': selectedGenres.includes(genre) }]"
-                                    v-on:click="toggleGenre(genre)">
-                                {{ genre }}
+                            <button v-for="feeling in feelings"
+                                    :key="feeling"
+                                    :class="['button genre-button', { 'is-primary': selectedFeelings.includes(feeling) }]"
+                                    v-on:click="toggleFeeling(feeling)">
+                                {{ formatFeeling(feeling) }}
                             </button>
                         </div>
-                        <button class="button is-primary mt-2" :disabled="selectedGenres.length === 0" v-on:click="nextQuestion()">Next</button>
+                        <button class="button is-primary mt-2" :disabled="selectedFeelings.length === 0" v-on:click="nextQuestion()">Next</button>
                     </div>
 
                     <div v-if="currentQuestionIndex === 1">
@@ -157,8 +157,8 @@
             },
             data() {
                 return {
-                    genres: [],
-                    selectedGenres: [], // Store selected genres
+                    feelings: [],
+                    selectedFeelings: [], // Store selected genres
                     currentQuestionIndex: 0,
                     maxQuestions: 4, // Number of questions after genre selection
                     recommendedMovie: null,
@@ -170,7 +170,7 @@
                     openToForeignFilm: null,
                     releaseYearRange: null,
                     prompts: [
-                        'Choose the genre(s) that appeals to you most right now',
+                        'What kind of feeling or experience are you looking for in a movie right now?',
                         'How long do you want to watch for?',
                         'Are you open to a movie in another language?',
                         'Do you want a movie from a specific release year range?'
@@ -182,15 +182,16 @@
                 };
             },
             methods: {
-                toggleGenre(genre) {
-                    const index = this.selectedGenres.indexOf(genre);
+                toggleFeeling(feeling) {
+                    const index = this.selectedFeelings.indexOf(feeling);
                     if (index > -1) {
-                        // Remove genre
-                        this.selectedGenres.splice(index, 1);
+                        this.selectedFeelings.splice(index, 1); // Remove feeling if already selected
                     } else {
-                        // Add genre
-                        this.selectedGenres.push(genre);
+                        this.selectedFeelings.push(feeling); // Add feeling if not selected
                     }
+                },
+                formatFeeling(feeling) {
+                    return feeling.replace(/([a-z])([A-Z])/g, '$1 $2');
                 },
                 nextQuestion() {
                     this.currentQuestionIndex++;
@@ -211,7 +212,9 @@
                     // add check here
                     this.allQuestionsAnswered = true;
                     this.isLoading = true;
-                    const url = `/Movie/GetRecommendations?genres=${this.selectedGenres.join(',')}&duration=${this.durationPreference}&openToForeignFilm=${this.openToForeignFilm}&yearRange=${this.releaseYearRange}`;
+                    const feelingsParam = this.selectedFeelings.join(',');
+
+                    const url = `/Movie/GetRecommendations?feelings=${feelingsParam}&duration=${this.durationPreference}&openToForeignFilm=${this.openToForeignFilm}&yearRange=${this.releaseYearRange}`;
                     fetch(url)
                         .then(response => response.json())
                         .then(data => {
@@ -223,17 +226,22 @@
                         });
                 },
                 loadNextRecommendation() {
+                    this.isLoading = true;
                     if (this.currentRecommendationIndex < this.recommendationCollection.length - 1) {
                         this.currentRecommendationIndex++;
                         this.recommendedMovie = this.recommendationCollection[this.currentRecommendationIndex];
                     } else {
                         alert('No more recommendations available.');
                     }
+                    this.isLoading = false;
                 },
                 startOver() {
                     this.showRecommendationBox = false;
                     this.currentQuestionIndex = 0;
-                    this.selectedGenres = [];
+                    this.selectedFeelings = [];
+                    this.durationPreference = null;
+                    this.openToForeignFilm = null;
+                    this.releaseYearRange = null;
                     this.allQuestionsAnswered = false;
                     this.recommendedMovie = null;
                     this.recommendationCollection = [];
@@ -254,10 +262,10 @@
 
             },
             mounted() {
-                fetch('/movie/GetGenres')
+                fetch('/movie/GetFeelings')
                     .then(response => response.json())
                     .then(data => {
-                        this.genres = data;
+                        this.feelings = data;
                         this.currentQuestion = this.prompts[this.currentQuestionIndex];
                         this.isLoading = false;
                     });

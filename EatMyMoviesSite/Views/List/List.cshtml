@@ -14,7 +14,7 @@
     {
         <h1>@movie.Ranking</h1>
         <article class="movie-block mt-0">
-            <a class="clickable-card" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(movie.Title)';">
+            <a class="clickable-card" onclick="window.location='@Url.Action("Detail", "Movie")?tmdbId=@(movie.TmdbId)';">
                 <div class="columns is-mobile is-hidden-desktop mb-0">
                     <div class="column is-two-fifths is-flex is-align-items-center is-justify-content-center">
                         <img class="poster" src="@movie.PosterPath" alt="@movie.Title poster" />

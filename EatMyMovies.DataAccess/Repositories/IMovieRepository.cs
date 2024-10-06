@@ -6,6 +6,7 @@ namespace EatMyMovies.DataAccess.Repositories
 	{
         List<Genre> GetAllGenres();
         IEnumerable<Movie> GetAllMovies();
+        IQueryable<string> GetGenresOfMovie(Movie movie);
         Movie GetMovieByTitle(string title);
         List<Movie> GetMoviesOfGenres(List<string> genres);
         void SaveGenres(Movie movie, IEnumerable<string> genres);

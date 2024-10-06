@@ -1,5 +1,6 @@
 ﻿using EatMyMovies.DataAccess.Models;
 using EatMyMoviesSite.DTOs;
+using EatMyMoviesSite.Enums;
 using EatMyMoviesSite.Models;
 using EatMyMoviesSite.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -74,10 +75,17 @@ namespace EatMyMoviesSite.Controllers
             return genres.Select(x => x.Name).ToList();
         }
 
-        [HttpGet("GetRecommendations")]
-        public async Task<List<MovieDetail>> GetRecommendations(string genres, string duration, bool openToForeignFilm, string yearRange)
+        [HttpGet("GetFeelings")]
+        public List<string> GetFeelings()
         {
-            var recommendations = await _movieService.GetRecommendations(genres, duration, openToForeignFilm, yearRange);
+            var feelings = Enum.GetNames(typeof(Feeling)).ToList();
+            return feelings;
+        }
+
+        [HttpGet("GetRecommendations")]
+        public async Task<List<MovieDetail>> GetRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange)
+        {
+            var recommendations = await _movieService.GetRecommendations(feelings, duration, openToForeignFilm, yearRange);
 
             var movieDetailTasks = recommendations.Select(async movie =>
             {

@@ -1,4 +1,5 @@
 ﻿using EatMyMoviesSite.DTOs;
+using EatMyMoviesSite.Enums;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
 
@@ -14,6 +15,6 @@ namespace EatMyMoviesSite.Services
         Task<List<MovieDropdown>> SearchMoviesByTitle(string titleSearch);
         Task<Video> GetTrailer(int movieId);
         IList<T> ShuffleList<T>(IList<T> list);
-        Task<List<Movie>> GetRecommendations(string genres, string duration, bool openToForeignFilm, string yearRange);
+        Task<List<Movie>> GetRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange);
     }
 }
