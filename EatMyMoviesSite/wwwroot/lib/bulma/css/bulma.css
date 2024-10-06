@@ -533,7 +533,6 @@ a.box:active {
 }
 
 .button:focus, .button.is-focused {
-  border-color: #485fc7;
   color: #363636;
 }
 

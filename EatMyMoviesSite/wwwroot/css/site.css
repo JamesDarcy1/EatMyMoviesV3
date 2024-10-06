@@ -571,4 +571,40 @@ select {
     margin: 0; /* Reset margin to avoid extra spacing */
 }
 
+.tooltip-icon {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 5px;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+    font-size: 10px; 
+    font-family: Arial, sans-serif; 
+    font-weight: normal;
+    text-shadow: none;
+    line-height: unset;
+    letter-spacing: unset;
+    text-transform: unset;
+
+}
+
+.tooltip-icon:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
 
