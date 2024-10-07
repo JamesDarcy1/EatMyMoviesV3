@@ -511,6 +511,10 @@ select {
     border: 2px solid #e71837;
 }
 
+.recommendation-button:hover {
+    background-color: #e71837;
+}
+
 .wide-button {
     width: 80%;
 }
