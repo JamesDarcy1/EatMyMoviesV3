@@ -471,7 +471,6 @@ button {
 }
 
     button:hover {
-        background-color: #e71837;
         color: #fff;
     }
 
@@ -501,6 +500,10 @@ select {
     .list-button:active {
         box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.3);
         transform: translateY(2px);
+    }
+
+    .list-button:hover {
+        background-color: #e71837;
     }
 
 .recommendation-button {
