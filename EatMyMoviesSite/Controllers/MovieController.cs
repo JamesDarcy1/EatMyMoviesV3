@@ -37,7 +37,7 @@ namespace EatMyMoviesSite.Controllers
                     movie = await _movieService.GetMovieByTitle(title);
                 }
                 var trailer = await _movieService.GetTrailer(movie.Id);
-                var rating = await _movieService.GetImdbRating(title);
+                var rating = await _movieService.GetImdbRating(movie.Title);
                 var movieDetail = Mapper.MapToMovieDetail(movie, trailer, rating);
                 return View(movieDetail);
             }

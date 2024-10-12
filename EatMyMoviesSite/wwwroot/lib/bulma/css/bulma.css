@@ -24,25 +24,26 @@
   vertical-align: top;
 }
 
-.button:focus, .input:focus, .textarea:focus, .select select:focus, .file-cta:focus,
-.file-name:focus, .pagination-previous:focus,
-.pagination-next:focus,
-.pagination-link:focus,
-.pagination-ellipsis:focus, .is-focused.button, .is-focused.input, .is-focused.textarea, .select select.is-focused, .is-focused.file-cta,
-.is-focused.file-name, .is-focused.pagination-previous,
-.is-focused.pagination-next,
-.is-focused.pagination-link,
-.is-focused.pagination-ellipsis, .button:active, .input:active, .textarea:active, .select select:active, .file-cta:active,
-.file-name:active, .pagination-previous:active,
-.pagination-next:active,
-.pagination-link:active,
-.pagination-ellipsis:active, .is-active.button, .is-active.input, .is-active.textarea, .select select.is-active, .is-active.file-cta,
-.is-active.file-name, .is-active.pagination-previous,
-.is-active.pagination-next,
-.is-active.pagination-link,
-.is-active.pagination-ellipsis {
-  outline: none;
-}
+    .button:focus, .input:focus, .textarea:focus, .select select:focus, .file-cta:focus,
+    .file-name:focus, .pagination-previous:focus,
+    .pagination-next:focus,
+    .pagination-link:focus,
+    .pagination-ellipsis:focus, .is-focused.button, .is-focused.input, .is-focused.textarea, .select select.is-focused, .is-focused.file-cta,
+    .is-focused.file-name, .is-focused.pagination-previous,
+    .is-focused.pagination-next,
+    .is-focused.pagination-link,
+    .is-focused.pagination-ellipsis, .button:active, .input:active, .textarea:active, .select select:active, .file-cta:active,
+    .file-name:active, .pagination-previous:active,
+    .pagination-next:active,
+    .pagination-link:active,
+    .pagination-ellipsis:active, .is-active.button, .is-active.input, .is-active.textarea, .select select.is-active, .is-active.file-cta,
+    .is-active.file-name, .is-active.pagination-previous,
+    .is-active.pagination-next,
+    .is-active.pagination-link,
+    .is-active.pagination-ellipsis {
+        outline: none;
+        background-color: #e71837;
+    }
 
 .button[disabled], .input[disabled], .textarea[disabled], .select select[disabled], .file-cta[disabled],
 .file-name[disabled], .pagination-previous[disabled],
@@ -6545,6 +6546,7 @@ a.navbar-item:focus, a.navbar-item:focus-within, a.navbar-item:hover, a.navbar-i
 .pagination-previous:hover,
 .pagination-next:hover,
 .pagination-link:hover {
+  background-color: #e71837;
   border-color: #b5b5b5;
   color: white;
 }
