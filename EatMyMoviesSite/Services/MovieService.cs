@@ -234,7 +234,7 @@ namespace EatMyMoviesSite.Services
             foreach (var movie in relevanceScores.Keys.ToList())
             {
                 // Add a small random value to the relevance score
-                double randomFactor = random.NextDouble() * 0.2; // Adjust 0.2 for more/less randomness
+                double randomFactor = random.NextDouble() * 99; // Adjust 0.2 for more/less randomness
 
                 relevanceScores[movie] += randomFactor;
             }
