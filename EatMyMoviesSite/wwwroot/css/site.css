@@ -486,7 +486,7 @@ select {
     width: 45%;
     margin: 5px;
     font-weight: bold; /* Make text bold */
-    overflow: hidden;
+    text-wrap: auto;
     background-color: white;
     border: 2px solid #ccc;
     border-radius: 5px;
