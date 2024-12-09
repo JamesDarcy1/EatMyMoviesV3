@@ -263,5 +263,13 @@ namespace EatMyMoviesSite.Services
 
             return list;
         }
+
+        public async Task<string> GetDirector(int movieId)
+        {
+            var credits = await _tmdbClient.GetMovieCreditsAsync(movieId);
+            string director = credits.Crew.FirstOrDefault(x => x.Job == "Director").Name;
+            return director;
+        }
+
     }
 }

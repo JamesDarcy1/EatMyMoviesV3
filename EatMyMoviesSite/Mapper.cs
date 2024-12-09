@@ -27,7 +27,7 @@ namespace EatMyMoviesSite
             };
 		}
 
-		public static MovieDetail MapToMovieDetail(Movie tmdbMovie, Video trailer, decimal? imdbRating)
+		public static MovieDetail MapToMovieDetail(Movie tmdbMovie, Video trailer, decimal? imdbRating, string director)
 		{
 			return new MovieDetail
 			{
@@ -42,11 +42,12 @@ namespace EatMyMoviesSite
 				ImdbRating = imdbRating != null ? imdbRating : null,
 				Runtime = tmdbMovie.Runtime,
 				TmdbId = tmdbMovie.Id,
-                Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage)
+                Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage),
+                Director = director,
             };
 		}
 
-        public static ListMovie MapToMovieSummary(Movie tmdbMovie, decimal? imdbRating)
+        public static ListMovie MapToMovieSummary(Movie tmdbMovie, decimal? imdbRating, string director)
         {
             return new ListMovie
             {
@@ -59,6 +60,7 @@ namespace EatMyMoviesSite
 				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("yyyy", CultureInfo.InvariantCulture),
                 Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage),
                 TmdbId= tmdbMovie.Id,
+                Director = director,
             };
         }
 

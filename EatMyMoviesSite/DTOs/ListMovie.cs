@@ -23,5 +23,7 @@ namespace EatMyMoviesSite.DTOs
 		public string Language { get; set; }
 
 		public int TmdbId { get; set; }
+
+		public string Director {  get; set; }
     }
 }

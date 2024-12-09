@@ -20,9 +20,10 @@ namespace EatMyMoviesSite.Controllers
         {
             var movieOfTheWeek = "The worst person in the world";
             var tmdbMovie = await _movieService.GetMovieByTitle(movieOfTheWeek);
+            string director = await _movieService.GetDirector(tmdbMovie.Id);
             var imdbRating = await _movieService.GetImdbRating(tmdbMovie.Title);
 
-            var summary = Mapper.MapToMovieSummary(tmdbMovie, imdbRating);
+            var summary = Mapper.MapToMovieSummary(tmdbMovie, imdbRating, director);
 
             return View(summary);
         }

@@ -16,5 +16,6 @@ namespace EatMyMoviesSite.Services
         Task<Video> GetTrailer(int movieId);
         IList<T> ShuffleList<T>(IList<T> list);
         Task<List<Movie>> GetRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange);
+        Task<string> GetDirector(int movieId);
     }
 }

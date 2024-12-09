@@ -22,13 +22,23 @@
                     </div>
                     <div class="column">
                         <strong><u>Runtime</u></strong><br />
-                        <strong>@Model.Runtime minutes</strong>
+                        @{
+                            int hrs = Model.Runtime.Value / 60;
+                            int mins = Model.Runtime.Value % 60;
+
+                            string formattedRuntime = $"{hrs}h {mins}m";
+                        }
+                        <strong>@formattedRuntime</strong>
                     </div>
                 </div>
                 <div class="columns is-mobile">
                     <div class="column">
                         <strong><u>Genres</u></strong><br />
                         <strong>@Model.Genres</strong>
+                    </div>
+                    <div class="column">
+                        <strong><u>Director</u></strong><br />
+                        <strong>@Model.Director</strong>
                     </div>
                     <div class="column">
                         <strong><u>Language</u></strong><br />
