@@ -60,9 +60,9 @@ namespace EatMyMovies.DataAccess.Repositories
 			return genres;
 		}
 
-		public List<Movie> GetMoviesOfGenres(List<string> genres)
+		public IQueryable<Movie> GetMoviesOfGenres(List<string> genres)
 		{
-			var moviesOfGenre = _dbContext.MovieGenres.Where(x => genres.Contains(x.Genre.Name)).Select(x => x.Movie).ToList();
+			var moviesOfGenre = _dbContext.MovieGenres.Where(x => genres.Contains(x.Genre.Name)).Select(x => x.Movie);
 			return moviesOfGenre;
 		}
 

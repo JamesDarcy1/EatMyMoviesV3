@@ -86,7 +86,7 @@ namespace EatMyMoviesSite.Controllers
         [HttpGet("GetRecommendations")]
         public async Task<List<MovieDetail>> GetRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange)
         {
-            var recommendations = await _movieService.GetRecommendations(feelings, duration, openToForeignFilm, yearRange);
+            var recommendations = await _movieService.GetFastRecommendations(feelings, duration, openToForeignFilm, yearRange);
 
             var movieDetailTasks = recommendations.Select(async movie =>
             {

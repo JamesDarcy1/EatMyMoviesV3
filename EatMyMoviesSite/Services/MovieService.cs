@@ -4,6 +4,7 @@ using EatMyMoviesSite.DTOs;
 using EatMyMoviesSite.Enums;
 using Microsoft.Extensions.Caching.Memory;
 using OMDbSharp;
+using System.Text;
 using System.Threading.Tasks;
 using TMDbLib.Client;
 using TMDbLib.Objects.General;
@@ -193,6 +194,67 @@ namespace EatMyMoviesSite.Services
 
             return topMovies;
 
+        }
+
+        public async Task<List<Movie>> GetFastRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange)
+        {
+            ChristmasListId = _listRepository.GetListByName("Christmas").ListId;
+
+            List<string> feelingsFormmated = FormatFeelings(feelings);
+            var storeMovies = new HashSet<EatMyMovies.DataAccess.Models.Movie>();
+
+            foreach(var feeling in feelingsFormmated)
+            {
+                storeMovies.UnionWith(_rankingRepository.GetAllMoviesInList(feeling));
+            }
+
+            storeMovies.UnionWith(_movieRepository.GetMoviesOfGenres(feelingsFormmated));
+
+            var filteredRecommendations = await Task.WhenAll(storeMovies.Select(movie => _tmdbClient.GetMovieAsync(movie.TmdbId.Value)));
+
+            filteredRecommendations = filteredRecommendations
+                .Where(movie => duration.Contains("Any") ||
+                                (duration.Contains("Short") && movie.Runtime <= 120) ||
+                                (duration.Contains("Long") && movie.Runtime > 120))
+                .Where(movie => openToForeignFilm || movie.OriginalLanguage == "en")
+                .Where(movie => yearRange == "Anytime" ||
+                                (yearRange == "After 2000" && movie.ReleaseDate.Value.Year >= 2000) ||
+                                (yearRange == "Before 2000" && movie.ReleaseDate.Value.Year < 2000))
+                .ToArray();
+
+            var shuffledReccys = ShuffleList<Movie>(filteredRecommendations);
+
+            return shuffledReccys.ToList();
+        }
+
+        private List<string> FormatFeelings(string feelings)
+        {
+            List<string> formattedFeelings = feelings.Split(',').ToList();
+
+            if (formattedFeelings.Contains("FeelGood"))
+            {
+                formattedFeelings.Remove("FeelGood");
+                formattedFeelings.Add("Feel-good");
+            }
+
+            if (formattedFeelings.Contains("MindBending"))
+            {
+                formattedFeelings.Remove("MindBending");
+                formattedFeelings.Add("Mind-bending");
+            }
+
+            if (formattedFeelings.Contains("Funny"))
+            {
+                formattedFeelings.Remove("Funny");
+                formattedFeelings.Add("Comedies");
+            }
+
+            if (formattedFeelings.Contains("Scary"))
+            {
+                formattedFeelings.Remove("Scary");
+                formattedFeelings.Add("Horrors");
+            }
+            return formattedFeelings;
         }
 
         private List<string> GetGenresLinkedToFeelings(string selectedFeelings)

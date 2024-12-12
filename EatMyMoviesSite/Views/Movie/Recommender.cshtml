@@ -119,6 +119,14 @@
                         </div>
             </article>
 
+            <div class="column"> 
+                <div class="buttons is-centered">
+                    <button class="button recommendation-button" v-on:click="loadNextRecommendation">Load another</button>
+                    <button class="button recommendation-button" v-on:click="startOver">Start over</button>
+                    <button class="button recommendation-button" v-on:click="shareOnWhatsApp">Share on WhatsApp</button>
+                </div>
+            </div>
+
             <div class="column">
                 <h1>{{ recommendedMovie.title }}</h1>
                 <h4 v-if="recommendedMovie.tagline" class="tagline">"{{ recommendedMovie.tagline }}"</h4>
@@ -135,11 +143,6 @@
                 </div>
             </div>
 
-            <div class="buttons is-centered">
-                <button class="button recommendation-button" v-on:click="loadNextRecommendation">Load another</button>
-                <button class="button recommendation-button" v-on:click="startOver">Start over</button>
-                <button class="button recommendation-button" v-on:click="shareOnWhatsApp">Share on WhatsApp</button>
-            </div>
         </div>
 </div>
     </transition>

@@ -24,6 +24,14 @@ namespace EatMyMovies.DataAccess.Repositories
             return movies;
         }
 
+        public IQueryable<Movie> GetAllMoviesInList(string listName)
+        {
+            var movies = _dbContext.ListRankings.Where(l => l.List.Name == listName)
+                                                .Select(m => m.Movie);
+            return movies;
+        }
+
+
         public int GetListCount(string listName)
         {
             var count = _dbContext.ListRankings.Count(l => l.List.Name == listName);
@@ -91,5 +99,7 @@ namespace EatMyMovies.DataAccess.Repositories
                 _dbContext.SaveChanges();
             }
         }
+
+
     }
 }

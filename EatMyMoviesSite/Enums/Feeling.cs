@@ -3,16 +3,15 @@
     public enum Feeling
     {
         FeelGood,
+        Inspiring,
         Emotional,
-        Exciting,
-        ThoughtProvoking,
-        Funny,
+        MindBending,
+        Mysterious,
+        Silly,
         Romantic,
         Adventurous,
-        Mysterious,
+        Weird,
         Scary,
-        Nostalgic,
-        Musical,
-        Inspiring
+        Funny
     }
 }

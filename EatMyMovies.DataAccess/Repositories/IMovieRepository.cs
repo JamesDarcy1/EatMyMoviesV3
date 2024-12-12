@@ -8,7 +8,7 @@ namespace EatMyMovies.DataAccess.Repositories
         IEnumerable<Movie> GetAllMovies();
         IQueryable<string> GetGenresOfMovie(Movie movie);
         Movie GetMovieByTitle(string title);
-        List<Movie> GetMoviesOfGenres(List<string> genres);
+        IQueryable<Movie> GetMoviesOfGenres(List<string> genres);
         void SaveGenres(Movie movie, IEnumerable<string> genres);
         Movie SaveTmdbMovie(string title, int tmdbId, decimal? imdbRating);
     }

@@ -70,15 +70,15 @@ namespace EatMyMoviesSite
         {
             { Feeling.FeelGood, new List<string> { "Comedy", "Family", "Romance", "Animation" } },
             { Feeling.Emotional, new List<string> { "Drama", "Romance", "Music", "History" } },
-            { Feeling.Exciting, new List<string> { "Action", "Adventure", "Thriller", "War", "Science Fiction" } },
-            { Feeling.ThoughtProvoking, new List<string> { "Drama", "Mystery", "Science Fiction", "Documentary" } },
+            //{ Feeling.Exciting, new List<string> { "Action", "Adventure", "Thriller", "War", "Science Fiction" } },
+            //{ Feeling.ThoughtProvoking, new List<string> { "Drama", "Mystery", "Science Fiction", "Documentary" } },
             { Feeling.Funny, new List<string> { "Comedy", "Family", "Animation" } },
             { Feeling.Romantic, new List<string> { "Romance", "Drama" } },
             { Feeling.Adventurous, new List<string> { "Adventure", "Fantasy", "Action", "Animation" } },
             { Feeling.Mysterious, new List<string> { "Mystery", "Thriller", "Crime" } },
             { Feeling.Scary, new List<string> { "Horror", "Thriller" } },
-            { Feeling.Nostalgic, new List<string> { "Family", "History", "Western", "War" } },
-            { Feeling.Musical, new List<string> { "Music", "Romance", "Drama" } },
+            //{ Feeling.Nostalgic, new List<string> { "Family", "History", "Western", "War" } },
+            //{ Feeling.Musical, new List<string> { "Music", "Romance", "Drama" } },
             { Feeling.Inspiring, new List<string> { "Documentary", "Drama", "History", "War" } }
         };
         }
