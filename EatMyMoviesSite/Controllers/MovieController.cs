@@ -55,6 +55,7 @@ namespace EatMyMoviesSite.Controllers
             return View();
         }
 
+        [HttpGet("SearchForMovie")]
         public async Task<List<MovieDropdown>> SearchForMovie(string titleSearch)
         {
             var results = await _movieService.SearchMoviesByTitle(titleSearch);

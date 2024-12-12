@@ -40,9 +40,14 @@
             },
             watch: {
                 searchQuery(newQuery) {
+                    console.log(newQuery);
+                    console.log('new query length ' + newQuery.length);
+                    console.log('!this.searchSelected ' + !this.searchSelected);
                     if (newQuery.length > 0 && !this.searchSelected) {
+                        console.log('Searching ...');
                         this.performSearch();
                     } else {
+                        console.log('else ...');
                         this.searchResults = [];
                     }
                 }
@@ -53,10 +58,13 @@
                         .then(response => response.json())
                         .then(data => {
                             this.searchResults = data;
+                            console.log('Found ', data);
                         })
                         .catch(() => {
+                            console.log('Error');
                             this.searchResults = [];
                         });
+                    console.log('over');
                 },
                 selectMovie(movie) {
                     window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}&tmdbId=${movie.id}`;
