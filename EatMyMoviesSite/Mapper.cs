@@ -27,7 +27,7 @@ namespace EatMyMoviesSite
             };
 		}
 
-		public static MovieDetail MapToMovieDetail(Movie tmdbMovie, Video trailer, decimal? imdbRating, string director)
+		public static MovieDetail MapToMovieDetail(Movie tmdbMovie, Video trailer, decimal? imdbRating, Person director, List<Person> actors)
 		{
 			return new MovieDetail
 			{
@@ -44,6 +44,7 @@ namespace EatMyMoviesSite
 				TmdbId = tmdbMovie.Id,
                 Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage),
                 Director = director,
+                Actors = actors,
             };
 		}
 

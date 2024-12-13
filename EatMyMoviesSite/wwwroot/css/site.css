@@ -612,4 +612,40 @@ select {
     opacity: 1;
 }
 
+/* Director Section Styling */
+.director-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Horizontal Scroll Section for Actors */
+.horizontal-scroll {
+    display: flex;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    gap: 1rem; /* Space between actor cards */
+    padding: 0.5rem 0; /* Add padding for spacing */
+}
+
+.director-section figure img,
+.horizontal-scroll figure img {
+    width: 96px; /* Consistent width */
+    height: 96px; /* Consistent height */
+    object-fit: cover; /* Crop and scale images uniformly */
+    border-radius: 50%; /* Make images rounded */
+}
+
+.director-section p,
+.horizontal-scroll p {
+    font-size: 14px;
+}
+
+
+
+
+
+
+
+
 

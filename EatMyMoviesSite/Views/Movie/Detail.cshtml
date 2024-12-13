@@ -18,10 +18,10 @@
                     </div>
                     @if (Model.ImdbRating != null)
                     {
-                    <div class="column">
-                        <strong><u>Imdb Rating</u></strong><br />
-                        <strong>@Model.ImdbRating</strong>
-                    </div>
+                        <div class="column">
+                            <strong><u>Imdb Rating</u></strong><br />
+                            <strong>@Model.ImdbRating</strong>
+                        </div>
                     }
                     <div class="column">
                         <strong><u>Runtime</u></strong><br />
@@ -38,10 +38,6 @@
                     <div class="column">
                         <strong><u>Genres</u></strong><br />
                         <strong>@Model.Genres</strong>
-                    </div>
-                    <div class="column">
-                        <strong><u>Director</u></strong><br />
-                        <strong>@Model.Director</strong>
                     </div>
                     <div class="column">
                         <strong><u>Language</u></strong><br />
@@ -68,6 +64,40 @@
             </iframe>
         </div>
     </div>
+
+    <div class="box">
+        <div class="columns is-mobile">
+            <!-- Director Section -->
+            <div class="column is-one-third has-text-centered director-section">
+                <h2 class="section-header mt-0">Director</h2>
+                <figure class="image">
+                    <img class="is-rounded" src="@Model.Director.ProfilePath" alt="Director: @Model.Director">
+                </figure>
+                <p><strong>@Model.Director.Name</strong></p>
+            </div>
+
+            <!-- Actors Section -->
+            <div class="column is-two-thirds">
+                <h2 class="section-header mt-0">Cast</h2>
+                <div class="horizontal-scroll">
+                    @foreach (var actor in Model.Actors)
+                    {
+                        <div>
+                            <figure class="image">
+                                <img class="is-rounded" src="@actor.ProfilePath" alt="@actor.Name">
+                            </figure>
+                            <p>@actor.Name</p>
+                            <p><i>@actor.Character</i></p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
 }
 else
 {

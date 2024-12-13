@@ -326,11 +326,43 @@ namespace EatMyMoviesSite.Services
             return list;
         }
 
-        public async Task<string> GetDirector(int movieId)
+        public async Task<Person> GetDirector(int movieId)
         {
             var credits = await _tmdbClient.GetMovieCreditsAsync(movieId);
-            string director = credits.Crew.FirstOrDefault(x => x.Job == "Director").Name;
+            var tmdbDirector = credits.Crew.FirstOrDefault(x => x.Job == "Director");
+
+            Person director = new Person()
+            {
+                Id = tmdbDirector.Id,
+                Name = tmdbDirector.Name,
+                ProfilePath = "https://image.tmdb.org/t/p/w185" + tmdbDirector.ProfilePath,
+                Role = "Director"
+            };
+
             return director;
+        }
+
+        public async Task<List<Person>> GetActors(int movieId)
+        {
+            var credits = await _tmdbClient.GetMovieCreditsAsync(movieId);
+            var tmdbActors = credits.Cast.Where(x => x.ProfilePath != null).Take(7);
+
+            List<Person> actors = new List<Person>();
+
+            foreach(var actor in tmdbActors)
+            {
+                actors.Add(new Person()
+                {
+                    Id = actor.Id,
+                    Name = actor.Name,
+                    ProfilePath = "https://image.tmdb.org/t/p/w185" + actor.ProfilePath,
+                    Role = "Actor",
+                    Character = actor.Character
+
+                });
+            }
+
+            return actors;
         }
 
     }

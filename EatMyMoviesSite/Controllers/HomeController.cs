@@ -1,4 +1,5 @@
-﻿using EatMyMoviesSite.Models;
+﻿using EatMyMoviesSite.DTOs;
+using EatMyMoviesSite.Models;
 using EatMyMoviesSite.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -20,10 +21,10 @@ namespace EatMyMoviesSite.Controllers
         {
             var movieOfTheWeek = "The worst person in the world";
             var tmdbMovie = await _movieService.GetMovieByTitle(movieOfTheWeek);
-            string director = await _movieService.GetDirector(tmdbMovie.Id);
+            Person director = await _movieService.GetDirector(tmdbMovie.Id);
             var imdbRating = await _movieService.GetImdbRating(tmdbMovie.Title);
 
-            var summary = Mapper.MapToMovieSummary(tmdbMovie, imdbRating, director);
+            var summary = Mapper.MapToMovieSummary(tmdbMovie, imdbRating, director.Name);
 
             return View(summary);
         }

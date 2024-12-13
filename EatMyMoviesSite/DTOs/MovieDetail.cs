@@ -15,7 +15,8 @@ namespace EatMyMoviesSite.DTOs
 		public string Genres { get; set; }
 		public int? Runtime {  get; set; }
 		public int TmdbId { get; set; }
-		public string Director { get; set; }	
+		public Person Director { get; set; }	
+		public List<Person> Actors { get; set; }
 		public string Language { get; set; }
 	}
 }

@@ -38,8 +38,9 @@ namespace EatMyMoviesSite.Controllers
                 }
                 var trailer = await _movieService.GetTrailer(movie.Id);
                 var rating = await _movieService.GetImdbRating(movie.Title);
-                string director = await _movieService.GetDirector(movie.Id);    
-                var movieDetail = Mapper.MapToMovieDetail(movie, trailer, rating, director);
+                Person director = await _movieService.GetDirector(movie.Id);
+                List<Person> actors = await _movieService.GetActors(movie.Id);
+                var movieDetail = Mapper.MapToMovieDetail(movie, trailer, rating, director, actors);
                 return View(movieDetail);
             }
             catch (Exception ex)
@@ -98,10 +99,11 @@ namespace EatMyMoviesSite.Controllers
                 // Await both tasks to complete
                 var trailer = await trailerTask;
                 var rating = await ratingTask;
-                string director = await _movieService.GetDirector(movie.Id);
+                Person director = await _movieService.GetDirector(movie.Id);
+                List<Person> actors = await _movieService.GetActors(movie.Id);
                 
 
-                return Mapper.MapToMovieDetail(movie, trailer, rating, director);
+                return Mapper.MapToMovieDetail(movie, trailer, rating, director, actors);
             });
 
             // Wait for all tasks to complete
