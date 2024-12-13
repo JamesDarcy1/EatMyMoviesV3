@@ -49,7 +49,9 @@
                                 <small>@Model.Genres</small>
                                 <small>@Model.ImdbRating IMDB Rating</small>
                                 <small>@Model.Runtime Minutes</small>
-                                <small>@Model.Language</small>
+                                @if(Model.Language != "Unknown Language"){
+                                    <small>@Model.Language</small>
+                                }
                                 <small class="find-out-more">Find Out More</small>
                             </div>
                         </div>

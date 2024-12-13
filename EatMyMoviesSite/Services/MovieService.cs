@@ -345,7 +345,7 @@ namespace EatMyMoviesSite.Services
         public async Task<List<Person>> GetActors(int movieId)
         {
             var credits = await _tmdbClient.GetMovieCreditsAsync(movieId);
-            var tmdbActors = credits.Cast.Where(x => x.ProfilePath != null).Take(7);
+            var tmdbActors = credits.Cast.Where(x => x.ProfilePath != null).Take(5);
 
             List<Person> actors = new List<Person>();
 
