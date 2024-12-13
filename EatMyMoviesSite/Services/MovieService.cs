@@ -98,7 +98,7 @@ namespace EatMyMoviesSite.Services
 
             if (!_cache.TryGetValue(cacheKey, out decimal? rating)) {
                 var movie = await _omdbClient.GetItemByTitle(movieTitle);
-                if (movie?.IMDbRating != null)
+                if (movie?.IMDbRating != null && movie?.IMDbRating != "N/A")
                 {
                     var imdbRating = Decimal.Parse(movie?.IMDbRating);
                     if(imdbRating == null) {
@@ -107,8 +107,8 @@ namespace EatMyMoviesSite.Services
                     {
                         rating = imdbRating;
                     }
+                    _cache.Set(cacheKey, rating, TimeSpan.FromHours(6));
                 }
-                _cache.Set(cacheKey, rating, TimeSpan.FromHours(6));
 
             }
             return rating;

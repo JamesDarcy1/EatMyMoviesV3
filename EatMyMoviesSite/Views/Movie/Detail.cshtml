@@ -16,10 +16,13 @@
                         <strong><u>Release Date</u></strong><br />
                         <strong>@Model.ReleaseDate</strong>
                     </div>
+                    @if (Model.ImdbRating != null)
+                    {
                     <div class="column">
                         <strong><u>Imdb Rating</u></strong><br />
                         <strong>@Model.ImdbRating</strong>
                     </div>
+                    }
                     <div class="column">
                         <strong><u>Runtime</u></strong><br />
                         @{
