@@ -330,13 +330,15 @@ namespace EatMyMoviesSite.Services
         {
             var credits = await _tmdbClient.GetMovieCreditsAsync(movieId);
             var tmdbDirector = credits.Crew.FirstOrDefault(x => x.Job == "Director");
+            var directorInfo = await _tmdbClient.GetPersonAsync(tmdbDirector.Id);
 
             Person director = new Person()
             {
                 Id = tmdbDirector.Id,
                 Name = tmdbDirector.Name,
                 ProfilePath = "https://image.tmdb.org/t/p/w185" + tmdbDirector.ProfilePath,
-                Role = "Director"
+                Role = "Director",
+                Biography = directorInfo.Biography
             };
 
             return director;
@@ -345,7 +347,7 @@ namespace EatMyMoviesSite.Services
         public async Task<List<Person>> GetActors(int movieId)
         {
             var credits = await _tmdbClient.GetMovieCreditsAsync(movieId);
-            var tmdbActors = credits.Cast.Where(x => x.ProfilePath != null).Take(5);
+            var tmdbActors = credits.Cast.Where(x => x.KnownForDepartment == "Acting" && x.ProfilePath != null);
 
             List<Person> actors = new List<Person>();
 

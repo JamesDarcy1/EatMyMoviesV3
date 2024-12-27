@@ -66,34 +66,42 @@
     </div>
 
     <div class="box">
+        <!-- Director Section -->
+        <h2 class="pb-2 mt-0">Director</h2>
         <div class="columns is-mobile">
-            <!-- Director Section -->
-            <div class="column is-one-third has-text-centered director-section">
-                <h2 class="section-header mt-0">Director</h2>
-                <figure class="image">
-                    <img class="is-rounded" src="@Model.Director.ProfilePath" alt="Director: @Model.Director">
+            <div class="column is-one-third">
+                <figure class="image is-flex is-justify-content-center">
+                    <img class="profile-image is-rounded" src="@Model.Director.ProfilePath" alt="Director: @Model.Director">
                 </figure>
-                <p><strong>@Model.Director.Name</strong></p>
             </div>
-
-            <!-- Actors Section -->
             <div class="column is-two-thirds">
-                <h2 class="section-header mt-0">Cast</h2>
-                <div class="horizontal-scroll">
-                    @foreach (var actor in Model.Actors)
-                    {
-                        <div>
-                            <figure class="image">
-                                <img class="is-rounded" src="@actor.ProfilePath" alt="@actor.Name">
-                            </figure>
-                            <p>@actor.Name</p>
-                            <p><i>@actor.Character</i></p>
-                        </div>
-                    }
+                <p><strong>@Model.Director.Name</strong></p>
+                <div class="director-section">
+                    <p>@Model.Director.Biography</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="box">
+        <h2 class="section-header mt-0 pb-2">Cast</h2>
+        <div class="columns is-multiline is-mobile">
+            @foreach (var actor in Model.Actors)
+            {
+                <div class="column is-one-third">
+                    <figure class="image is-flex is-justify-content-center">
+                        <img class="profile-image is-rounded" src="@actor.ProfilePath" alt="@actor.Name">
+                    </figure>
+                    <div class="actor-section">
+                        <p>@actor.Name</p>
+                        <p><i>@actor.Character</i></p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+
 
 
 

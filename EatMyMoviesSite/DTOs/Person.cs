@@ -11,5 +11,7 @@
         public string Role { get; set; }
 
         public string Character {  get; set; }
+
+        public string Biography { get; set; }
     }
 }

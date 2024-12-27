@@ -147,6 +147,16 @@ html {
     .genre-button {
         width: 40%
     }
+
+    .director-section {
+        max-height: 9rem;
+    }
+
+    .director-section p {
+        font-weight: 200;
+        font-size: 10px;
+        padding: 0px;
+    }
 }
 
 
@@ -612,34 +622,24 @@ select {
     opacity: 1;
 }
 
-/* Director Section Styling */
 .director-section {
-    display: flex;
+    display: block;
     flex-direction: column;
     align-items: center;
     text-align: center;
+    overflow-y: scroll;
+    text-overflow: ellipsis;
 }
 
-/* Horizontal Scroll Section for Actors */
-.horizontal-scroll {
-    display: flex;
-    overflow-x: auto; /* Enable horizontal scrolling */
-    gap: 1rem; /* Space between actor cards */
-    padding: 0.5rem 0; /* Add padding for spacing */
-}
-
-.director-section figure img,
-.horizontal-scroll figure img {
-    width: 96px; /* Consistent width */
-    height: 96px; /* Consistent height */
-    object-fit: cover; /* Crop and scale images uniformly */
-    border-radius: 50%; /* Make images rounded */
-}
-
-.director-section p,
-.horizontal-scroll p {
+.actor-section p {
     font-size: 14px;
+    font-weight: 400;
 }
+
+.profile-image {
+    max-width: max-content;
+}
+
 
 
 
