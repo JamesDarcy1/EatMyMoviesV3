@@ -15,11 +15,11 @@
         <h1>@movie.Ranking</h1>
         <article class="movie-block mt-0">
             <a class="clickable-card" onclick="window.location='@Url.Action("Detail", "Movie")?tmdbId=@(movie.TmdbId)';">
-                <div class="columns is-mobile is-hidden-desktop mb-0">
-                    <div class="column is-two-fifths is-flex is-align-items-center is-justify-content-center">
+                <div class="columns is-mobile m-0">
+                    <div class="column is-two-fifths-mobile is-one-third-desktop is-flex is-align-items-center is-justify-content-center">
                         <img class="poster" src="@movie.PosterPath" alt="@movie.Title poster" />
                     </div>
-                    <div class="column is-justify-content-center">
+                    <div class="column is-one-third-desktop is-justify-content-center">
                         <h4 class="movie-title mb-0">@movie.Title</h4>
                         <small class="release-date">@movie.ReleaseDate</small>
                         <small>@movie.Genres</small>
@@ -28,22 +28,7 @@
                         <small>@movie.Language</small>
                         <small class="find-out-more">Find Out More</small>
                     </div>
-                </div>
-
-                <div class="columns is-desktop is-hidden-mobile">
-                    <div class="column is-one-third ">
-                        <img class="poster poster-on-detail" src="@movie.PosterPath" alt="@movie.Title poster" />
-                    </div>
-                    <div class="column is-one-third is-flex is-flex-direction-column is-justify-content-center">
-                        <h4 class="movie-title mb-0">@movie.Title</h4>
-                        <small class="release-date">@movie.ReleaseDate</small>
-                        <small>@movie.Genres</small>
-                        <small>@movie.ImdbRating IMDB Rating</small>
-                        <small>@movie.Runtime Minutes</small>
-                        <small>@movie.Language</small>
-                        <small class="find-out-more">Find Out More</small>
-                    </div>
-                    <div class="column is-one-third is-flex is-flex-direction-column is-justify-content-center">
+                    <div class="column is-one-third-desktop is-hidden-mobile is-flex is-flex-direction-column is-justify-content-center">
                         <small class="card-synopsis">@movie.Synopsis</small>
                     </div>
                 </div>
