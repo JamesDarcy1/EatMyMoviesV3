@@ -84,7 +84,11 @@
         </div>
     </transition>
 
-    <p v-show="showRecommendationBox && !isLoading && !recommendedMovie">No movie found matching your criteria</p>
+    <div class="has-text-centered" v-show="showRecommendationBox && !isLoading && !recommendedMovie">
+        <p>No movie found matching your criteria</p>
+        <button class="button recommendation-button" v-on:click="startOver">Start over</button>
+    </div>
+    
 
     <!-- Movie Recommendation Box -->
     <transition name="slide">
