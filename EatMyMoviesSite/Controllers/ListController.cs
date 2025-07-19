@@ -22,7 +22,7 @@ namespace EatMyMoviesSite.Controllers
         }
 
 
-        [Route("comdies")]
+        [Route("comedies")]
         public async Task<IActionResult> Comedies(int page = 1)
         {
 			var list = await _movieService.BuildMovieList("Comedies", page);

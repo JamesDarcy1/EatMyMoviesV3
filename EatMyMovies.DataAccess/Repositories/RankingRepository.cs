@@ -1,4 +1,5 @@
 ﻿using EatMyMovies.DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
 
@@ -98,6 +99,12 @@ namespace EatMyMovies.DataAccess.Repositories
                 _dbContext.ListRankings.Remove(listRanking);
                 _dbContext.SaveChanges();
             }
+        }
+
+        public List<ListRanking> GetListRankingsForMovie(Guid movieId)
+        {
+            var listRankings = _dbContext.ListRankings.Include(lr => lr.List).Where(lr => lr.Movie.MovieId == movieId);
+            return listRankings.ToList();
         }
 
 

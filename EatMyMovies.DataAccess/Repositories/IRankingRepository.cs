@@ -8,6 +8,7 @@ namespace EatMyMovies.DataAccess.Repositories
         IQueryable<Movie> GetAllMoviesInList(string listName);
         IEnumerable<ListRanking> GetAllRankingsInList(List list);
         int GetListCount(string listName);
+        List<ListRanking> GetListRankingsForMovie(Guid movieId);
         ListRanking GetMovieAtRanking(List list, int ranking);
 		IEnumerable<Movie> GetMoviesForListByPage(string listName, int page = 1);
 		int GetRankingOfMovie(Guid movieId, string listName);

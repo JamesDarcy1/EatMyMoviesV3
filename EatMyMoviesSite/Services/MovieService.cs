@@ -367,5 +367,30 @@ namespace EatMyMoviesSite.Services
             return actors;
         }
 
+        public List<MovieRanking> GetListRankingsForMovie(Guid movieId) {
+            var rankingsFromStore = _rankingRepository.GetListRankingsForMovie(movieId);
+            var rankings = new List<MovieRanking>();
+            foreach(var storeRanking in rankingsFromStore)
+            {
+                rankings.Add(new MovieRanking()
+                {
+                    ListId = storeRanking.List.ListId,
+                    ListName = storeRanking.List.Name,
+                    MovieId = storeRanking.Movie.MovieId,
+                    Ranking = storeRanking.Ranking,
+                    ListRankingId = storeRanking.ListRankingId,
+
+                });
+            }
+
+            return rankings;
+        }
+
+        public EatMyMovies.DataAccess.Models.Movie GetStoreMovieByTitle(string title)
+        {
+            var storeMovie = _movieRepository.GetMovieByTitle(title);
+            return storeMovie;
+        }
+
     }
 }

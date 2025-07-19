@@ -44,7 +44,8 @@ namespace EatMyMoviesSite
 				TmdbId = tmdbMovie.Id,
                 Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage),
                 Director = director,
-                Actors = actors,
+                Actors = actors.Take(6).ToList(),
+                CanEdit = string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "development", StringComparison.InvariantCultureIgnoreCase)
             };
 		}
 

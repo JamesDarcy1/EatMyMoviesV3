@@ -41,6 +41,12 @@ namespace EatMyMoviesSite.Controllers
                 Person director = await _movieService.GetDirector(movie.Id);
                 List<Person> actors = await _movieService.GetActors(movie.Id);
                 var movieDetail = Mapper.MapToMovieDetail(movie, trailer, rating, director, actors);
+                
+                var storeMovie = _movieService.GetStoreMovieByTitle(movie.Title);
+                if (storeMovie != null)
+                {
+                    movieDetail.Rankings = _movieService.GetListRankingsForMovie(storeMovie.MovieId);
+                }
                 return View(movieDetail);
             }
             catch (Exception ex)

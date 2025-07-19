@@ -19,5 +19,7 @@ namespace EatMyMoviesSite.Services
         Task<Person> GetDirector(int movieId);
         Task<List<Movie>> GetFastRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange);
         Task<List<Person>> GetActors(int movieId);
+        List<MovieRanking> GetListRankingsForMovie(Guid movieId);
+        EatMyMovies.DataAccess.Models.Movie GetStoreMovieByTitle(string title);
     }
 }

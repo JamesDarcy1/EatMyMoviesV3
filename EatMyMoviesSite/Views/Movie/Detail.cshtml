@@ -102,6 +102,47 @@
         </div>
     </div>
 
+    @if (Model.CanEdit)
+    {
+        <h2 class="title is-4">List Management</h2>
+
+        <div class="box">
+
+            <!-- Header row -->
+            <div class="columns has-text-weight-semibold is-size-7 mb-2">
+                <div class="column is-4">List</div>
+                <div class="column is-3">Ranking</div>
+                <div class="column is-5">Actions</div>
+            </div>
+
+            <!-- Data rows -->
+            @foreach (var ranking in Model.Rankings)
+            {
+                <form method="post" asp-action="UpdateRanking" class="mb-2">
+                    <div class="columns is-vcentered">
+                        <div class="column is-4">
+                            @ranking.ListName
+                        </div>
+                        <div class="column is-3">
+                            <div class="field">
+                                <div class="control">
+                                    <input class="input is-small" type="number" name="NewRanking" value="@ranking.Ranking" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column is-5">
+                            <div class="buttons is-centered">
+                                <input type="hidden" name="ListRankingId" value="@ranking.ListRankingId" />
+                                <button type="submit" class="button is-info is-small">Update</button>
+                                <button formaction="/YourController/DeleteRanking" formmethod="post" name="ListRankingId" value="@ranking.ListRankingId" class="button is-danger is-small">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            }
+        </div>
+
+    }
 
 
 
