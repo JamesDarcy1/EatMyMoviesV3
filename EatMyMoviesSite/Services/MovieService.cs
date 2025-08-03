@@ -392,5 +392,10 @@ namespace EatMyMoviesSite.Services
             return storeMovie;
         }
 
+        public List<List> GetAllLists()
+        {
+            return _listRepository.GetAllLists();
+        }
+
     }
 }

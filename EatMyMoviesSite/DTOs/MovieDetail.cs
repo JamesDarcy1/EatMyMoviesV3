@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using EatMyMovies.DataAccess.Models;
+using System.Collections.Generic;
 
 namespace EatMyMoviesSite.DTOs
 {
@@ -20,5 +21,7 @@ namespace EatMyMoviesSite.DTOs
 		public string Language { get; set; }
 		public bool CanEdit { get; set; }
 		public List<MovieRanking> Rankings { get; set; }
+
+		public List<List> Lists { get; set; }
 	}
 }

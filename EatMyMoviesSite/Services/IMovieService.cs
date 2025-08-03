@@ -21,5 +21,6 @@ namespace EatMyMoviesSite.Services
         Task<List<Person>> GetActors(int movieId);
         List<MovieRanking> GetListRankingsForMovie(Guid movieId);
         EatMyMovies.DataAccess.Models.Movie GetStoreMovieByTitle(string title);
+        List<EatMyMovies.DataAccess.Models.List> GetAllLists();
     }
 }

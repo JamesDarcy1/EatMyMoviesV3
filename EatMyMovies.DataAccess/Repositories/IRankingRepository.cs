@@ -8,12 +8,14 @@ namespace EatMyMovies.DataAccess.Repositories
         IQueryable<Movie> GetAllMoviesInList(string listName);
         IEnumerable<ListRanking> GetAllRankingsInList(List list);
         int GetListCount(string listName);
+        ListRanking GetListRanking(Guid movieId, Guid listId);
         List<ListRanking> GetListRankingsForMovie(Guid movieId);
         ListRanking GetMovieAtRanking(List list, int ranking);
 		IEnumerable<Movie> GetMoviesForListByPage(string listName, int page = 1);
 		int GetRankingOfMovie(Guid movieId, string listName);
 		ListRanking InsertMovieToList(Movie movie, List list, int ranking);
-		void RemoveRanking(int ranking, Guid listId);
+        void RemoveListRanking(Guid movieId, Guid listId);
+        void RemoveRanking(int ranking, Guid listId);
 		ListRanking UpdateRanking(ListRanking listRanking, int newRanking);
 	}
 }

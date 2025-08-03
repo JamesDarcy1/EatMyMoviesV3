@@ -107,6 +107,23 @@ namespace EatMyMovies.DataAccess.Repositories
             return listRankings.ToList();
         }
 
+        public ListRanking GetListRanking(Guid movieId, Guid listId)
+        {
+            var listRanking = _dbContext.ListRankings.FirstOrDefault(lr => lr.Movie.MovieId == movieId && lr.List.ListId == listId);
+            return listRanking;
+        }
+
+        public void RemoveListRanking(Guid movieId, Guid listId)
+        {
+            var listRanking = GetListRanking(movieId, listId);
+            
+            if (listRanking != null)
+            {
+                _dbContext.ListRankings.Remove(listRanking);
+                _dbContext.SaveChanges();
+            }
+        }
+
 
     }
 }

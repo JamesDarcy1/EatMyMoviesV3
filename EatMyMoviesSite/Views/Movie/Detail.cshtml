@@ -108,39 +108,71 @@
 
         <div class="box">
 
-            <!-- Header row -->
             <div class="columns has-text-weight-semibold is-size-7 mb-2">
                 <div class="column is-4">List</div>
                 <div class="column is-3">Ranking</div>
                 <div class="column is-5">Actions</div>
             </div>
 
-            <!-- Data rows -->
             @foreach (var ranking in Model.Rankings)
             {
-                <form method="post" asp-action="UpdateRanking" class="mb-2">
+                <form method="post" action="/Storage/UpdateRanking" class="mb-2">
                     <div class="columns is-vcentered">
                         <div class="column is-4">
                             @ranking.ListName
                         </div>
                         <div class="column is-3">
-                            <div class="field">
-                                <div class="control">
-                                    <input class="input is-small" type="number" name="NewRanking" value="@ranking.Ranking" />
-                                </div>
-                            </div>
+                            <input class="input is-small" type="number" name="newRanking" value="@ranking.Ranking" />
                         </div>
                         <div class="column is-5">
                             <div class="buttons is-centered">
-                                <input type="hidden" name="ListRankingId" value="@ranking.ListRankingId" />
+                                <input type="hidden" name="movieId" value="@ranking.MovieId" />
+                                <input type="hidden" name="listId" value="@ranking.ListId" />
+
                                 <button type="submit" class="button is-info is-small">Update</button>
-                                <button formaction="/YourController/DeleteRanking" formmethod="post" name="ListRankingId" value="@ranking.ListRankingId" class="button is-danger is-small">Delete</button>
+
+                                <button formaction="/Storage/DeleteRanking"
+                                        formmethod="post"
+                                        name="movieId"
+                                        value="@ranking.MovieId"
+                                        class="button is-danger is-small"
+                                        onclick="this.form.listId.value='@ranking.ListId'">
+                                    Delete
+                                </button>
                             </div>
                         </div>
                     </div>
                 </form>
             }
+
+            <!-- New form for adding a ranking -->
+            <form method="post" action="/Storage/AddMovieToList" class="mt-4">
+                <div class="columns is-vcentered">
+                    <div class="column is-4">
+                        <div class="select is-small is-fullwidth">
+                            <select name="listName" required>
+                                <option value="">Select a list...</option>
+                                @foreach (var list in Model.Lists)
+                                {
+                                    <option value="@list.Name">@list.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+                        <input class="input is-small" type="number" name="ranking" placeholder="Ranking" required />
+                    </div>
+                    <div class="column is-5">
+                        <div class="buttons is-centered">
+                            <input type="hidden" name="movieTitle" value="@Model.Title" />
+                            <button type="submit" class="button is-primary is-small">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
         </div>
+
 
     }
 

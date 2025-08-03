@@ -2,10 +2,12 @@
 using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace EatMyMoviesSite.Controllers
 {
+    [Route("[controller]")]
     public class StorageController : ControllerBase
     {
         private readonly IMovieRepository _movieRepository;
@@ -49,20 +51,20 @@ namespace EatMyMoviesSite.Controllers
             return tmdbMovie;
         }
 
-        [HttpPost]
-        public async Task<ListRanking> AddMovieToList(string listName, string movieTitle, int ranking)
+        [HttpPost("AddMovieToList")]
+        public async Task<IActionResult> AddMovieToList(string listName, string movieTitle, int ranking)
         {
             var movie = _movieRepository.GetMovieByTitle(movieTitle);
             var list = _listRepository.GetListByName(listName);
 
-            if(movie == null)
+            if (movie == null)
             {
                 movie = await SaveToDatabase(movieTitle);
             }
 
             if (_rankingRepository.FilmExistsInList(movie.MovieId, list.ListId))
             {
-                throw new Exception("Film already exists in list");
+                return Redirect(Request.Headers["Referer"].ToString());
             }
 
             var listRankings = _rankingRepository.GetAllRankingsInList(list);
@@ -72,10 +74,11 @@ namespace EatMyMoviesSite.Controllers
                 _storageService.ShuffleListDownIfNecessary(list, ranking);
             }
 
-            var listRanking = _rankingRepository.InsertMovieToList(movie, list, ranking);
+            _rankingRepository.InsertMovieToList(movie, list, ranking);
 
-            return listRanking;
+            return Redirect(Request.Headers["Referer"].ToString());
         }
+
 
         [HttpPost]
         public ListRanking UpdateRankingInList(string listName, string movieTitle, int newRanking)
@@ -122,6 +125,28 @@ namespace EatMyMoviesSite.Controllers
             }
         }
 
+        [HttpPost("UpdateRanking")]
+        public IActionResult UpdateRanking(Guid movieId, Guid listId, int newRanking)
+        {
+            var ranking = _rankingRepository.GetListRanking(movieId, listId);
+
+            if (ranking == null)
+            {
+                return NotFound("Ranking not found");
+            }
+
+            _rankingRepository.UpdateRanking(ranking, newRanking);
+
+            return Redirect(Request.Headers["Referer"].ToString());
+        }
+
+        [HttpPost("DeleteRanking")]
+        public IActionResult DeleteRanking(Guid movieId, Guid listId)
+        {
+            _rankingRepository.RemoveListRanking(movieId, listId);
+
+            return Redirect(Request.Headers["Referer"].ToString());
+        }
 
     }
 }
