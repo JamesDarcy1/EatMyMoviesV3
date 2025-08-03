@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OMDbSharp" Version="0.3.0" />
-    <PackageReference Include="RestSharp" Version="110.2.0" />
+    <PackageReference Include="RestSharp" Version="112.0.0" />
     <PackageReference Include="TMDbLib" Version="2.0.0" />
   </ItemGroup>
 
@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\LogoDesign1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Update="wwwroot\red-spinner.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

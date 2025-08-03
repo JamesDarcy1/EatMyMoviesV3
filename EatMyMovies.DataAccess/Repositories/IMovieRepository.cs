@@ -4,7 +4,12 @@ namespace EatMyMovies.DataAccess.Repositories
 {
 	public interface IMovieRepository
 	{
-		Movie GetMovieByTitle(string title);
-		Movie SaveTmdbMovie(string title, int tmdbId, decimal imdbRating);
-	}
+        List<Genre> GetAllGenres();
+        IEnumerable<Movie> GetAllMovies();
+        IQueryable<string> GetGenresOfMovie(Movie movie);
+        Movie GetMovieByTitle(string title);
+        IQueryable<Movie> GetMoviesOfGenres(List<string> genres);
+        void SaveGenres(Movie movie, IEnumerable<string> genres);
+        Movie SaveTmdbMovie(string title, int tmdbId, decimal? imdbRating);
+    }
 }

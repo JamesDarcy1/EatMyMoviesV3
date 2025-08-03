@@ -1,63 +1,77 @@
 ﻿@using EatMyMoviesSite.DTOs
 @model ListMovie;
 
-<title>Eat My Movies - Discover Your Next Cinematic Obsession</title>
-<meta name="description" content="Discover your next cinematic obsession with Eat My Movies – a curated compilation of top film rankings across diverse genres. Let our suggestions guide your movie nights and ignite your passion for storytelling. Explore a world of entertainment with random genre picks!" />
+<title>Eat My Movies</title>
+<meta name="description" content="Welcome to Eat My Movies - the place to discover your next cinematic obsession. By answering a few quetions we aim to find you the perfect movie for your night's viewing. Please enjoy our recommendations and have fun exploring our carefully curated lists." />
+<link rel="canonical" href="https://www.eatmymovies.com/" />.
 
 <form method="POST" action="/Movie/Detail">
     <section class="hero is-medium">
         <div>
-            <div class="container has-text-centered">
+            <div class="has-text-centered">
                 <h1>
                     Discover Your Next Cinematic Obsession
                 </h1>
+                <p>
+                    Don't know what to watch tonight?
+                </p>
+                <button class="button is-primary"
+                        asp-controller="Movie"
+                        asp-action="Recommender">
+                    Find me a movie
+                </button>
 
-                <h2 class="subtitle has-text-weight-bold pt-5">
-                    Movie of the week
-                </h2>
+                <h1 class="pt-6">
+                    How it works
+                </h1>
+                <p>
+                    We ask several questions, you tell us what you're looking for and we find the perfect recommendation
+                </p>
 
-                <article class="movie-block box mt-0 pb-6">
-                    <div class="columns is-mobile">
-                        <div class="column is-three-fifths">
-                            <div class="content">
-                                <h2>@Model.Title</h2>
-                                <small>@Model.Genres</small><br />
-                                <small>IMDB Rating: @Model.ImdbRating</small><br />
-                                <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(Model.Title)';">Find Out More</a>
-                                <p class="synopsis desktop-only">@Model.Synopsis</p>
+
+                <h1 class="pt-6">
+                    Movie of the Week
+                    <span class="tooltip-icon">
+                        <i class="fas fa-calendar-alt"></i> <!-- FontAwesome calendar icon -->
+                        <span class="tooltip-text">Updated every Friday</span>
+                    </span>
+                </h1>
+
+                <article class="movie-block mt-0">
+                    <a class="clickable-card" onclick="window.location='@Url.Action("Detail", "Movie")?tmdbId=@(Model.TmdbId)';">
+                        <div class="columns is-mobile m-0">
+                            <div class="column is-two-fifths-mobile is-one-third-desktop is-flex is-align-items-center is-justify-content-center">
+                                <img class="poster" src="@Model.PosterPath" alt="@Model.Title poster" />
+                            </div>
+                            <div class="column is-one-third-desktop is-justify-content-center">
+                                <h4 class="movie-title mb-0">@Model.Title</h4>
+                                <small class="release-date">@Model.ReleaseDate</small>
+                                <small>@Model.Genres</small>
+                                <small>@Model.ImdbRating IMDB Rating</small>
+                                <small>@Model.Runtime Minutes</small>
+                                <small class="find-out-more">Find Out More</small>
+                            </div>
+                            <div class="column is-one-third-desktop is-hidden-mobile is-flex is-flex-direction-column is-justify-content-center">
+                                <small class="card-synopsis">@Model.Synopsis</small>
                             </div>
                         </div>
-                        <div class="column is-two-fifths">
-                            <img class="poster" src="@Model.PosterPath" alt="@Model.Title poster" />
-                        </div>
-                    </div>
-                    <div class="columns is-mobile">
-                        <div class="column">
-                            <p class="synopsis mobile-only">@Model.Synopsis</p>
-                        </div>
-                    </div>
+
+                    </a>
+
                 </article>
 
-                <b class="subtitle has-text-weight-bold pt-5">
-                    Explore top-ranked films, personalised movie suggestions, and soon to be in-depth reviews.
-                </b>
-                <div class="buttons is-centered">
-                    <a class="button cool-button" asp-area="" asp-controller="List" asp-action="Top100">Top 100</a>
-                    <a class="button cool-button" asp-area="" asp-controller="List" asp-action="Comedies">Comedies</a>
-                    <a class="button cool-button" asp-area="" asp-controller="List" asp-action="ForeignFilms">Foreign Films</a>
-                </div>
-
-
-                <div class="field has-addons has-addons-centered">
-                    <div class="control">
-                        <input class="input" type="text" name="title" placeholder="Search for a movie...">
-                    </div>
-                    <div class="control">
-                        <button type="submit" class="button is-info">
-                            Search
-                        </button>
-                    </div>
-                </div>
+                <h1 class="pt-6">
+                    Movie Lists
+                </h1>
+                <button class="button list-button" asp-controller="List" asp-action="Top100">Top 100</button>
+                <button class="button list-button" asp-controller="List" asp-action="Christmas">Christmas</button>
+                <button class="button list-button" asp-controller="List" asp-action="Comedies">Comedies</button>
+                <button class="button list-button" asp-controller="List" asp-action="Disney">Disney</button>
+                <button class="button list-button" asp-controller="List" asp-action="ForeignFilms">Foreign Films</button>
+                <button class="button list-button" asp-controller="List" asp-action="Documentaries">Documentaries</button>
+                <button class="button list-button" asp-controller="List" asp-action="StandoutSoundtracks">Standout Soundtracks</button>
+                <button class="button list-button" asp-controller="List" asp-action="Iconic80s">Iconic 80s</button>
+                <button class="button list-button" asp-controller="List" asp-action="Horrors">Horrors</button>
             </div>
         </div>
     </section>

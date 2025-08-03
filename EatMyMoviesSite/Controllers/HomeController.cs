@@ -1,4 +1,5 @@
-﻿using EatMyMoviesSite.Models;
+﻿using EatMyMoviesSite.DTOs;
+using EatMyMoviesSite.Models;
 using EatMyMoviesSite.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -18,16 +19,26 @@ namespace EatMyMoviesSite.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var movieOfTheWeek = "Stand by me";
+            var movieOfTheWeek = "Three billboards outside ebbing Missouri";
             var tmdbMovie = await _movieService.GetMovieByTitle(movieOfTheWeek);
+            Person director = await _movieService.GetDirector(tmdbMovie.Id);
             var imdbRating = await _movieService.GetImdbRating(tmdbMovie.Title);
 
-            var summary = Mapper.MapToMovieSummary(tmdbMovie, imdbRating);
+            var summary = Mapper.MapToMovieSummary(tmdbMovie, imdbRating, director.Name);
 
             return View(summary);
         }
 
+
+        [Route("about")]
         public IActionResult About()
+        {
+            return View();
+        }
+
+
+        [Route("contact")]
+        public IActionResult Contact()
         {
             return View();
         }

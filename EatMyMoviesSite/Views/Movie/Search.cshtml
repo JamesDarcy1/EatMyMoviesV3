@@ -1,19 +1,94 @@
-﻿<meta name="description" content="Search for movies with Eat My Movies – your ultimate destination for discovering films across all genres. Find detailed information, ratings, and personalized recommendations to enhance your movie-watching experience. Start your search now!" />
-<title>Eat My Movies - Search</title>
-
-<form method="POST" action="/Movie/Detail">
-<div class="container has-text-centered">
-	<h1>Movie Search</h1>
-	<div class="columns mt-2">
-		<div class="column is-three-quarters">
-			<input class="textarea" placeholder="Enter movie title" rows="1" name="title"/>
-		</div>
-		<div class="column is-one-quarter">
-			<button class="button cool-button m-0" type="submit">
-				@*<i class="fa-solid fa-magnifying-glass"></i>*@
-				<span>Search</span>
-			</button>
-		</div>
-	</div>
+﻿<div id="searchApp">
+    <h1>Movie Search</h1>
+    <div class="columns is-mobile mt-2">
+        <div class="column is is-three-quarters">
+            <input class="textarea" placeholder="Enter movie title" rows="3" v-model="searchQuery" />
+            <div :class="{'dropdown is-active': searchResults.length > 0, 'dropdown': searchResults.length || searchSelected === true}">
+                <div class="dropdown-menu has-text-left">
+                    <div class="dropdown-content">
+                        <a v-for="(movie, index) in searchResults" :key="index" class="dropdown-item" v-on:click="selectMovie(movie)">
+                            <img :src="'https://image.tmdb.org/t/p/w92' + movie.posterPath" :alt="movie.title + ' poster'" class="dropdown-poster">
+                            <span class="dropdown-title">{{ movie.title }}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <button class="button is-primary m-0" v-on:click="handleSearch">
+                <span>Search</span>
+            </button>
+        </div>
+    </div>
 </div>
-</form>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    searchQuery: '',
+                    searchResults: [],
+                    searchSelected: false,
+                    selectedMovie: null,
+                };
+            },
+            watch: {
+                searchQuery(newQuery) {
+                    console.log(newQuery);
+                    console.log('new query length ' + newQuery.length);
+                    console.log('!this.searchSelected ' + !this.searchSelected);
+                    if (newQuery.length > 0 && !this.searchSelected) {
+                        console.log('Searching ...');
+                        this.performSearch();
+                    } else {
+                        console.log('else ...');
+                        this.searchResults = [];
+                    }
+                }
+            },
+            methods: {
+                performSearch() {
+                    fetch(`/Movie/SearchForMovie?titleSearch=${encodeURIComponent(this.searchQuery)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            this.searchResults = data;
+                            console.log('Found ', data);
+                        })
+                        .catch(() => {
+                            console.log('Error');
+                            this.searchResults = [];
+                        });
+                    console.log('over');
+                },
+                selectMovie(movie) {
+                    window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}&tmdbId=${movie.id}`;
+                    // this.searchQuery = movie.title;
+                    // this.selectedMovie = movie;
+                    // this.searchSelected = true;
+                    // this.searchResults = [];
+                },
+                handleSearch() {
+                    window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}`;
+                }
+            }
+        }).mount('#searchApp');
+    </script>
+}
+
+<style>
+    .dropdown-poster {
+        width: 40px; /* Adjust size as needed */
+        height: auto;
+        margin-right: 10px; /* Space between poster and title */
+        vertical-align: middle;
+    }
+
+    .dropdown-title {
+        vertical-align: middle; /* Align text with the poster */
+    }
+</style>
+

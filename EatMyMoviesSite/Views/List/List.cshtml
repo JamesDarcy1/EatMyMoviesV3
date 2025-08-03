@@ -2,7 +2,7 @@
 @model MovieList
 
 <meta name="description" content=@Model.Description />
-<title>Eat My Movies - @Model.Name</title>
+<title>@Model.Name</title>
 
 <div class="has-text-centered">
     <h1>@Model.Name</h1>
@@ -12,91 +12,31 @@
 
     @foreach (var movie in Model.Movies)
     {
-        <article class="movie-block box">
-            <div class="columns is-mobile">
-                <div class="column is-one-fifth">
-                    <h1>@movie.Ranking</h1>
-                </div>
-                <div class="column is-two-fifths">
-                    <div class="content">
-                        <h2>@movie.Title</h2>
-                        <small>@movie.Genres</small><br />
-                        <small>IMDB Rating: @movie.ImdbRating</small><br />
-                        <a class="find-out-more" href="javascript:void(0);" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(movie.Title)';">Find Out More</a>
-                        <p class="synopsis desktop-only">@movie.Synopsis</p> 
+        <h1>@movie.Ranking</h1>
+        <article class="movie-block mt-0">
+            <a class="clickable-card" onclick="window.location='@Url.Action("Detail", "Movie")?tmdbId=@(movie.TmdbId)';">
+                <div class="columns is-mobile m-0">
+                    <div class="column is-two-fifths-mobile is-one-third-desktop is-flex is-align-items-center is-justify-content-center">
+                        <img class="poster" src="@movie.PosterPath" alt="@movie.Title poster" />
+                    </div>
+                    <div class="column is-one-third-desktop is-justify-content-center">
+                        <h4 class="movie-title mb-0">@movie.Title</h4>
+                        <small class="release-date">@movie.ReleaseDate</small>
+                        <small>@movie.Genres</small>
+                        <small>@movie.ImdbRating IMDB Rating</small>
+                        <small>@movie.Runtime Minutes</small>
+                        <small>@movie.Language</small>
+                        <small class="find-out-more">Find Out More</small>
+                    </div>
+                    <div class="column is-one-third-desktop is-hidden-mobile is-flex is-flex-direction-column is-justify-content-center">
+                        <small class="card-synopsis">@movie.Synopsis</small>
                     </div>
                 </div>
-                <div class="column is-two-fifths">
-                    <img class="poster" src="@movie.PosterPath" alt="@movie.Title poster"/>
-                </div>
-            </div>
-            <div class="columns is-mobile">
-                <div class="column">
-                    <p class="synopsis mobile-only">@movie.Synopsis</p> 
-                </div>
-            </div>
+            </a>
+
         </article>
-
     }
 
-
-    @* @foreach (var movie in Model.Movies)
-    {
-    <article class="media is-cli movie-article" onclick="window.location='@Url.Action("Detail", "Movie")?title=@(movie.Title)';">
-    <figure class="media-left">
-    <h1>@movie.Ranking</h1>
-    </figure>
-    <div class="media-content">
-    <div class="content">
-    <h2>@movie.Title</h2>
-    <small>@movie.Genres</small><br />
-    <small>IMDB Rating: @movie.ImdbRating</small><br />
-    </div>
-    <div>
-    <p class="synopsis">@movie.Synopsis</p>
-    </div>
-    </div>
-    <figure class="media-right">
-    <img class="poster" src=@movie.PosterPath />
-    </figure>
-    </article>
-    } *@
-
-
-    @* 	<div class="opaque-box is-paddingless">
-    <table class="table is-narrow is-fullwidth has-text-weight-bold has-text-centerd">
-    <thead class="is-white">
-    <tr>
-    <th></th>
-    <th class="has-text-centered">Title</th>
-    <th class="has-text-centered">Poster</th>
-    <th class="has-text-centered">IMDB Rating</th>
-    <th class="has-text-centered">Genre</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var movie in Model.Movies)
-    {
-    <tr onclick="window.location='@Url.Action("Detail", "Movie")?title=@(movie.Title)';" class="is-clickable">
-    <td class="is-center has-text-weight-bold">@movie.Ranking</td>
-    <td class="movie-title">@movie.Title</td>
-    <td><img src="@movie.PosterPath" alt="Sample Photo" class="poster" /></td>
-    <td>
-    @movie.ImdbRating
-    </td>
-    <td>
-    @foreach (var genre in movie.Genres)
-    {
-    @genre
-
-    <br />
-    }
-    </td>
-    </tr>
-    }
-    </tbody>
-    </table>
-    </div> *@
 </div>
 @await Html.PartialAsync("_PaginationPartial", new PaginationViewModel
 {

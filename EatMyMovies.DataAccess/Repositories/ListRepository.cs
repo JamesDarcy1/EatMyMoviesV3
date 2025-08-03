@@ -18,9 +18,9 @@ namespace EatMyMovies.DataAccess.Repositories
 			return list;
 		}
 
-		public List AddList(string listName)
+		public List AddList(string listName, string description)
 		{
-			var result = _dbContext.Lists.Add(new List() { Name = listName });
+			var result = _dbContext.Lists.Add(new List() { Name = listName, Description = description });
 			_dbContext.SaveChanges();
 			return result.Entity;
 		}

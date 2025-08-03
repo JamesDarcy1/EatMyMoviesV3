@@ -3,12 +3,26 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Eat My Movies</title>
 	<link rel="stylesheet" href="~/lib/bulma/css/bulma.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/EatMyMoviesSite.styles.css" asp-append-version="true" />
-	<link rel="icon" href="~/LogoDesign1.png" type="image/x-icon">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+	<link rel="manifest" href="/favicon/site.webmanifest">
 
+	<!-- Hotjar Tracking Code for https://eatmymovies.com -->
+	<script>
+		(function (h, o, t, j, a, r) {
+			h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments) };
+			h._hjSettings = { hjid: 5171442, hjsv: 6 };
+			a = o.getElementsByTagName('head')[0];
+			r = o.createElement('script'); r.async = 1;
+			r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+			a.appendChild(r);
+		})(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+	</script>
 	<!-- Google Analytics Tracking Code -->
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-QGZDZJ5HW2"></script>
 	<script>
@@ -22,8 +36,8 @@
 	<header>
 		<nav class="navbar header-box-shadow" role="navigation" aria-label="main navigation">
 			<div class="navbar-brand has-text-centered">
-				<a asp-area="" asp-controller="Home" asp-action="Index">
-					<p class="logo-text">Eat My Movies</p>
+				<a asp-controller="Home" asp-action="Index">
+					<img class="logo" src="~/no_background_logo.png">
 				</a>
 				<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-target">
 					<span aria-hidden="true"></span>
@@ -33,38 +47,54 @@
 			</div>
 
 			<div id="navbar-target" class="navbar-menu">
-				<div class="navbar-end">
-					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-					<a class="navbar-item" asp-area="" asp-controller="Home" asp-action="About">About</a>
-					<a class="navbar-item" asp-area="" asp-controller="Movie" asp-action="Search">Search</a>
+				<div class="navbar-start">
+					<a class="navbar-item" asp-controller="Movie" asp-action="Recommender">Find me a movie</a>
+					<a class="navbar-item" asp-controller="Home" asp-action="About">About</a>
+					<a class="navbar-item" asp-controller="Movie" asp-action="Search">Search all movies</a>
+					<a class="navbar-item" asp-controller="Home" asp-action="Contact">Contact us</a>
 					<div class="navbar-item has-dropdown is-hoverable">
 						<a class="navbar-item">
 							Lists
 						</a>
 						<div class="navbar-dropdown">
-							<a class="navbar-item" asp-area="" asp-controller="List" asp-action="Top100">
+							<a class="navbar-item" asp-controller="List" asp-action="Top100">
 								Top 100
 							</a>
-							<a class="navbar-item" asp-area="" asp-controller="List" asp-action="Comedies">
+							<a class="navbar-item" asp-controller="List" asp-action="Christmas">
+								Christmas
+							</a>
+							<a class="navbar-item" asp-controller="List" asp-action="Comedies">
 								Comedy
 							</a>
-							<a class="navbar-item" asp-area="" asp-controller="List" asp-action="ForeignFilms">
+							<a class="navbar-item" asp-controller="List" asp-action="Disney">
+								Disney
+							</a>
+							<a class="navbar-item" asp-controller="List" asp-action="ForeignFilms">
 								Foreign Films
 							</a>
-							<a class="navbar-item" asp-area="" asp-controller="List" asp-action="Christmas">
-								Christmas
+							<a class="navbar-item" asp-controller="List" asp-action="Documentaries">
+								Documentaries
+							</a>
+							<a class="navbar-item" asp-controller="List" asp-action="StandoutSoundtracks">
+								Standout Soundtracks
+							</a>
+							<a class="navbar-item" asp-controller="List" asp-action="Iconic80s">
+								Iconic 80s
+							</a>
+							<a class="navbar-item" asp-controller="List" asp-action="Horrors">
+								Horrors
 							</a>
 						</div>
 					</div>
 					@if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
 					{
-						<a class="navbar-item" asp-area="" asp-controller="Authentication" asp-action="Login">Login</a>
+						<a class="navbar-item" asp-controller="Authentication" asp-action="Login">Login</a>
 					}
 				</div>
 			</div>
 		</nav>
 	</header>
-	<div class="container">
+	<div class="container" id="vueAppTemplate">
 		<main role="main" class="pb-3">
 			@RenderBody()
 		</main>
@@ -72,17 +102,17 @@
 
 	<footer class="footer">
 		<div class="has-text-centered">
-			<p>
-				<strong>Eat My Movies</strong>. All rights reserved. <br />
+			<strong style="color:#e71837">Eat My Movies</strong>. All rights reserved. <br />
 				This product uses the TMDB API but is not endorsed or certified by TMDB
-				<img class="tmdb-logo" src="~/TMDB_logo.svg" alt="Tmdb logo" />
-			</p>
+				<img class="tmdb-logo mt-3" src="~/TMDB_logo.svg" alt="Tmdb logo" />
 		</div>
 	</footer>
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
 	@await RenderSectionAsync("Scripts", required: false)
+	@RenderSection("VueComponents", required: false)
+
 </body>
 </html>
 

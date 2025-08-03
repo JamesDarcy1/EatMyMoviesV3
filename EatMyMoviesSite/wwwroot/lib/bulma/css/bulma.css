@@ -22,27 +22,28 @@
   padding-top: calc(0.5em - 1px);
   position: relative;
   vertical-align: top;
+  background-color: white;
 }
 
-.button:focus, .input:focus, .textarea:focus, .select select:focus, .file-cta:focus,
-.file-name:focus, .pagination-previous:focus,
-.pagination-next:focus,
-.pagination-link:focus,
-.pagination-ellipsis:focus, .is-focused.button, .is-focused.input, .is-focused.textarea, .select select.is-focused, .is-focused.file-cta,
-.is-focused.file-name, .is-focused.pagination-previous,
-.is-focused.pagination-next,
-.is-focused.pagination-link,
-.is-focused.pagination-ellipsis, .button:active, .input:active, .textarea:active, .select select:active, .file-cta:active,
-.file-name:active, .pagination-previous:active,
-.pagination-next:active,
-.pagination-link:active,
-.pagination-ellipsis:active, .is-active.button, .is-active.input, .is-active.textarea, .select select.is-active, .is-active.file-cta,
-.is-active.file-name, .is-active.pagination-previous,
-.is-active.pagination-next,
-.is-active.pagination-link,
-.is-active.pagination-ellipsis {
-  outline: none;
-}
+    .button:focus, .input:focus, .textarea:focus, .select select:focus, .file-cta:focus,
+    .file-name:focus, .pagination-previous:focus,
+    .pagination-next:focus,
+    .pagination-link:focus,
+    .pagination-ellipsis:focus, .is-focused.button, .is-focused.input, .is-focused.textarea, .select select.is-focused, .is-focused.file-cta,
+    .is-focused.file-name, .is-focused.pagination-previous,
+    .is-focused.pagination-next,
+    .is-focused.pagination-link,
+    .is-focused.pagination-ellipsis, .button:active, .input:active, .textarea:active, .select select:active, .file-cta:active,
+    .file-name:active, .pagination-previous:active,
+    .pagination-next:active,
+    .pagination-link:active,
+    .pagination-ellipsis:active, .is-active.button, .is-active.input, .is-active.textarea, .select select.is-active, .is-active.file-cta,
+    .is-active.file-name, .is-active.pagination-previous,
+    .is-active.pagination-next,
+    .is-active.pagination-link,
+    .is-active.pagination-ellipsis {
+        outline: none;
+    }
 
 .button[disabled], .input[disabled], .textarea[disabled], .select select[disabled], .file-cta[disabled],
 .file-name[disabled], .pagination-previous[disabled],
@@ -475,7 +476,7 @@ table th {
     box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
     color: #4a4a4a;
     display: block;
-    padding: 1.25rem;
+    padding: 1rem;
     text-align: center;
 }
 
@@ -500,6 +501,7 @@ a.box:active {
   padding-top: calc(0.5em - 1px);
   text-align: center;
   white-space: nowrap;
+      box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
 }
 
 .button strong {
@@ -532,7 +534,6 @@ a.box:active {
 }
 
 .button:focus, .button.is-focused {
-  border-color: #485fc7;
   color: #363636;
 }
 
@@ -1006,13 +1007,13 @@ fieldset[disabled] .button.is-dark.is-inverted.is-outlined {
 }
 
 .button.is-primary {
-  background-color: #00d1b2;
+  background-color: #e71837;
   border-color: transparent;
   color: #fff;
 }
 
 .button.is-primary:hover, .button.is-primary.is-hovered {
-  background-color: #00c4a7;
+  background-color: #e71837;
   border-color: transparent;
   color: #fff;
 }
@@ -1027,15 +1028,13 @@ fieldset[disabled] .button.is-dark.is-inverted.is-outlined {
 }
 
 .button.is-primary:active, .button.is-primary.is-active {
-  background-color: #00b89c;
+  background-color: #e71837;
   border-color: transparent;
   color: #fff;
 }
 
 .button.is-primary[disabled],
 fieldset[disabled] .button.is-primary {
-  background-color: #00d1b2;
-  border-color: #00d1b2;
   box-shadow: none;
 }
 
@@ -1765,7 +1764,6 @@ fieldset[disabled] .button.is-danger.is-inverted.is-outlined {
 
 .button[disabled],
 fieldset[disabled] .button {
-  background-color: white;
   border-color: #dbdbdb;
   box-shadow: none;
   opacity: 0.5;
@@ -4782,7 +4780,7 @@ fieldset[disabled] .select select:hover {
 }
 
 .dropdown {
-  display: inline-flex;
+/*  display: inline-flex;*/
   position: relative;
   vertical-align: top;
 }
@@ -4806,7 +4804,7 @@ fieldset[disabled] .select select:hover {
 .dropdown-menu {
   display: none;
   left: 0;
-  min-width: 12rem;
+  min-width: 100%;
   padding-top: 4px;
   position: absolute;
   top: 100%;
@@ -6098,19 +6096,18 @@ body.has-navbar-fixed-bottom {
   position: relative;
   width: 3.25rem;
   margin-left: auto;
+  margin-right: 10px;
 }
 
 .navbar-burger span {
-  background-color: currentColor;
+  background-color: #ffffff;
   display: block;
-  height: 1px;
-  left: calc(50% - 8px);
+  height: 3px;
+  left: calc(50% - 10px);
   position: absolute;
   transform-origin: center;
-  transition-duration: 86ms;
-  transition-property: background-color, opacity, transform;
-  transition-timing-function: ease-out;
-  width: 16px;
+  transition: all 0.3s ease;
+  width: 20px;
 }
 
 .navbar-burger span:nth-child(1) {
@@ -6125,12 +6122,10 @@ body.has-navbar-fixed-bottom {
   top: calc(50% + 4px);
 }
 
-.navbar-burger:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
+/* Circle morph to X */
 .navbar-burger.is-active span:nth-child(1) {
-  transform: translateY(5px) rotate(45deg);
+  transform: translateY(5px) rotate(45deg) scale(1.2);
+  border-radius: 50%;
 }
 
 .navbar-burger.is-active span:nth-child(2) {
@@ -6138,7 +6133,8 @@ body.has-navbar-fixed-bottom {
 }
 
 .navbar-burger.is-active span:nth-child(3) {
-  transform: translateY(-5px) rotate(-45deg);
+  transform: translateY(-5px) rotate(-45deg) scale(1.2);
+  border-radius: 50%;
 }
 
 .navbar-menu {
@@ -6251,6 +6247,16 @@ a.navbar-item:focus, a.navbar-item:focus-within, a.navbar-item:hover, a.navbar-i
   .navbar > .container {
     display: block;
   }
+
+  .navbar-dropdown .navbar-item {
+    padding-left: 2.5rem;
+  }
+
+  .navbar-item,
+  .navbar-link {
+      padding: 0.5rem 1.5rem;
+  }
+
   .navbar-brand .navbar-item,
   .navbar-tabs .navbar-item {
     align-items: center;
@@ -6540,6 +6546,7 @@ a.navbar-item:focus, a.navbar-item:focus-within, a.navbar-item:hover, a.navbar-i
 .pagination-previous:hover,
 .pagination-next:hover,
 .pagination-link:hover {
+  background-color: #e71837;
   border-color: #b5b5b5;
   color: white;
 }
@@ -11839,10 +11846,8 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 }
 
 .footer {
-    background-color: #fafafa;
+    background-color: rgba(0, 0, 0, 0.8);
     padding: 3rem 1.5rem 6rem;
-/*    bottom: 0;
-    position: relative;
-    width: 100%;*/
+    color: #e71837
 }
 /*# sourceMappingURL=bulma.css.map */

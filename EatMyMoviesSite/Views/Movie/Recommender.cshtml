@@ -1,0 +1,289 @@
+﻿<title>Find me a movie</title>
+<meta name="description" content="We ask several questions, you tell us what you're looking for and we find the perfect movie recommendation" />
+
+<div id="recommenderApp" v-cloak>
+    <h1 v-if="!recommendedMovie">Discover your next cinematic obsession</h1>
+    <h1 v-if="recommendedMovie">Tonight's pick</h1>
+
+    <transition name="fade">
+        <div v-if="!showRecommendationBox" class="box has-text-centered">
+            <div class="question-area">
+                <div v-if="isLoading">
+                    <p v-if="allQuestionsAnswered">Finding you a match</p>
+                    <loading-spinner></loading-spinner>
+                </div>
+                <div v-else>
+
+                    <div class="progress-indicator">
+                        <span v-for="(question, index) in prompts"
+                              :key="index"
+                              :class="['progress-step', { 'is-current': currentQuestionIndex === index, 'is-clickable': index <= currentQuestionIndex }]"
+                              v-on:click="goToQuestion(index)">
+                            {{ index + 1 }}
+                        </span>
+                    </div>
+
+                    <p v-if="!allQuestionsAnswered">{{ prompts[currentQuestionIndex] }}</p>
+                    <div v-if="currentQuestionIndex === 0">
+                        <!-- Feeling Buttons -->
+                        <div class="buttons is-centered mt-2">
+                            <button v-for="feeling in feelings"
+                                    :key="feeling"
+                                    :class="['button genre-button', { 'is-primary': selectedFeelings.includes(feeling) }]"
+                                    v-on:click="toggleFeeling(feeling)">
+                                {{ formatFeeling(feeling) }}
+                            </button>
+                        </div>
+                        <button class="button is-primary mt-2" :disabled="selectedFeelings.length === 0" v-on:click="nextQuestion()">Next</button>
+                    </div>
+
+                    <div v-if="currentQuestionIndex === 1">
+                        <!-- Duration Question -->
+                        <div class="buttons is-centered">
+                            <button v-for="(duration, index) in durations"
+                                    :key="index"
+                                    :class="['button wide-button', { 'is-primary': duration.includes(durationPreference)}]"
+                                    v-on:click="selectDuration(index)">
+                                {{ duration }}
+                            </button>
+                        </div>
+                        <button class="button is-primary mt-2" :disabled="!durationPreference" v-on:click="nextQuestion()">Next</button>
+                    </div>
+
+                    <div v-if="currentQuestionIndex === 2">
+                        <!-- Foreign Film Question -->
+                        <div class="buttons is-centered">
+                            <button class="button"
+                                    :class="{ 'is-selected is-primary': openToForeignFilm === true }"
+                                    v-on:click="selectForeignFilm(true)">
+                                Yes
+                            </button>
+                            <button class="button"
+                                    :class="{ 'is-selected is-primary': openToForeignFilm === false }"
+                                    v-on:click="selectForeignFilm(false)">
+                                No
+                            </button>
+                        </div>
+                        <button class="button is-primary mt-2" :disabled="openToForeignFilm === null" v-on:click="nextQuestion()">Next</button>
+                    </div>
+
+                    <div v-if="currentQuestionIndex === 3 && !allQuestionsAnswered">
+                        <!-- Year Range Question -->
+                        <div class="buttons is-centered">
+                            <button v-for="(yearRange, index) in yearRanges"
+                                    :key="index"
+                                    :class="['button', { 'is-primary': releaseYearRange === yearRange }]"
+                                    v-on:click="selectYearRange(index)">
+                                {{ yearRange }}
+                            </button>
+                        </div>
+                        <button class="button is-primary mt-2" :disabled="!releaseYearRange" v-on:click="fetchRecommendedMovie()">Find me a movie</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </transition>
+
+    <div class="has-text-centered" v-show="showRecommendationBox && !isLoading && !recommendedMovie">
+        <p>No movie found matching your criteria</p>
+        <button class="button recommendation-button" v-on:click="startOver">Start over</button>
+    </div>
+    
+
+    <!-- Movie Recommendation Box -->
+    <transition name="slide">
+        <div v-if="showRecommendationBox">
+            <article class="movie-block mt-0">
+
+                    <div class="columns is-mobile is-hidden-desktop mb-0">
+                        <div class="column is-two-fifths is-flex is-align-items-center is-justify-content-center">
+                            <img class="poster" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
+                        </div>
+                        <div class="column is-justify-content-center">
+                            <h4 class="movie-title mb-0">{{ recommendedMovie.title }}</h4>
+                            <small class="release-date">{{ recommendedMovie.releaseDate }}</small>
+                            <small>{{ recommendedMovie.genres }}</small>
+                            <small>{{ recommendedMovie.imdbRating }} IMDB Rating</small>
+                            <small>{{ recommendedMovie.runtime }} Minutes</small>
+                            <small>{{ recommendedMovie.language }}</small>
+                        </div>
+                    </div>
+
+                    <div class="columns is-desktop is-hidden-mobile">
+                        <div class="column is-one-third">
+                            <img class="poster poster-on-detail" :src="'https://image.tmdb.org/t/p/w500' + recommendedMovie.posterPath" :alt="recommendedMovie.title + ' poster'" />
+                        </div>
+                        <div class="column is-flex is-flex-direction-column is-justify-content-center">
+                            <h4 class="movie-title mb-0">{{ recommendedMovie.title }}</h4>
+                            <small class="release-date">{{ recommendedMovie.releaseDate }}</small>
+                            <small>{{ recommendedMovie.genres }}</small>
+                            <small>{{ recommendedMovie.imdbRating }} IMDB Rating</small>
+                            <small>{{ recommendedMovie.runtime }} Minutes</small>
+                            <small>{{ recommendedMovie.language }}</small>
+                        </div>
+            </article>
+
+            <div class="column"> 
+                <div class="buttons is-centered">
+                    <button class="button recommendation-button" v-on:click="loadNextRecommendation">Load another</button>
+                    <button class="button recommendation-button" v-on:click="startOver">Start over</button>
+                    <button class="button recommendation-button" v-on:click="shareOnWhatsApp">Share on WhatsApp</button>
+                </div>
+            </div>
+
+            <div class="column">
+                <h1>{{ recommendedMovie.title }}</h1>
+                <h4 v-if="recommendedMovie.tagline" class="tagline">"{{ recommendedMovie.tagline }}"</h4>
+                <div class="columns">
+                    <div class="column">
+                        <p class="synopsis">{{ recommendedMovie.overview }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="recommendedMovie" class="columns">
+                <div class="column has-text-centered trailer-container">
+                    <iframe class="responsive-iframe" :src="recommendedMovie.trailerPath"></iframe>
+                </div>
+            </div>
+
+        </div>
+</div>
+    </transition>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <script src="/components/loading.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            components: {
+                'loading-spinner': LoadingSpinner
+            },
+            data() {
+                return {
+                    feelings: [],
+                    selectedFeelings: [], // Store selected genres
+                    currentQuestionIndex: 0,
+                    maxQuestions: 4, // Number of questions after genre selection
+                    recommendedMovie: null,
+                    recommendationCollection: [],
+                    isLoading: true,
+                    showRecommendationBox: false,
+                    mood: null,
+                    durationPreference: null,
+                    openToForeignFilm: null,
+                    releaseYearRange: null,
+                    prompts: [
+                        'What kind of feeling or experience are you looking for in a movie right now?',
+                        'How long do you want to watch for?',
+                        'Are you open to a movie in another language?',
+                        'Do you want a movie from a specific release year range?'
+                    ],
+                    durations: ['Short (less than 2 hours)', 'Long (over 2 hours)', 'Any length'],
+                    yearRanges: ['Before 2000', 'After 2000', 'Anytime'],
+                    allQuestionsAnswered: false,
+                    currentRecommendationIndex: 0 // Track current recommendation in the collection
+                };
+            },
+            methods: {
+                toggleFeeling(feeling) {
+                    const index = this.selectedFeelings.indexOf(feeling);
+                    if (index > -1) {
+                        this.selectedFeelings.splice(index, 1); // Remove feeling if already selected
+                    } else {
+                        this.selectedFeelings.push(feeling); // Add feeling if not selected
+                    }
+                },
+                formatFeeling(feeling) {
+                    return feeling.replace(/([a-z])([A-Z])/g, '$1 $2');
+                },
+                nextQuestion() {
+                    this.currentQuestionIndex++;
+                    if (this.currentQuestionIndex < this.maxQuestions) {
+                        this.currentQuestion = this.prompts[this.currentQuestionIndex];
+                    }
+                },
+                selectDuration(index) {
+                    this.durationPreference = this.durations[index];
+                },
+                selectForeignFilm(value) {
+                    this.openToForeignFilm = value;
+                },
+                selectYearRange(index) {
+                    this.releaseYearRange = this.yearRanges[index];
+                },
+                fetchRecommendedMovie() {
+                    // add check here
+                    this.allQuestionsAnswered = true;
+                    this.isLoading = true;
+                    const feelingsParam = this.selectedFeelings.join(',');
+
+                    const url = `/Movie/GetRecommendations?feelings=${feelingsParam}&duration=${this.durationPreference}&openToForeignFilm=${this.openToForeignFilm}&yearRange=${this.releaseYearRange}`;
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            this.recommendationCollection = data;
+                            this.recommendedMovie = data[0];
+                            this.currentRecommendationIndex = 0; // Reset recommendation index
+                            this.isLoading = false;
+                            this.showRecommendationBox = true;
+                        });
+                },
+                loadNextRecommendation() {
+                    this.isLoading = true;
+                    if (this.currentRecommendationIndex < this.recommendationCollection.length - 1) {
+                        this.currentRecommendationIndex++;
+                        this.recommendedMovie = this.recommendationCollection[this.currentRecommendationIndex];
+                    } else {
+                        alert('No more recommendations available.');
+                    }
+                    this.isLoading = false;
+                },
+                startOver() {
+                    this.showRecommendationBox = false;
+                    this.currentQuestionIndex = 0;
+                    this.selectedFeelings = [];
+                    this.durationPreference = null;
+                    this.openToForeignFilm = null;
+                    this.releaseYearRange = null;
+                    this.allQuestionsAnswered = false;
+                    this.recommendedMovie = null;
+                    this.recommendationCollection = [];
+                    this.currentRecommendationIndex = 0;
+                },
+                shareOnWhatsApp() {
+                    const releaseYear = this.recommendedMovie.releaseDate.slice(-4);
+                    const movieUrl = `www.eatmymovies.com/movie/detail?tmdbId=${this.recommendedMovie.tmdbId}`;
+                    const message = `Check out this movie: ${this.recommendedMovie.title} (${releaseYear}) - ${movieUrl}`;
+                    const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+                    window.open(url, '_blank');
+                },
+                goToQuestion(index) {
+                    if (index <= this.currentQuestionIndex) {
+                        this.currentQuestionIndex = index;
+                    }
+                },
+
+            },
+            mounted() {
+                fetch('/movie/GetFeelings')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.feelings = data;
+                        this.currentQuestion = this.prompts[this.currentQuestionIndex];
+                        this.isLoading = false;
+                    });
+            },
+        }).mount('#recommenderApp');
+
+    </script>
+}
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>

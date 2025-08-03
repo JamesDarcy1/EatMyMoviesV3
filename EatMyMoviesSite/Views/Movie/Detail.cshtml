@@ -2,60 +2,191 @@
 @using System.Diagnostics;
 @model MovieDetail;
 
-<meta name="description" content=@Model.Overview />
-
 @if (Model != null)
 {
-	<title>Eat My Movies - @Model.Title</title>
-	<div class="box">
-		<div class="columns">
-			<div class="column is-three-fifths">
-				<h1>@Model.Title</h1>
-				<i class="tagline">@Model.Tagline</i><br />
-				<div class="columns is-mobile">
-					<div class="column">
-						<strong><u>Release Date</u></strong><br />
-						<strong>@Model.ReleaseDate</strong>
-					</div>
-					<div class="column">
-						<strong><u>Genres</u></strong><br />
-						@foreach (var genre in Model.Genres)
-						{
-							<strong>@genre<br></strong>
-						}
-					</div>
-					<div class="column">
-						<strong><u>Imdb Rating</u></strong><br />
-						<strong>@Model.ImdbRating</strong>
-					</div>
-				</div>
-			</div>
+    <meta name="description" content=@Model.Overview />
+    <title>@Model.Title</title>
+    <div class="box">
+        <div class="columns">
+            <div class="column is-three-fifths">
+                <h1>@Model.Title</h1>
+                <i class="tagline">@Model.Tagline</i><br />
+                <div class="columns is-mobile">
+                    <div class="column">
+                        <strong><u>Release Date</u></strong><br />
+                        <strong>@Model.ReleaseDate</strong>
+                    </div>
+                    @if (Model.ImdbRating != null)
+                    {
+                        <div class="column">
+                            <strong><u>Imdb Rating</u></strong><br />
+                            <strong>@Model.ImdbRating</strong>
+                        </div>
+                    }
+                    <div class="column">
+                        <strong><u>Runtime</u></strong><br />
+                        @{
+                            int hrs = Model.Runtime.Value / 60;
+                            int mins = Model.Runtime.Value % 60;
 
-			<div class="column is-two-fifths">
-				<img class="poster-on-detail" src=@("https://image.tmdb.org/t/p/w500" + Model.PosterPath) alt="@Model.Title poster" />
-			</div>
-		</div>
-		<div class="column">
-			<div class="columns is-mobile">
-				<p class="synopsis">@Model.Overview</p>
-			</div>
-		</div>
-	</div>
+                            string formattedRuntime = $"{hrs}h {mins}m";
+                        }
+                        <strong>@formattedRuntime</strong>
+                    </div>
+                </div>
+                <div class="columns is-mobile">
+                    <div class="column">
+                        <strong><u>Genres</u></strong><br />
+                        <strong>@Model.Genres</strong>
+                    </div>
+                    <div class="column">
+                        <strong><u>Language</u></strong><br />
+                        <strong>@Model.Language</strong>
+                    </div>
+                </div>
+            </div>
 
-	<div class="columns">
-		<div class="column has-text-centered trailer-container">
-			<iframe class="responsive-iframe"
-					src=@(Model.TrailerPath)>
-			</iframe>
-		</div>
-	</div>
+            <div class="column is-two-fifths">
+                <img class="poster poster-on-detail" src=@("https://image.tmdb.org/t/p/w500" + Model.PosterPath) alt="@Model.Title poster" />
+            </div>
+        </div>
+        <div class="column">
+            <div class="columns is-mobile">
+                <p class="synopsis">@Model.Overview</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="column has-text-centered trailer-container">
+            <iframe class="responsive-iframe"
+                    src=@(Model.TrailerPath)
+                    allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+
+    <div class="box">
+        <!-- Director Section -->
+        <h2 class="pb-2 mt-0">Director</h2>
+        <div class="columns is-mobile">
+            <div class="column is-one-third">
+                <figure class="image is-flex is-justify-content-center">
+                    <img class="profile-image is-rounded" src="@Model.Director.ProfilePath" alt="Director: @Model.Director">
+                </figure>
+            </div>
+            <div class="column is-two-thirds">
+                <p><strong>@Model.Director.Name</strong></p>
+                <div class="director-section">
+                    <p>@Model.Director.Biography</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <h2 class="section-header mt-0 pb-2">Cast</h2>
+        <div class="columns is-multiline is-mobile">
+            @foreach (var actor in Model.Actors)
+            {
+                <div class="column is-one-third">
+                    <figure class="image is-flex is-justify-content-center">
+                        <img class="profile-image is-rounded" src="@actor.ProfilePath" alt="@actor.Name">
+                    </figure>
+                    <div class="actor-section">
+                        <p>@actor.Name</p>
+                        <p><i>@actor.Character</i></p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (Model.CanEdit)
+    {
+        <h2 class="title is-4">List Management</h2>
+
+        <div class="box">
+
+            <div class="columns has-text-weight-semibold is-size-7 mb-2">
+                <div class="column is-4">List</div>
+                <div class="column is-3">Ranking</div>
+                <div class="column is-5">Actions</div>
+            </div>
+
+            @foreach (var ranking in Model.Rankings)
+            {
+                <form method="post" action="/Storage/UpdateRanking" class="mb-2">
+                    <div class="columns is-vcentered">
+                        <div class="column is-4">
+                            @ranking.ListName
+                        </div>
+                        <div class="column is-3">
+                            <input class="input is-small" type="number" name="newRanking" value="@ranking.Ranking" />
+                        </div>
+                        <div class="column is-5">
+                            <div class="buttons is-centered">
+                                <input type="hidden" name="movieId" value="@ranking.MovieId" />
+                                <input type="hidden" name="listId" value="@ranking.ListId" />
+
+                                <button type="submit" class="button is-info is-small">Update</button>
+
+                                <button formaction="/Storage/DeleteRanking"
+                                        formmethod="post"
+                                        name="movieId"
+                                        value="@ranking.MovieId"
+                                        class="button is-danger is-small"
+                                        onclick="this.form.listId.value='@ranking.ListId'">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            }
+
+            <!-- New form for adding a ranking -->
+            <form method="post" action="/Storage/AddMovieToList" class="mt-4">
+                <div class="columns is-vcentered">
+                    <div class="column is-4">
+                        <div class="select is-small is-fullwidth">
+                            <select name="listName" required>
+                                <option value="">Select a list...</option>
+                                @foreach (var list in Model.Lists)
+                                {
+                                    <option value="@list.Name">@list.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+                        <input class="input is-small" type="number" name="ranking" placeholder="Ranking" required />
+                    </div>
+                    <div class="column is-5">
+                        <div class="buttons is-centered">
+                            <input type="hidden" name="movieTitle" value="@Model.Title" />
+                            <button type="submit" class="button is-primary is-small">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+
+    }
+
+
+
+
+
 }
 else
 {
-	<div class="opaque-box">
-		<h1 class="text-danger">Movie not found</h1>
-		<h2 class="text-danger">Please go back and try again</h2>
-	</div>
+    <div class="opaque-box">
+        <h1 class="text-danger">Movie not found</h1>
+        <h2 class="text-danger">Please go back and try again</h2>
+    </div>
 }
 
 
