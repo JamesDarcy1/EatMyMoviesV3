@@ -73,7 +73,7 @@ namespace EatMyMoviesSite.Services
             return reducedList;
         }
 
-        public async Task<Movie> GetMoviesById(int id)
+        public async Task<Movie> GetMovieById(int id)
         {
             var cacheKey = $"Movie_{id}";
 
@@ -132,7 +132,7 @@ namespace EatMyMoviesSite.Services
                 {
                     var ranking = _rankingRepository.GetRankingOfMovie(movie.MovieId, listTitle);
                     var imdbRating = await GetImdbRating(movie.Title);
-                    var tmdbMovie = await GetMoviesById(movie.TmdbId.Value);
+                    var tmdbMovie = await GetMovieById(movie.TmdbId.Value);
                     var mappedMovie = Mapper.BuildListMovie(tmdbMovie, imdbRating, ranking);
                     moviesList.Movies.Add(mappedMovie);
                 }

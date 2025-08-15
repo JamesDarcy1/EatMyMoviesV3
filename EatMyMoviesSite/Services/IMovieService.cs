@@ -11,7 +11,7 @@ namespace EatMyMoviesSite.Services
         List<EatMyMovies.DataAccess.Models.Genre> GetAllGenres();
         Task<decimal?> GetImdbRating(string movieTitle);
 		Task<Movie> GetMovieByTitle(string title);
-		Task<Movie> GetMoviesById(int id);
+		Task<Movie> GetMovieById(int id);
         Task<List<MovieDropdown>> SearchMoviesByTitle(string titleSearch);
         Task<Video> GetTrailer(int movieId);
         IList<T> ShuffleList<T>(IList<T> list);

@@ -31,7 +31,7 @@ namespace EatMyMoviesSite.Controllers
                 TMDbLib.Objects.Movies.Movie movie;
                 if(tmdbId != null)
                 {
-                    movie = await _movieService.GetMoviesById(tmdbId.Value);
+                    movie = await _movieService.GetMovieById(tmdbId.Value);
                 }
                 else { 
                     movie = await _movieService.GetMovieByTitle(title);
