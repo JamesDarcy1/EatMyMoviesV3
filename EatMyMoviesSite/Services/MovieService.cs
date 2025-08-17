@@ -119,8 +119,15 @@ namespace EatMyMoviesSite.Services
             try
             {
                 var list = _listRepository.GetListByName(listTitle);
-                var moviesList = new MovieList() { Name = list.Name, Description = list.Description, Movies = new List<ListMovie>() };
-                var moviesForPage =  _rankingRepository.GetMoviesForListByPage(listTitle, page).ToList();
+                var moviesList = new MovieList()
+                {
+                    Name = list.Name,
+                    Description = list.Description,
+                    Movies = new List<ListMovie>()
+                };
+
+                var moviesForPage = _rankingRepository.GetMoviesForListByPage(listTitle, page).ToList();
+                var rankings = _rankingRepository.GetAllRankingsInList(list);
                 var totalMovies = _rankingRepository.GetListCount(listTitle);
                 var totalPages = (int)Math.Ceiling((double)totalMovies / _moviesPerPage);
                 page = Math.Max(1, Math.Min(page, totalPages));
@@ -128,24 +135,31 @@ namespace EatMyMoviesSite.Services
                 moviesList.TotalPages = totalPages;
                 moviesList.CurrentPage = page;
 
-                foreach (var movie in moviesForPage)
+                var tasks = moviesForPage.Select(async movie =>
                 {
-                    var ranking = _rankingRepository.GetRankingOfMovie(movie.MovieId, listTitle);
-                    var imdbRating = await GetImdbRating(movie.Title);
-                    var tmdbMovie = await GetMovieById(movie.TmdbId.Value);
-                    var mappedMovie = Mapper.BuildListMovie(tmdbMovie, imdbRating, ranking);
-                    moviesList.Movies.Add(mappedMovie);
-                }
+                    var ranking = rankings.First(r => r.Movie.MovieId == movie.MovieId).Ranking;
 
-                moviesList.Movies = moviesList.Movies.OrderBy(x => x.Ranking).ToList();
+                    var imdbTask = GetImdbRating(movie.Title);
+                    var tmdbTask = GetMovieById(movie.TmdbId.Value);
+
+                    var imdbRating = imdbTask.Result;
+                    var tmdbMovie = tmdbTask.Result;
+
+                    return Mapper.BuildListMovie(tmdbMovie, imdbRating, ranking);
+                });
+
+                var results = await Task.WhenAll(tasks);
+
+                moviesList.Movies.AddRange(results);
+
                 return moviesList;
-
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
+
 
         public List<EatMyMovies.DataAccess.Models.Genre> GetAllGenres()
         {

@@ -78,6 +78,7 @@ namespace EatMyMovies.DataAccess.Repositories
         public IEnumerable<ListRanking> GetAllRankingsInList(List list)
         {
             var listRankings = _dbContext.ListRankings.Where(lr => lr.List == list)
+                                                      .Include(lr => lr.Movie)
                                                       .OrderBy(lr => lr.Ranking).ToList();
             return listRankings;
         }
