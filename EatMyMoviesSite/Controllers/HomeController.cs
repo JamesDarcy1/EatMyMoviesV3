@@ -20,16 +20,16 @@ namespace EatMyMoviesSite.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var movieOfTheWeek = "Sing Sing";
-            var motwTmdbId = 1155828;
+            var movieOfTheWeek = "Starred up";
+            //int motwTmdbId = null;
             Movie tmdbMovie;
-            if(motwTmdbId != null)
-            {
-                tmdbMovie = await _movieService.GetMovieById(motwTmdbId);
-            } else
-            {
+            //if(motwTmdbId != null)
+            //{
+            //    tmdbMovie = await _movieService.GetMovieById(motwTmdbId);
+            //} else
+            //{
                 tmdbMovie = await _movieService.GetMovieByTitle(movieOfTheWeek);
-            }
+            //}
             Person director = await _movieService.GetDirector(tmdbMovie.Id);
             var imdbRating = await _movieService.GetImdbRating(tmdbMovie.Title);
 
