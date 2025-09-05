@@ -21,18 +21,13 @@ namespace EatMyMoviesSite.Controllers
         public async Task<IActionResult> Index()
         {
             var movieOfTheWeek = "Starred up";
-            //int motwTmdbId = null;
-            Movie tmdbMovie;
-            //if(motwTmdbId != null)
-            //{
-            //    tmdbMovie = await _movieService.GetMovieById(motwTmdbId);
-            //} else
-            //{
-                tmdbMovie = await _movieService.GetMovieByTitle(movieOfTheWeek);
-            //}
+            int? motwTmdbId = null; // Set to null if we don't need it
+
+            Movie tmdbMovie = motwTmdbId != null ? await _movieService.GetMovieById(motwTmdbId.Value) : 
+                await _movieService.GetMovieByTitle(movieOfTheWeek);
+
             Person director = await _movieService.GetDirector(tmdbMovie.Id);
             var imdbRating = await _movieService.GetImdbRating(tmdbMovie.Title);
-
             var summary = Mapper.MapToMovieSummary(tmdbMovie, imdbRating, director.Name);
 
             return View(summary);

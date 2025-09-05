@@ -117,10 +117,8 @@ namespace EatMyMoviesSite.Controllers
                 var tmdbMovie = await _movieService.GetMovieByTitle(movie.Title);
                 if (tmdbMovie != null)
                 {
-                    Console.WriteLine("movie ", tmdbMovie.Title);
                     var genres = tmdbMovie.Genres.Select(x => x.Name);
                     _movieRepository.SaveGenres(movie, genres);
-                    Console.WriteLine("saved genres ", JsonSerializer.Serialize(tmdbMovie.Genres));
                 }
             }
         }

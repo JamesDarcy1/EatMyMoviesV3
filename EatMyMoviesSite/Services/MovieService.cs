@@ -4,11 +4,9 @@ using EatMyMoviesSite.DTOs;
 using EatMyMoviesSite.Enums;
 using Microsoft.Extensions.Caching.Memory;
 using OMDbSharp;
-using System.Text;
-using System.Threading.Tasks;
 using TMDbLib.Client;
 using TMDbLib.Objects.General;
-using TMDbLib.Objects.Movies;
+using TMDbLib.Objects.TvShows;
 using Movie = TMDbLib.Objects.Movies.Movie;
 
 namespace EatMyMoviesSite.Services
@@ -24,6 +22,15 @@ namespace EatMyMoviesSite.Services
         private readonly bool _isDevelopment;
         private Guid ChristmasListId;
         private readonly IMemoryCache _cache;
+
+
+        private static readonly Dictionary<string, string> _feelingMap = new()
+        {
+            { "FeelGood", "Feel-good" },
+            { "MindBending", "Mind-bending" },
+            { "Funny", "Comedies" },
+            { "Scary", "Horrors" }
+        };
 
         public MovieService(IRankingRepository rankingRepository,
                             IConfiguration configuration,
@@ -59,18 +66,32 @@ namespace EatMyMoviesSite.Services
             return movie;
         }
 
-        public async Task<List<MovieDropdown>> SearchMoviesByTitle(string titleSearch)
+        public async Task<List<MovieDropdown>> SearchByTitle(string titleSearch,string type)
         {
-            var searchResults = await _tmdbClient.SearchMovieAsync(titleSearch, 1);
-            var reducedList = searchResults.Results.Where(x => x.PosterPath != null)
+            if (type == "movie") {
+                var movieSearchResults = await _tmdbClient.SearchMovieAsync(titleSearch, 1);
+                var reducedMovieList = movieSearchResults.Results.Where(x => x.PosterPath != null)
+                                                        .Select(x =>
+                                                            new MovieDropdown()
+                                                            {
+                                                                Id = x.Id,
+                                                                Title = x.Title,
+                                                                PosterPath = x.PosterPath
+                                                            }).Take(5).ToList();
+                return reducedMovieList;
+            }
+            else { 
+                var tvSearchResults = await _tmdbClient.SearchTvShowAsync(titleSearch);
+                var reducedTVList = tvSearchResults.Results.Where(x => x.PosterPath != null)
                                                     .Select(x =>
                                                         new MovieDropdown()
                                                         {
                                                             Id = x.Id,
-                                                            Title = x.Title,
+                                                            Title = x.Name,
                                                             PosterPath = x.PosterPath
                                                         }).Take(5).ToList();
-            return reducedList;
+                return reducedTVList;
+            }
         }
 
         public async Task<Movie> GetMovieById(int id)
@@ -84,6 +105,19 @@ namespace EatMyMoviesSite.Services
             }
             return movie;
         }
+
+        public async Task<TvShow> GetTVSeriesById(int id)
+        {
+            var cacheKey = $"TV_{id}";
+
+            if (!_cache.TryGetValue(cacheKey, out TvShow tvShow))
+            {
+                tvShow = await _tmdbClient.GetTvShowAsync(id);
+                _cache.Set(cacheKey, tvShow, TimeSpan.FromHours(6));
+            }
+            return tvShow;
+        }
+
 
         public async Task<Video> GetTrailer(int movieId)
         {
@@ -212,8 +246,6 @@ namespace EatMyMoviesSite.Services
 
         public async Task<List<Movie>> GetFastRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange)
         {
-            ChristmasListId = _listRepository.GetListByName("Christmas").ListId;
-
             List<string> feelingsFormmated = FormatFeelings(feelings);
             var storeMovies = new HashSet<EatMyMovies.DataAccess.Models.Movie>();
 
@@ -241,34 +273,13 @@ namespace EatMyMoviesSite.Services
             return shuffledReccys.ToList();
         }
 
+
         private List<string> FormatFeelings(string feelings)
         {
-            List<string> formattedFeelings = feelings.Split(',').ToList();
-
-            if (formattedFeelings.Contains("FeelGood"))
-            {
-                formattedFeelings.Remove("FeelGood");
-                formattedFeelings.Add("Feel-good");
-            }
-
-            if (formattedFeelings.Contains("MindBending"))
-            {
-                formattedFeelings.Remove("MindBending");
-                formattedFeelings.Add("Mind-bending");
-            }
-
-            if (formattedFeelings.Contains("Funny"))
-            {
-                formattedFeelings.Remove("Funny");
-                formattedFeelings.Add("Comedies");
-            }
-
-            if (formattedFeelings.Contains("Scary"))
-            {
-                formattedFeelings.Remove("Scary");
-                formattedFeelings.Add("Horrors");
-            }
-            return formattedFeelings;
+            return feelings
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(f => _feelingMap.TryGetValue(f, out var mapped) ? mapped : f)
+                .ToList();
         }
 
         private List<string> GetGenresLinkedToFeelings(string selectedFeelings)

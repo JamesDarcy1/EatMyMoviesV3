@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Globalization;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
+using TMDbLib.Objects.TvShows;
 
 namespace EatMyMoviesSite
 {
@@ -48,6 +49,27 @@ namespace EatMyMoviesSite
                 CanEdit = string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "development", StringComparison.InvariantCultureIgnoreCase)
             };
 		}
+
+        public static MovieDetail MapToTvShowDetail(TvShow tmdbShow, Video trailer, decimal? imdbRating, Person director, List<Person> actors)
+        {
+            return new MovieDetail
+            {
+                Title = tmdbShow.Name,
+                PosterPath = tmdbShow.PosterPath,
+                BackdropPath = tmdbShow.BackdropPath,
+                Overview = tmdbShow.Overview,
+                ReleaseDate = tmdbShow.FirstAirDate.Value.ToString("yyyy", CultureInfo.InvariantCulture),
+                TrailerPath = trailer != null ? $"https://www.youtube.com/embed/{trailer.Key}" : null,
+                Tagline = tmdbShow.Tagline,
+                Genres = string.Join(", ", tmdbShow.Genres.Select(g => g.Name)),
+                ImdbRating = imdbRating != null ? imdbRating : null,
+                TmdbId = tmdbShow.Id,
+                Language = LanguageHelper.GetLanguageName(tmdbShow.OriginalLanguage),
+                Director = director,
+                Actors = actors.Take(6).ToList(),
+                CanEdit = string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "development", StringComparison.InvariantCultureIgnoreCase)
+            };
+        }
 
         public static ListMovie MapToMovieSummary(Movie tmdbMovie, decimal? imdbRating, string director)
         {

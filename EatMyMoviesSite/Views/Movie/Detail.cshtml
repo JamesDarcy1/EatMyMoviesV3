@@ -23,6 +23,8 @@
                             <strong>@Model.ImdbRating</strong>
                         </div>
                     }
+                    @if (Model.Runtime)
+                    {
                     <div class="column">
                         <strong><u>Runtime</u></strong><br />
                         @{
@@ -33,6 +35,7 @@
                         }
                         <strong>@formattedRuntime</strong>
                     </div>
+                    }
                 </div>
                 <div class="columns is-mobile">
                     <div class="column">

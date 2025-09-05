@@ -63,15 +63,16 @@
                 <h1 class="pt-6">
                     Movie Lists
                 </h1>
-                <button class="button list-button" asp-controller="List" asp-action="Top100">Top 100</button>
-                <button class="button list-button" asp-controller="List" asp-action="Christmas">Christmas</button>
-                <button class="button list-button" asp-controller="List" asp-action="Comedies">Comedies</button>
-                <button class="button list-button" asp-controller="List" asp-action="Disney">Disney</button>
-                <button class="button list-button" asp-controller="List" asp-action="ForeignFilms">Foreign Films</button>
-                <button class="button list-button" asp-controller="List" asp-action="Documentaries">Documentaries</button>
-                <button class="button list-button" asp-controller="List" asp-action="StandoutSoundtracks">Standout Soundtracks</button>
-                <button class="button list-button" asp-controller="List" asp-action="Iconic80s">Iconic 80s</button>
-                <button class="button list-button" asp-controller="List" asp-action="Horrors">Horrors</button>
+                <a class="button list-button" asp-controller="List" asp-action="Details" asp-route-listTitle="Top-100">Top 100</a>
+                <a class="button list-button" asp-controller="List" asp-action="Details" asp-route-listTitle="Best-TV-Series">Best TV Series</a>
+                <a class="button list-button" asp-controller="List" asp-action="Details" asp-route-listTitle="Christmas">Christmas</a>
+                <a class="button list-button" asp-controller="List" asp-action="Details" asp-route-listTitle="Comedies">Comedies</a>
+                <a class="button list-button" asp-controller="List" asp-action="Details" asp-route-listTitle="Disney">Disney</a>
+                <a class="button list-button" asp-controller="List" asp-action="Details" asp-route-listTitle="Foreign-Films">Foreign Films</a>
+                <a class="button list-button" asp-controller="List" asp-action="Details" asp-route-listTitle="Documentaries">Documentaries</a>
+                <a class="button list-button" asp-controller="List" asp-action="Details" asp-route-listTitle="Standout-Soundtracks">Standout Soundtracks</a>
+                <a class="button list-button" asp-controller="List" asp-action="Details" asp-route-listTitle="Iconic-80s">Iconic 80s</a>
+                <a class="button list-button" asp-controller="List" asp-action="Details" asp-route-listTitle="Horrors">Horrors</a>
             </div>
         </div>
     </section>

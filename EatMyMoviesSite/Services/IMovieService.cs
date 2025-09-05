@@ -2,6 +2,7 @@
 using EatMyMoviesSite.Enums;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
+using TMDbLib.Objects.TvShows;
 
 namespace EatMyMoviesSite.Services
 {
@@ -12,7 +13,7 @@ namespace EatMyMoviesSite.Services
         Task<decimal?> GetImdbRating(string movieTitle);
 		Task<Movie> GetMovieByTitle(string title);
 		Task<Movie> GetMovieById(int id);
-        Task<List<MovieDropdown>> SearchMoviesByTitle(string titleSearch);
+        Task<List<MovieDropdown>> SearchByTitle(string titleSearch, string type);
         Task<Video> GetTrailer(int movieId);
         IList<T> ShuffleList<T>(IList<T> list);
         Task<List<Movie>> GetRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange);
@@ -22,5 +23,6 @@ namespace EatMyMoviesSite.Services
         List<MovieRanking> GetListRankingsForMovie(Guid movieId);
         EatMyMovies.DataAccess.Models.Movie GetStoreMovieByTitle(string title);
         List<EatMyMovies.DataAccess.Models.List> GetAllLists();
+        Task<TvShow> GetTVSeriesById(int id);
     }
 }

@@ -1,26 +1,51 @@
 ﻿<div id="searchApp">
-    <h1>Movie Search</h1>
-    <div class="columns is-mobile mt-2">
-        <div class="column is is-three-quarters">
-            <input class="textarea" placeholder="Enter movie title" rows="3" v-model="searchQuery" />
-            <div :class="{'dropdown is-active': searchResults.length > 0, 'dropdown': searchResults.length || searchSelected === true}">
-                <div class="dropdown-menu has-text-left">
-                    <div class="dropdown-content">
-                        <a v-for="(movie, index) in searchResults" :key="index" class="dropdown-item" v-on:click="selectMovie(movie)">
-                            <img :src="'https://image.tmdb.org/t/p/w92' + movie.posterPath" :alt="movie.title + ' poster'" class="dropdown-poster">
-                            <span class="dropdown-title">{{ movie.title }}</span>
-                        </a>
-                    </div>
+    <h1 class="has-text-centered">Movie Search</h1>
+
+    <!-- Search Input + Dropdown -->
+    <div class="field mt-5">
+        <p class="control">
+            <input class="input" placeholder="Enter title..." v-model="searchQuery">
+        </p>
+
+        <!-- Dropdown Results attached to input -->
+        <div class="dropdown" :class="{ 'is-active': searchResults.length > 0 }" v-if="searchResults.length > 0">
+            <div class="dropdown-menu">
+                <div class="dropdown-content">
+                    <a v-for="(movie, index) in searchResults" :key="index" class="dropdown-item" v-on:click="selectMovie(movie)">
+                        <img :src="'https://image.tmdb.org/t/p/w92' + movie.posterPath" :alt="movie.title + ' poster'" class="mr-2">
+                        {{ movie.title }}
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="column">
-            <button class="button is-primary m-0" v-on:click="handleSearch">
-                <span>Search</span>
+    </div>
+
+    <!-- Toggle -->
+    <div class="field is-flex is-justify-content-center">
+        <div class="control" style="width: 25%;">
+            <div class="select" style="width: 100%;">
+                <select v-model="searchType">
+                    <option value="movie">Movies</option>
+                    <option value="tv">TV Series</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Button -->
+    <div class="field is-flex is-justify-content-center">
+        <div class="control" style="width: 25%;">
+            <button class="button is-primary is-fullwidth" v-on:click="handleSearch">
+                Search
             </button>
         </div>
     </div>
 </div>
+
+
+
+
+
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
@@ -34,45 +59,35 @@
                     searchResults: [],
                     searchSelected: false,
                     selectedMovie: null,
+                    searchType: 'movie', // default selection
                 };
             },
             watch: {
                 searchQuery(newQuery) {
-                    console.log(newQuery);
-                    console.log('new query length ' + newQuery.length);
-                    console.log('!this.searchSelected ' + !this.searchSelected);
                     if (newQuery.length > 0 && !this.searchSelected) {
-                        console.log('Searching ...');
                         this.performSearch();
                     } else {
-                        console.log('else ...');
                         this.searchResults = [];
                     }
                 }
             },
             methods: {
                 performSearch() {
-                    fetch(`/Movie/SearchForMovie?titleSearch=${encodeURIComponent(this.searchQuery)}`)
+                    fetch(`/Movie/SearchByTitle?titleSearch=${encodeURIComponent(this.searchQuery)}&type=${this.searchType}`)
                         .then(response => response.json())
                         .then(data => {
                             this.searchResults = data;
-                            console.log('Found ', data);
                         })
                         .catch(() => {
-                            console.log('Error');
                             this.searchResults = [];
                         });
-                    console.log('over');
-                },
-                selectMovie(movie) {
-                    window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}&tmdbId=${movie.id}`;
-                    // this.searchQuery = movie.title;
-                    // this.selectedMovie = movie;
-                    // this.searchSelected = true;
-                    // this.searchResults = [];
                 },
                 handleSearch() {
-                    window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}`;
+                    window.location.href = `/${this.searchType === 'movie' ? 'Movie' : 'TV'}/Detail?title=${encodeURIComponent(this.searchQuery)}`;
+                },
+
+                selectMovie(movie) {
+                    window.location.href = `/${this.searchType === 'movie' ? 'Movie' : 'TV'}/Detail?title=${encodeURIComponent(this.searchQuery)}&tmdbId=${movie.id}`;
                 }
             }
         }).mount('#searchApp');
