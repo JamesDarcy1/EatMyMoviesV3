@@ -38,8 +38,16 @@ namespace EatMyMoviesSite
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers.Append(
+                        "Cache-Control", "public,max-age=31536000");
+                }
+            });
 
-			app.UseEndpoints(endpoints =>
+            app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute(
 					name: "default",

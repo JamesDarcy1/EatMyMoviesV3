@@ -1,8 +1,9 @@
 ﻿@using EatMyMoviesSite.DTOs;
 @model MovieList
 
-<meta name="description" content=@Model.Description />
-<title>@Model.Name</title>
+<title>@Model.Name | Eat My Movies</title>
+<meta name="description" content="@Model.Description" />
+<link rel="canonical" href="https://eatmymovies.com/list/@Model.Name.ToSlug()">
 
 <div class="has-text-centered">
     <h1>@Model.Name</h1>
@@ -14,10 +15,10 @@
     {
         <h1>@movie.Ranking</h1>
         <article class="movie-block mt-0">
-            <a class="clickable-card" onclick="window.location='@Url.Action("Detail", "Movie")?tmdbId=@(movie.TmdbId)';">
+            <a class="clickable-card" href="/movie/detail?tmdbId=@(movie.TmdbId)">
                 <div class="columns is-mobile m-0">
                     <div class="column is-two-fifths-mobile is-one-third-desktop is-flex is-align-items-center is-justify-content-center">
-                        <img class="poster" src="@movie.PosterPath" alt="@movie.Title poster" />
+                        <img class="poster" loading="lazy" src="@movie.PosterPath" alt="@movie.Title poster" />
                     </div>
                     <div class="column is-one-third-desktop is-justify-content-center">
                         <h4 class="movie-title mb-0">@movie.Title</h4>
