@@ -20,7 +20,7 @@ namespace EatMyMoviesSite.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var movieOfTheWeek = "Dazed and confused";
+            var movieOfTheWeek = "One battle after another";
             //int motwTmdbId = null;
             Movie tmdbMovie;
             //if(motwTmdbId != null)
