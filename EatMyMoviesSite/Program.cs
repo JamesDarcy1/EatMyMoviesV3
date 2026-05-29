@@ -2,7 +2,6 @@ using EatMyMovies.DataAccess;
 using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting.Internal;
 
 namespace EatMyMoviesSite
 {
@@ -12,12 +11,13 @@ namespace EatMyMoviesSite
         {
             var builder = WebApplication.CreateBuilder(args);
 
-			builder.Services.AddDbContext<EatMyMoviesContext>(options =>
-						options.UseSqlServer(
-							builder.Configuration.GetConnectionString("DbConnection")));
+            ConfigureAppConfiguration(builder, args);
+            ValidateRequiredConfiguration(builder.Configuration);
 
-            builder.Configuration.AddJsonFile("Config/appsettings.json")
-                                  .AddJsonFile($"Config/appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", true);
+            var connectionString = builder.Configuration.GetConnectionString("DbConnection");
+
+			builder.Services.AddDbContext<EatMyMoviesContext>(options =>
+						options.UseSqlServer(connectionString));
 
 			builder.Services.AddControllersWithViews();
             ConfigureServices(builder.Services);
@@ -57,6 +57,46 @@ namespace EatMyMoviesSite
 			});
 
 			app.Run();
+        }
+
+        private static void ConfigureAppConfiguration(WebApplicationBuilder builder, string[] args)
+        {
+            var configurationBuilder = (IConfigurationBuilder)builder.Configuration;
+            configurationBuilder.Sources.Clear();
+
+            configurationBuilder
+                .SetBasePath(builder.Environment.ContentRootPath)
+                .AddJsonFile("Config/appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"Config/appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
+            if (builder.Environment.IsDevelopment())
+            {
+                builder.Configuration.AddUserSecrets<Program>(optional: true);
+            }
+
+            builder.Configuration
+                .AddEnvironmentVariables()
+                .AddCommandLine(args);
+        }
+
+        private static void ValidateRequiredConfiguration(IConfiguration configuration)
+        {
+            var requiredKeys = new[]
+            {
+                "ConnectionStrings:DbConnection",
+                "Tmdb:ApiKey",
+                "Omdb:ApiKey"
+            };
+
+            var missingKeys = requiredKeys
+                .Where(key => string.IsNullOrWhiteSpace(configuration[key]))
+                .ToList();
+
+            if (missingKeys.Any())
+            {
+                throw new InvalidOperationException(
+                    $"Missing required configuration value(s): {string.Join(", ", missingKeys)}.");
+            }
         }
 
 		private static void ConfigureServices(IServiceCollection services)

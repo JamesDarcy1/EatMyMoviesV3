@@ -1,16 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>eatmymoviesv3-local-secrets</UserSecretsId>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Include="..\EatMyMoviesSite\Config\appsettings.Development.json" />
-    <Content Include="..\EatMyMoviesSite\Config\appsettings.Production.json" />
-    <Content Include="..\EatMyMoviesSite\Config\appsettings.json" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
