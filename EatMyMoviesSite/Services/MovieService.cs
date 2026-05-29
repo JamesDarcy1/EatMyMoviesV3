@@ -3,9 +3,8 @@ using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.DTOs;
 using EatMyMoviesSite.Enums;
 using Microsoft.Extensions.Caching.Memory;
-using OMDbSharp;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Text.Json.Serialization;
 using TMDbLib.Client;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
@@ -16,7 +15,8 @@ namespace EatMyMoviesSite.Services
     public class MovieService : IMovieService
     {
         private readonly TMDbClient _tmdbClient;
-        private readonly OMDbClient _omdbClient;
+        private readonly HttpClient _httpClient;
+        private readonly string _omdbApiKey;
         private readonly IRankingRepository _rankingRepository;
         private readonly IListRepository _listRepository;
         private readonly IMovieRepository _movieRepository;
@@ -29,11 +29,13 @@ namespace EatMyMoviesSite.Services
                             IConfiguration configuration,
                             IListRepository listRepository,
                             IMovieRepository movieRepository,
-                            IMemoryCache memoryCache)
+                            IMemoryCache memoryCache,
+                            IHttpClientFactory httpClientFactory)
         {
             _isDevelopment = configuration["ASPNETCORE_ENVIRONMENT"] == "Development";
             _tmdbClient = new TMDbClient(configuration["Tmdb:ApiKey"]);
-            _omdbClient = new OMDbClient(configuration["Omdb:ApiKey"], false);
+            _httpClient = httpClientFactory.CreateClient();
+            _omdbApiKey = configuration["Omdb:ApiKey"] ?? string.Empty;
             _rankingRepository = rankingRepository;
             _listRepository = listRepository;
             _movieRepository = movieRepository;
@@ -97,13 +99,11 @@ namespace EatMyMoviesSite.Services
             var cacheKey = $"Rating_{movieTitle}";
 
             if (!_cache.TryGetValue(cacheKey, out decimal? rating)) {
-                var movie = await _omdbClient.GetItemByTitle(movieTitle);
-                if (movie?.IMDbRating != null && movie?.IMDbRating != "N/A")
+                var movie = await _httpClient.GetFromJsonAsync<OmdbMovieResponse>(
+                    $"https://www.omdbapi.com/?apikey={Uri.EscapeDataString(_omdbApiKey)}&t={Uri.EscapeDataString(movieTitle)}");
+                if (movie?.ImdbRating != null && movie.ImdbRating != "N/A")
                 {
-                    var imdbRating = Decimal.Parse(movie?.IMDbRating);
-                    if(imdbRating == null) {
-                        rating = null;
-                    } else
+                    if (decimal.TryParse(movie.ImdbRating, CultureInfo.InvariantCulture, out var imdbRating))
                     {
                         rating = imdbRating;
                     }
@@ -338,6 +338,12 @@ namespace EatMyMoviesSite.Services
             }
 
             return list;
+        }
+
+        private sealed class OmdbMovieResponse
+        {
+            [JsonPropertyName("imdbRating")]
+            public string? ImdbRating { get; set; }
         }
 
         public async Task<Person> GetDirector(int movieId)
