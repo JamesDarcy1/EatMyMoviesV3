@@ -67,6 +67,7 @@ namespace EatMyMoviesSite
             services.AddScoped<IMovieService, MovieService>();
             services.AddScoped<IStorageService, StorageService>();
             services.AddMemoryCache();
+            services.AddHttpClient();
 		}
 	}
 }
