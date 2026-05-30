@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <UserSecretsId>eatmymoviesv3-local-secrets</UserSecretsId>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EatMyMovies.DataAccess\EatMyMovies.DataAccess.csproj" />
+	  <ProjectReference Include="..\EatMyMovies.DataAccess\EatMyMovies.DataAccess.csproj">
+		  <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+	  </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

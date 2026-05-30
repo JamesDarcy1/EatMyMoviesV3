@@ -61,11 +61,7 @@ namespace EatMyMoviesSite
 
         private static void ConfigureAppConfiguration(WebApplicationBuilder builder, string[] args)
         {
-            var configurationBuilder = (IConfigurationBuilder)builder.Configuration;
-            configurationBuilder.Sources.Clear();
-
-            configurationBuilder
-                .SetBasePath(builder.Environment.ContentRootPath)
+            builder.Configuration
                 .AddJsonFile("Config/appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"Config/appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
