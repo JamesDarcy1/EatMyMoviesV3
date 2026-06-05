@@ -3,7 +3,6 @@
 
 <div id="recommenderApp" class="recommender-panel" v-cloak>
     <h1 v-if="!recommendedMovie">Discover your next cinematic obsession</h1>
-    <h1 v-else>Tonight's pick</h1>
 
     <transition name="fade">
         <div v-if="!showRecommendationBox" class="box question-card has-text-centered">
@@ -106,53 +105,81 @@
 
     <transition name="slide">
         <div v-if="showRecommendationBox && recommendedMovie" class="recommendation-result">
-            <article class="movie-block movie-card mt-0">
-                <div class="columns is-mobile is-hidden-desktop mb-0">
-                    <div class="column is-two-fifths is-flex is-align-items-center is-justify-content-center">
-                        <img class="poster" :src="posterUrl(recommendedMovie.posterPath)" :alt="recommendedMovie.title + ' poster'" />
+            <article class="marquee-result" :style="{ '--poster-backdrop': 'url(' + posterUrl(recommendedMovie.posterPath) + ')' }">
+                <section class="marquee-hero" aria-labelledby="recommendation-title">
+                    <div class="marquee-hero-glow" aria-hidden="true"></div>
+                    <div class="marquee-poster-frame">
+                        <img class="poster marquee-poster" :src="posterUrl(recommendedMovie.posterPath)" :alt="recommendedMovie.title + ' poster'" v-on:error="usePosterFallback" />
+                        <div class="recommendation-action-stack" aria-label="Recommendation actions">
+                            <button type="button" class="button recommendation-icon-button" :disabled="!hasNextRecommendation" v-on:click="loadNextRecommendation" aria-label="Next recommendation" title="Next recommendation">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <path d="M5 5v14l9-7-9-7z"></path>
+                                    <path d="M17 5v14"></path>
+                                </svg>
+                            </button>
+                            <button type="button" class="button recommendation-icon-button" v-on:click="startOver" aria-label="Start over" title="Start over">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <path d="M4 12a8 8 0 1 0 2.35-5.65"></path>
+                                    <path d="M4 4v6h6"></path>
+                                </svg>
+                            </button>
+                            <button type="button" class="button recommendation-icon-button" v-on:click="shareOnWhatsApp" aria-label="Share on WhatsApp" title="Share on WhatsApp">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <circle cx="18" cy="5" r="3"></circle>
+                                    <circle cx="6" cy="12" r="3"></circle>
+                                    <circle cx="18" cy="19" r="3"></circle>
+                                    <path d="m8.6 10.6 6.8-4.2"></path>
+                                    <path d="m8.6 13.4 6.8 4.2"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                    <div class="column is-justify-content-center">
-                        <h4 class="movie-title mb-0">{{ recommendedMovie.title }}</h4>
-                        <small class="release-date">{{ recommendedMovie.releaseDate }}</small>
-                        <small>{{ recommendedMovie.genres }}</small>
-                        <small>{{ recommendedMovie.imdbRating }} IMDB Rating</small>
-                        <small>{{ recommendedMovie.runtime }} Minutes</small>
-                        <small>{{ recommendedMovie.language }}</small>
-                    </div>
-                </div>
 
-                <div class="columns is-desktop is-hidden-mobile m-0">
-                    <div class="column is-one-third is-flex is-align-items-center is-justify-content-center">
-                        <img class="poster poster-on-detail" :src="posterUrl(recommendedMovie.posterPath)" :alt="recommendedMovie.title + ' poster'" />
+                    <div class="marquee-hero-copy">
+                        <span class="marquee-kicker">Tonight's pick</span>
+                        <h1 id="recommendation-title" class="marquee-title">{{ recommendedMovie.title }}</h1>
+                        <p class="marquee-genres">{{ recommendedMovie.genres }}</p>
+                        <div class="marquee-meta-rail" aria-label="Movie details">
+                            <div class="marquee-meta-item">
+                                <span class="marquee-meta-label">Year</span>
+                                <span class="marquee-meta-value">{{ releaseYear(recommendedMovie.releaseDate) }}</span>
+                            </div>
+                            <div class="marquee-meta-item">
+                                <span class="marquee-meta-label">IMDb</span>
+                                <span class="marquee-meta-value">{{ recommendedMovie.imdbRating }}</span>
+                            </div>
+                            <div class="marquee-meta-item">
+                                <span class="marquee-meta-label">Time</span>
+                                <span class="marquee-meta-value">{{ runtimeLabel(recommendedMovie.runtime) }}</span>
+                            </div>
+                            <div class="marquee-meta-item">
+                                <span class="marquee-meta-label">Audio</span>
+                                <span class="marquee-meta-value">{{ recommendedMovie.language }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="column is-flex is-flex-direction-column is-justify-content-center">
-                        <h4 class="movie-title mb-0">{{ recommendedMovie.title }}</h4>
-                        <small class="release-date">{{ recommendedMovie.releaseDate }}</small>
-                        <small>{{ recommendedMovie.genres }}</small>
-                        <small>{{ recommendedMovie.imdbRating }} IMDB Rating</small>
-                        <small>{{ recommendedMovie.runtime }} Minutes</small>
-                        <small>{{ recommendedMovie.language }}</small>
+                </section>
+
+                <section class="marquee-copy" :class="{ 'has-tagline': recommendedMovie.tagline }">
+                    <p v-if="recommendedMovie.tagline" class="marquee-tagline">"{{ recommendedMovie.tagline }}"</p>
+                    <p class="synopsis marquee-synopsis">{{ recommendedMovie.overview }}</p>
+                </section>
+
+                <section v-if="recommendedMovie.trailerPath" class="marquee-trailer" aria-label="Movie trailer">
+                    <div class="marquee-section-label">Trailer</div>
+                    <div class="marquee-trailer-screen">
+                        <iframe class="responsive-iframe" :src="recommendedMovie.trailerPath" title="Movie trailer" allowfullscreen></iframe>
                     </div>
-                </div>
+                </section>
+
+                <section v-else class="marquee-trailer marquee-trailer-empty" aria-label="Movie trailer unavailable">
+                    <div class="marquee-section-label">Trailer</div>
+                    <div class="marquee-trailer-screen">
+                        <p>No trailer available</p>
+                    </div>
+                </section>
             </article>
 
-            <div class="buttons is-centered recommendation-actions">
-                <button type="button" class="button recommendation-button" :disabled="!hasNextRecommendation" v-on:click="loadNextRecommendation">Load another</button>
-                <button type="button" class="button recommendation-button" v-on:click="startOver">Start over</button>
-                <button type="button" class="button recommendation-button" v-on:click="shareOnWhatsApp">Share on WhatsApp</button>
-            </div>
-
-            <section class="recommendation-copy has-text-centered">
-                <h1>{{ recommendedMovie.title }}</h1>
-                <h4 v-if="recommendedMovie.tagline" class="tagline">"{{ recommendedMovie.tagline }}"</h4>
-                <p class="synopsis">{{ recommendedMovie.overview }}</p>
-            </section>
-
-            <div v-if="recommendedMovie.trailerPath" class="columns">
-                <div class="column has-text-centered trailer-container">
-                    <iframe class="responsive-iframe" :src="recommendedMovie.trailerPath" title="Movie trailer" allowfullscreen></iframe>
-                </div>
-            </div>
         </div>
     </transition>
 </div>
@@ -284,6 +311,20 @@
                 goToQuestion(index) {
                     if (index <= this.currentQuestionIndex) {
                         this.currentQuestionIndex = index;
+                    }
+                },
+                releaseYear(releaseDate) {
+                    const releaseText = releaseDate ? releaseDate.toString() : '';
+                    const match = releaseText.match(/\b(19|20)\d{2}\b/);
+                    return match ? match[0] : releaseText;
+                },
+                runtimeLabel(runtime) {
+                    return runtime ? `${runtime} min` : 'TBC';
+                },
+                usePosterFallback(event) {
+                    if (!event.target.src.endsWith('/icon_only.png')) {
+                        event.target.src = '/icon_only.png';
+                        event.target.classList.add('poster-fallback');
                     }
                 },
                 posterUrl(posterPath) {
