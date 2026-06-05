@@ -1,21 +1,42 @@
-﻿<div id="searchApp">
+<div id="searchApp" class="search-panel" v-cloak>
     <h1>Movie Search</h1>
-    <div class="columns is-mobile mt-2">
-        <div class="column is is-three-quarters">
-            <input class="textarea" placeholder="Enter movie title" rows="3" v-model="searchQuery" />
-            <div :class="{'dropdown is-active': searchResults.length > 0, 'dropdown': searchResults.length || searchSelected === true}">
-                <div class="dropdown-menu has-text-left">
+    <div class="columns is-mobile mt-2 is-align-items-start search-row">
+        <div class="column is-three-quarters search-field">
+            <label class="is-sr-only" for="movie-search">Enter movie title</label>
+            <input id="movie-search"
+                   class="input search-input"
+                   placeholder="Enter movie title"
+                   autocomplete="off"
+                   v-model.trim="searchQuery"
+                   v-on:keyup.enter="handleSearch"
+                   v-on:keydown.down.prevent="moveSelection(1)"
+                   v-on:keydown.up.prevent="moveSelection(-1)"
+                   v-on:keydown.esc="clearResults"
+                   aria-autocomplete="list"
+                   aria-controls="movie-search-results"
+                   :aria-expanded="showDropdown.toString()" />
+
+            <div :class="['dropdown search-dropdown', { 'is-active': showDropdown }]">
+                <div id="movie-search-results" class="dropdown-menu has-text-left" role="listbox">
                     <div class="dropdown-content">
-                        <a v-for="(movie, index) in searchResults" :key="index" class="dropdown-item" v-on:click="selectMovie(movie)">
-                            <img :src="'https://image.tmdb.org/t/p/w92' + movie.posterPath" :alt="movie.title + ' poster'" class="dropdown-poster">
+                        <div v-if="isLoading" class="dropdown-item search-status">Searching...</div>
+                        <div v-else-if="searchError" class="dropdown-item search-status has-text-danger">{{ searchError }}</div>
+                        <div v-else-if="showEmptyState" class="dropdown-item search-status">No movies found</div>
+                        <a v-for="(movie, index) in searchResults"
+                           :key="movie.id"
+                           :class="['dropdown-item search-result', { 'is-active': highlightedIndex === index }]"
+                           role="option"
+                           v-on:mouseenter="highlightedIndex = index"
+                           v-on:click="selectMovie(movie)">
+                            <img :src="posterUrl(movie.posterPath)" :alt="movie.title + ' poster'" class="dropdown-poster" loading="lazy" />
                             <span class="dropdown-title">{{ movie.title }}</span>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="column">
-            <button class="button is-primary m-0" v-on:click="handleSearch">
+        <div class="column search-action">
+            <button class="button is-primary m-0" v-on:click="handleSearch" :disabled="!searchQuery">
                 <span>Search</span>
             </button>
         </div>
@@ -23,7 +44,7 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <script src="~/lib/vue/vue.global.prod.js"></script>
     <script>
         const { createApp } = Vue;
 
@@ -32,63 +53,112 @@
                 return {
                     searchQuery: '',
                     searchResults: [],
-                    searchSelected: false,
-                    selectedMovie: null,
+                    highlightedIndex: -1,
+                    isLoading: false,
+                    searchError: '',
+                    hasSearched: false,
+                    debounceTimer: null,
+                    activeController: null,
+                    searchRequestId: 0
                 };
+            },
+            computed: {
+                showDropdown() {
+                    return this.isLoading || this.searchError || this.searchResults.length > 0 || this.showEmptyState;
+                },
+                showEmptyState() {
+                    return this.hasSearched && !this.isLoading && !this.searchError && this.searchQuery.length >= 2 && this.searchResults.length === 0;
+                }
             },
             watch: {
                 searchQuery(newQuery) {
-                    console.log(newQuery);
-                    console.log('new query length ' + newQuery.length);
-                    console.log('!this.searchSelected ' + !this.searchSelected);
-                    if (newQuery.length > 0 && !this.searchSelected) {
-                        console.log('Searching ...');
-                        this.performSearch();
-                    } else {
-                        console.log('else ...');
-                        this.searchResults = [];
+                    window.clearTimeout(this.debounceTimer);
+                    this.searchError = '';
+                    this.highlightedIndex = -1;
+
+                    if (newQuery.length < 2) {
+                        this.clearResults();
+                        return;
                     }
+
+                    this.debounceTimer = window.setTimeout(() => this.performSearch(), 250);
                 }
             },
             methods: {
                 performSearch() {
-                    fetch(`/Movie/SearchForMovie?titleSearch=${encodeURIComponent(this.searchQuery)}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            this.searchResults = data;
-                            console.log('Found ', data);
+                    if (this.activeController) {
+                        this.activeController.abort();
+                    }
+
+                    const requestId = ++this.searchRequestId;
+                    this.activeController = new AbortController();
+                    this.isLoading = true;
+                    this.hasSearched = true;
+
+                    fetch(`/Movie/SearchForMovie?titleSearch=${encodeURIComponent(this.searchQuery)}`, { signal: this.activeController.signal })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Search failed');
+                            }
+                            return response.json();
                         })
-                        .catch(() => {
-                            console.log('Error');
-                            this.searchResults = [];
+                        .then(data => {
+                            if (requestId !== this.searchRequestId) {
+                                return;
+                            }
+                            this.searchResults = data;
+                            this.highlightedIndex = data.length ? 0 : -1;
+                        })
+                        .catch(error => {
+                            if (error.name !== 'AbortError' && requestId === this.searchRequestId) {
+                                this.searchError = 'Search is unavailable. Please try again.';
+                                this.searchResults = [];
+                            }
+                        })
+                        .finally(() => {
+                            if (requestId === this.searchRequestId) {
+                                this.isLoading = false;
+                            }
                         });
-                    console.log('over');
                 },
                 selectMovie(movie) {
-                    window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}&tmdbId=${movie.id}`;
-                    // this.searchQuery = movie.title;
-                    // this.selectedMovie = movie;
-                    // this.searchSelected = true;
-                    // this.searchResults = [];
+                    window.location.href = `/Movie/Detail?title=${encodeURIComponent(movie.title)}&tmdbId=${movie.id}`;
                 },
                 handleSearch() {
+                    if (!this.searchQuery) {
+                        return;
+                    }
+
+                    if (this.highlightedIndex >= 0 && this.searchResults[this.highlightedIndex]) {
+                        this.selectMovie(this.searchResults[this.highlightedIndex]);
+                        return;
+                    }
+
                     window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}`;
+                },
+                moveSelection(direction) {
+                    if (!this.searchResults.length) {
+                        return;
+                    }
+
+                    const lastIndex = this.searchResults.length - 1;
+                    const nextIndex = this.highlightedIndex + direction;
+                    this.highlightedIndex = nextIndex < 0 ? lastIndex : nextIndex > lastIndex ? 0 : nextIndex;
+                },
+                clearResults() {
+                    if (this.activeController) {
+                        this.activeController.abort();
+                    }
+                    this.searchRequestId++;
+                    this.isLoading = false;
+                    this.searchResults = [];
+                    this.highlightedIndex = -1;
+                    this.hasSearched = false;
+                },
+                posterUrl(posterPath) {
+                    return posterPath ? `https://image.tmdb.org/t/p/w92${posterPath}` : '/icon_only.png';
                 }
             }
         }).mount('#searchApp');
     </script>
 }
-
-<style>
-    .dropdown-poster {
-        width: 40px; /* Adjust size as needed */
-        height: auto;
-        margin-right: 10px; /* Space between poster and title */
-        vertical-align: middle;
-    }
-
-    .dropdown-title {
-        vertical-align: middle; /* Align text with the poster */
-    }
-</style>
-

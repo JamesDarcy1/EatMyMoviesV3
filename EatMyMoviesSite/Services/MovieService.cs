@@ -4,6 +4,7 @@ using EatMyMoviesSite.DTOs;
 using EatMyMoviesSite.Enums;
 using Microsoft.Extensions.Caching.Memory;
 using System.Globalization;
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using TMDbLib.Client;
 using TMDbLib.Objects.General;
@@ -21,6 +22,7 @@ namespace EatMyMoviesSite.Services
         private readonly IListRepository _listRepository;
         private readonly IMovieRepository _movieRepository;
         private readonly int _moviesPerPage = 10;
+        private const int TmdbMaxRetryAttempts = 3;
         private readonly bool _isDevelopment;
         private Guid ChristmasListId;
         private readonly IMemoryCache _cache;
@@ -33,7 +35,11 @@ namespace EatMyMoviesSite.Services
                             IHttpClientFactory httpClientFactory)
         {
             _isDevelopment = configuration["ASPNETCORE_ENVIRONMENT"] == "Development";
-            _tmdbClient = new TMDbClient(configuration["Tmdb:ApiKey"]);
+            _tmdbClient = new TMDbClient(configuration["Tmdb:ApiKey"])
+            {
+                MaxRetryCount = TmdbMaxRetryAttempts,
+                Timeout = TimeSpan.FromSeconds(30)
+            };
             _httpClient = httpClientFactory.CreateClient();
             _omdbApiKey = configuration["Omdb:ApiKey"] ?? string.Empty;
             _rankingRepository = rankingRepository;
@@ -48,12 +54,16 @@ namespace EatMyMoviesSite.Services
 
             if (!_cache.TryGetValue(cacheKey, out Movie movie))
             {
-                var searchResults = await _tmdbClient.SearchMovieAsync(title);
+                var searchResults = await ExecuteTmdbRequestAsync(
+                    () => _tmdbClient.SearchMovieAsync(title),
+                    $"searching for movie title '{title}'");
                 var bestResult = searchResults.Results.FirstOrDefault();
 
                 if (bestResult == null) throw new Exception("Movie not found");
 
-                movie = await _tmdbClient.GetMovieAsync(bestResult.Id);
+                movie = await ExecuteTmdbRequestAsync(
+                    () => _tmdbClient.GetMovieAsync(bestResult.Id),
+                    $"getting movie {bestResult.Id}");
 
                 _cache.Set(cacheKey, movie, TimeSpan.FromHours(6));
             }
@@ -63,7 +73,9 @@ namespace EatMyMoviesSite.Services
 
         public async Task<List<MovieDropdown>> SearchMoviesByTitle(string titleSearch)
         {
-            var searchResults = await _tmdbClient.SearchMovieAsync(titleSearch, 1);
+            var searchResults = await ExecuteTmdbRequestAsync(
+                () => _tmdbClient.SearchMovieAsync(titleSearch, 1),
+                $"searching for movie title '{titleSearch}'");
             var reducedList = searchResults.Results.Where(x => x.PosterPath != null)
                                                     .Select(x =>
                                                         new MovieDropdown()
@@ -81,7 +93,9 @@ namespace EatMyMoviesSite.Services
 
             if (!_cache.TryGetValue(cacheKey, out Movie movie))
             {
-                movie = await _tmdbClient.GetMovieAsync(id);
+                movie = await ExecuteTmdbRequestAsync(
+                    () => _tmdbClient.GetMovieAsync(id),
+                    $"getting movie {id}");
                 _cache.Set(cacheKey, movie, TimeSpan.FromHours(6)); 
             }
             return movie;
@@ -89,7 +103,9 @@ namespace EatMyMoviesSite.Services
 
         public async Task<Video> GetTrailer(int movieId)
         {
-            var videos = await _tmdbClient.GetMovieVideosAsync(movieId);
+            var videos = await ExecuteTmdbRequestAsync(
+                () => _tmdbClient.GetMovieVideosAsync(movieId),
+                $"getting videos for movie {movieId}");
             var trailer = videos.Results.FirstOrDefault(v => v.Type == "Trailer");
             return trailer;
         }
@@ -142,8 +158,8 @@ namespace EatMyMoviesSite.Services
                     var imdbTask = GetImdbRating(movie.Title);
                     var tmdbTask = GetMovieById(movie.TmdbId.Value);
 
-                    var imdbRating = imdbTask.Result;
-                    var tmdbMovie = tmdbTask.Result;
+                    var imdbRating = await imdbTask;
+                    var tmdbMovie = await tmdbTask;
 
                     return Mapper.BuildListMovie(tmdbMovie, imdbRating, ranking);
                 });
@@ -183,7 +199,9 @@ namespace EatMyMoviesSite.Services
                 }
             }
 
-            var allMovies = await Task.WhenAll(storeMovies.Select(movie => _tmdbClient.GetMovieAsync(movie.TmdbId.Value)));
+            var allMovies = await Task.WhenAll(storeMovies.Select(movie => ExecuteTmdbRequestAsync(
+                () => _tmdbClient.GetMovieAsync(movie.TmdbId.Value),
+                $"getting movie {movie.TmdbId.Value}")));
 
             allMovies = allMovies
                 .Where(movie => duration.Contains("Any") ||
@@ -224,7 +242,9 @@ namespace EatMyMoviesSite.Services
 
             storeMovies.UnionWith(_movieRepository.GetMoviesOfGenres(feelingsFormmated));
 
-            var filteredRecommendations = await Task.WhenAll(storeMovies.Select(movie => _tmdbClient.GetMovieAsync(movie.TmdbId.Value)));
+            var filteredRecommendations = await Task.WhenAll(storeMovies.Select(movie => ExecuteTmdbRequestAsync(
+                () => _tmdbClient.GetMovieAsync(movie.TmdbId.Value),
+                $"getting movie {movie.TmdbId.Value}")));
 
             filteredRecommendations = filteredRecommendations
                 .Where(movie => duration.Contains("Any") ||
@@ -348,9 +368,13 @@ namespace EatMyMoviesSite.Services
 
         public async Task<Person> GetDirector(int movieId)
         {
-            var credits = await _tmdbClient.GetMovieCreditsAsync(movieId);
+            var credits = await ExecuteTmdbRequestAsync(
+                () => _tmdbClient.GetMovieCreditsAsync(movieId),
+                $"getting credits for movie {movieId}");
             var tmdbDirector = credits.Crew.FirstOrDefault(x => x.Job == "Director");
-            var directorInfo = await _tmdbClient.GetPersonAsync(tmdbDirector.Id);
+            var directorInfo = await ExecuteTmdbRequestAsync(
+                () => _tmdbClient.GetPersonAsync(tmdbDirector.Id),
+                $"getting person {tmdbDirector.Id}");
 
             Person director = new Person()
             {
@@ -366,7 +390,9 @@ namespace EatMyMoviesSite.Services
 
         public async Task<List<Person>> GetActors(int movieId)
         {
-            var credits = await _tmdbClient.GetMovieCreditsAsync(movieId);
+            var credits = await ExecuteTmdbRequestAsync(
+                () => _tmdbClient.GetMovieCreditsAsync(movieId),
+                $"getting credits for movie {movieId}");
             var tmdbActors = credits.Cast.Where(x => x.KnownForDepartment == "Acting" && x.ProfilePath != null);
 
             List<Person> actors = new List<Person>();
@@ -415,6 +441,34 @@ namespace EatMyMoviesSite.Services
         public List<List> GetAllLists()
         {
             return _listRepository.GetAllLists();
+        }
+
+        private static async Task<T> ExecuteTmdbRequestAsync<T>(Func<Task<T>> request, string operation)
+        {
+            for (var attempt = 1; ; attempt++)
+            {
+                try
+                {
+                    return await request();
+                }
+                catch (Exception ex) when (attempt < TmdbMaxRetryAttempts && IsTransientTmdbException(ex))
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(250 * attempt));
+                }
+                catch (Exception ex) when (IsTransientTmdbException(ex))
+                {
+                    throw new HttpRequestException(
+                        $"TMDb request failed while {operation} after {TmdbMaxRetryAttempts} attempts.",
+                        ex);
+                }
+            }
+        }
+
+        private static bool IsTransientTmdbException(Exception exception)
+        {
+            return exception is HttpRequestException ||
+                   exception is IOException ||
+                   exception.InnerException != null && IsTransientTmdbException(exception.InnerException);
         }
 
     }

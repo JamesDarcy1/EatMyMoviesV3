@@ -14,11 +14,11 @@
     @foreach (var movie in Model.Movies)
     {
         <h1>@movie.Ranking</h1>
-        <article class="movie-block mt-0">
+        <article class="movie-block movie-card mt-0">
             <a class="clickable-card" href="/movie/detail?tmdbId=@(movie.TmdbId)">
                 <div class="columns is-mobile m-0">
                     <div class="column is-two-fifths-mobile is-one-third-desktop is-flex is-align-items-center is-justify-content-center">
-                        <img class="poster" loading="lazy" src="@movie.PosterPath" alt="@movie.Title poster" />
+                        <img class="poster" loading="lazy" src="@movie.PosterPath" alt="@movie.Title poster" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
                     </div>
                     <div class="column is-one-third-desktop is-justify-content-center">
                         <h4 class="movie-title mb-0">@movie.Title</h4>

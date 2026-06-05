@@ -6,7 +6,7 @@
 <link rel="canonical" href="https://www.eatmymovies.com/" />.
 
 <form method="POST" action="/Movie/Detail">
-    <section class="hero is-medium">
+    <section class="hero is-medium home-hero">
         <div>
             <div class="has-text-centered">
                 <h1>
@@ -15,7 +15,7 @@
                 <p>
                     Don't know what to watch tonight?
                 </p>
-                <button class="button is-primary"
+                <button class="button is-primary is-medium"
                         asp-controller="Movie"
                         asp-action="Recommender">
                     Find me a movie
@@ -31,17 +31,17 @@
 
                 <h1 class="pt-6">
                     Movie of the Week
-                    <span class="tooltip-icon">
-                        <i class="fas fa-calendar-alt"></i> <!-- FontAwesome calendar icon -->
+                    <span class="tooltip-icon updated-badge" tabindex="0" aria-label="Updated every Friday">
+                        <span aria-hidden="true">Fri</span>
                         <span class="tooltip-text">Updated every Friday</span>
                     </span>
                 </h1>
 
-                <article class="movie-block mt-0">
+                <article class="movie-block movie-card mt-0">
                     <a class="clickable-card" onclick="window.location='@Url.Action("Detail", "Movie")?tmdbId=@(Model.TmdbId)';">
                         <div class="columns is-mobile m-0">
                             <div class="column is-two-fifths-mobile is-one-third-desktop is-flex is-align-items-center is-justify-content-center">
-                                <img class="poster" src="@Model.PosterPath" alt="@Model.Title poster" />
+                                <img class="poster" src="@Model.PosterPath" alt="@Model.Title poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
                             </div>
                             <div class="column is-one-third-desktop is-justify-content-center">
                                 <h4 class="movie-title mb-0">@Model.Title</h4>
@@ -63,15 +63,17 @@
                 <h1 class="pt-6">
                     Movie Lists
                 </h1>
-                <button class="button list-button" asp-controller="List" asp-action="Top100">Top 100</button>
-                <button class="button list-button" asp-controller="List" asp-action="Christmas">Christmas</button>
-                <button class="button list-button" asp-controller="List" asp-action="Comedies">Comedies</button>
-                <button class="button list-button" asp-controller="List" asp-action="Disney">Disney</button>
-                <button class="button list-button" asp-controller="List" asp-action="ForeignFilms">Foreign Films</button>
-                <button class="button list-button" asp-controller="List" asp-action="Documentaries">Documentaries</button>
-                <button class="button list-button" asp-controller="List" asp-action="StandoutSoundtracks">Standout Soundtracks</button>
-                <button class="button list-button" asp-controller="List" asp-action="Iconic80s">Iconic 80s</button>
-                <button class="button list-button" asp-controller="List" asp-action="Horrors">Horrors</button>
+                <div class="list-button-grid">
+                    <button class="button list-button" asp-controller="List" asp-action="Top100">Top 100</button>
+                    <button class="button list-button" asp-controller="List" asp-action="Christmas">Christmas</button>
+                    <button class="button list-button" asp-controller="List" asp-action="Comedies">Comedies</button>
+                    <button class="button list-button" asp-controller="List" asp-action="Disney">Disney</button>
+                    <button class="button list-button" asp-controller="List" asp-action="ForeignFilms">Foreign Films</button>
+                    <button class="button list-button" asp-controller="List" asp-action="Documentaries">Documentaries</button>
+                    <button class="button list-button" asp-controller="List" asp-action="StandoutSoundtracks">Standout Soundtracks</button>
+                    <button class="button list-button" asp-controller="List" asp-action="Iconic80s">Iconic 80s</button>
+                    <button class="button list-button" asp-controller="List" asp-action="Horrors">Horrors</button>
+                </div>
             </div>
         </div>
     </section>

@@ -1,6 +1,18 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+document.addEventListener('DOMContentLoaded', () => {
+    const navbarBurgers = Array.from(document.querySelectorAll('.navbar-burger'));
 
-// Write your JavaScript code.
-var mixinArray = [];
-console.log('mixin array created');
+    navbarBurgers.forEach((burger) => {
+        const targetId = burger.dataset.target;
+        const target = targetId ? document.getElementById(targetId) : null;
+
+        if (!target) {
+            return;
+        }
+
+        burger.addEventListener('click', () => {
+            const isActive = burger.classList.toggle('is-active');
+            target.classList.toggle('is-active', isActive);
+            burger.setAttribute('aria-expanded', isActive.toString());
+        });
+    });
+});

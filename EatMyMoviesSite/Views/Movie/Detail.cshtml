@@ -6,55 +6,49 @@
 {
     <meta name="description" content="@Model.Overview" />
     <title>@Model.Title</title>
-    <div class="box">
-        <div class="columns">
-            <div class="column is-three-fifths">
+    <div class="box movie-detail-hero">
+        <div class="columns is-vcentered">
+            <div class="column is-three-fifths movie-detail-copy">
                 <h1>@Model.Title</h1>
-                <i class="tagline">@Model.Tagline</i><br />
-                <div class="columns is-mobile">
-                    <div class="column">
-                        <strong><u>Release Date</u></strong><br />
-                        <strong>@Model.ReleaseDate</strong>
+                <i class="tagline">@Model.Tagline</i>
+                <div class="movie-meta-grid">
+                    <div class="movie-meta-item">
+                        <span class="movie-meta-label">Release Date</span>
+                        <span class="movie-meta-value">@Model.ReleaseDate</span>
                     </div>
                     @if (Model.ImdbRating != null)
                     {
-                        <div class="column">
-                            <strong><u>Imdb Rating</u></strong><br />
-                            <strong>@Model.ImdbRating</strong>
+                        <div class="movie-meta-item">
+                            <span class="movie-meta-label">IMDb Rating</span>
+                            <span class="movie-meta-value">@Model.ImdbRating</span>
                         </div>
                     }
-                    <div class="column">
-                        <strong><u>Runtime</u></strong><br />
+                    <div class="movie-meta-item">
                         @{
                             int hrs = Model.Runtime.Value / 60;
                             int mins = Model.Runtime.Value % 60;
 
                             string formattedRuntime = $"{hrs}h {mins}m";
                         }
-                        <strong>@formattedRuntime</strong>
+                        <span class="movie-meta-label">Runtime</span>
+                        <span class="movie-meta-value">@formattedRuntime</span>
                     </div>
-                </div>
-                <div class="columns is-mobile">
-                    <div class="column">
-                        <strong><u>Genres</u></strong><br />
-                        <strong>@Model.Genres</strong>
+                    <div class="movie-meta-item">
+                        <span class="movie-meta-label">Genres</span>
+                        <span class="movie-meta-value">@Model.Genres</span>
                     </div>
-                    <div class="column">
-                        <strong><u>Language</u></strong><br />
-                        <strong>@Model.Language</strong>
+                    <div class="movie-meta-item">
+                        <span class="movie-meta-label">Language</span>
+                        <span class="movie-meta-value">@Model.Language</span>
                     </div>
                 </div>
             </div>
 
-            <div class="column is-two-fifths">
-                <img class="poster poster-on-detail" src=@("https://image.tmdb.org/t/p/w500" + Model.PosterPath) alt="@Model.Title poster" />
+            <div class="column is-two-fifths movie-detail-poster">
+                <img class="poster poster-on-detail" src=@("https://image.tmdb.org/t/p/w500" + Model.PosterPath) alt="@Model.Title poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
             </div>
         </div>
-        <div class="column">
-            <div class="columns is-mobile">
-                <p class="synopsis">@Model.Overview</p>
-            </div>
-        </div>
+        <p class="synopsis movie-detail-overview">@Model.Overview</p>
     </div>
 
     <div class="columns">
@@ -69,14 +63,14 @@
     <div class="box">
         <!-- Director Section -->
         <h2 class="pb-2 mt-0">Director</h2>
-        <div class="columns is-mobile">
-            <div class="column is-one-third">
+        <div class="columns director-profile">
+            <div class="column is-one-quarter">
                 <figure class="image is-flex is-justify-content-center">
-                    <img class="profile-image is-rounded" src="@Model.Director.ProfilePath" alt="Director: @Model.Director">
+                    <img class="profile-image is-rounded" src="@Model.Director.ProfilePath" alt="Director: @Model.Director.Name" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('profile-fallback');">
                 </figure>
             </div>
-            <div class="column is-two-thirds">
-                <p><strong>@Model.Director.Name</strong></p>
+            <div class="column">
+                <p class="person-name">@Model.Director.Name</p>
                 <div class="director-section">
                     <p>@Model.Director.Biography</p>
                 </div>
@@ -86,15 +80,15 @@
 
     <div class="box">
         <h2 class="section-header mt-0 pb-2">Cast</h2>
-        <div class="columns is-multiline is-mobile">
+        <div class="cast-grid">
             @foreach (var actor in Model.Actors)
             {
-                <div class="column is-one-third">
+                <div class="cast-card">
                     <figure class="image is-flex is-justify-content-center">
-                        <img class="profile-image is-rounded" src="@actor.ProfilePath" alt="@actor.Name">
+                        <img class="profile-image is-rounded" src="@actor.ProfilePath" alt="@actor.Name" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('profile-fallback');">
                     </figure>
                     <div class="actor-section">
-                        <p>@actor.Name</p>
+                        <p class="person-name">@actor.Name</p>
                         <p><i>@actor.Character</i></p>
                     </div>
                 </div>

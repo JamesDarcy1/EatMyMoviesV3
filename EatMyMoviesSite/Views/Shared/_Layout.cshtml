@@ -9,7 +9,6 @@
 	<link rel="stylesheet" href="~/lib/bulma/css/bulma.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/EatMyMoviesSite.styles.css" asp-append-version="true" />
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
@@ -39,10 +38,10 @@
 	<header>
 		<nav class="navbar header-box-shadow" role="navigation" aria-label="main navigation">
 			<div class="navbar-brand has-text-centered">
-				<a asp-controller="Home" asp-action="Index">
-					<img class="logo" src="~/no_background_logo.png">
+				<a class="navbar-logo" asp-controller="Home" asp-action="Index" aria-label="Eat My Movies home">
+					<img class="logo" src="~/no_background_logo.png" alt="Eat My Movies">
 				</a>
-				<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-target">
+				<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" aria-controls="navbar-target" data-target="navbar-target">
 					<span aria-hidden="true"></span>
 					<span aria-hidden="true"></span>
 					<span aria-hidden="true"></span>
@@ -53,13 +52,13 @@
 				<div class="navbar-start">
 					<a class="navbar-item" asp-controller="Movie" asp-action="Recommender">Find me a movie</a>
 					<a class="navbar-item" asp-controller="Home" asp-action="About">About</a>
-					<a class="navbar-item" asp-controller="Movie" asp-action="Search">Search all movies</a>
+					<a class="navbar-item" asp-controller="Movie" asp-action="Search">Search</a>
 					<a class="navbar-item" asp-controller="Home" asp-action="Contact">Contact us</a>
 					<div class="navbar-item has-dropdown is-hoverable">
-						<a class="navbar-item">
+						<a class="navbar-link">
 							Lists
 						</a>
-						<div class="navbar-dropdown" style="background-color:rgba(0, 0, 0, 0.8)">
+						<div class="navbar-dropdown">
 							<a class="navbar-item" asp-controller="List" asp-action="Top100">
 								Top 100
 							</a>
@@ -105,7 +104,7 @@
 
 	<footer class="footer">
 		<div class="has-text-centered">
-			<strong style="color:#e71837">Eat My Movies</strong>. All rights reserved. <br />
+			<strong>Eat My Movies</strong>. All rights reserved. <br />
 				This product uses the TMDB API but is not endorsed or certified by TMDB
 				<img class="tmdb-logo mt-3" src="~/TMDB_logo.svg" alt="Tmdb logo" />
 		</div>
@@ -118,23 +117,3 @@
 
 </body>
 </html>
-
-<script>
-	document.addEventListener('DOMContentLoaded', () => {
-
-		const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-
-		$navbarBurgers.forEach(el => {
-			el.addEventListener('click', () => {
-
-				const target = el.dataset.target;
-				const $target = document.getElementById(target);
-
-				el.classList.toggle('is-active');
-				$target.classList.toggle('is-active');
-
-			});
-		});
-
-	});
-</script>
