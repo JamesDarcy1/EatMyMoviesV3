@@ -477,9 +477,20 @@ a:hover,
     width: 100%;
 }
 
+.recommender-option-grid {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0.5rem auto 0;
+}
+
+.feeling-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 42rem;
+}
+
 .genre-button {
     min-height: 3rem;
-    width: min(30%, 13rem);
+    width: 100%;
 }
 
 .recommender-option {
@@ -487,7 +498,12 @@ a:hover,
     border: 2px solid rgba(185, 18, 43, 0.58);
     box-shadow: 0 4px 10px rgba(31, 31, 36, 0.08);
     color: var(--emm-ink);
+    line-height: 1.2;
     min-height: 2.85rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    white-space: normal;
+    width: 100%;
 }
 
 .recommender-option:hover,
@@ -609,6 +625,16 @@ a:hover,
     margin-bottom: 1.25rem;
 }
 
+.recommender-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.recommender-next {
+    min-width: 9rem;
+}
+
 .loading-spinner {
     max-width: 6rem;
     width: 22%;
@@ -668,6 +694,16 @@ a:hover,
 .search-status {
     color: var(--emm-muted);
     font-weight: 700;
+}
+
+.pagination-list {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: center;
+}
+
+.pagination-link {
+    margin: 0;
 }
 
 .trailer-container {
@@ -778,6 +814,10 @@ a:hover,
         font-size: 2.35rem;
     }
 
+    main {
+        padding-top: 0.85rem;
+    }
+
     p {
         font-size: 1rem;
     }
@@ -796,10 +836,15 @@ a:hover,
     .movie-block {
         margin-left: auto;
         margin-right: auto;
+        margin-bottom: 1rem;
+    }
+
+    .movie-card .column {
+        padding: 0.65rem;
     }
 
     .poster {
-        max-height: 220px;
+        max-height: 200px;
     }
 
     .poster-on-detail {
@@ -839,16 +884,58 @@ a:hover,
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .recommender-panel > h1 {
+        font-size: 2rem;
+        margin: 0.7rem 0 0.85rem;
+    }
+
+    .progress-indicator {
+        gap: 0.4rem;
+        margin-bottom: 0.85rem;
+    }
+
+    .progress-step {
+        height: 2rem;
+        width: 2rem;
+    }
+
+    .recommender-option-grid {
+        gap: 0.55rem;
+    }
+
+    .feeling-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
     .genre-button {
-        width: calc(50% - 0.75rem);
+        min-height: 2.7rem;
     }
 
     .question-card {
-        padding: 1.25rem;
+        padding: 1rem;
     }
 
     .question-prompt {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
+        line-height: 1.35;
+        margin-bottom: 0.85rem;
+        padding: 0;
+    }
+
+    .recommender-actions {
+        background: linear-gradient(180deg, rgba(253, 240, 213, 0), rgba(253, 240, 213, 0.96) 32%);
+        bottom: 0;
+        left: 0;
+        margin-top: 0.85rem;
+        padding: 1.1rem 1rem max(1rem, env(safe-area-inset-bottom));
+        position: sticky;
+        right: 0;
+        z-index: 3;
+    }
+
+    .recommender-next {
+        min-height: 2.85rem;
+        width: min(100%, 22rem);
     }
 
     .recommendation-button {
@@ -856,16 +943,31 @@ a:hover,
     }
 
     .search-row {
-        gap: 0.75rem;
+        align-items: stretch;
+        gap: 0.6rem;
+    }
+
+    .search-field {
+        min-width: 0;
     }
 
     .search-action {
         flex: 0 0 auto;
         padding-left: 0;
+        padding-right: 0;
     }
 
     .search-action .button {
         min-height: 3rem;
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+    }
+
+    .pagination {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 100%;
+        overflow-x: hidden;
     }
 
     .director-profile {
@@ -892,7 +994,37 @@ a:hover,
         grid-template-columns: 1fr;
     }
 
-    .genre-button {
+    .container {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .recommender-panel > h1 {
+        font-size: 1.8rem;
+    }
+
+    .feeling-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .recommender-option {
+        font-size: 0.92rem;
+        min-height: 2.6rem;
+        padding-left: 0.45rem;
+        padding-right: 0.45rem;
+    }
+
+    .search-row {
+        flex-wrap: wrap;
+    }
+
+    .search-row .search-field,
+    .search-row .search-action {
+        flex-basis: 100%;
+        width: 100%;
+    }
+
+    .search-action .button {
         width: 100%;
     }
 }

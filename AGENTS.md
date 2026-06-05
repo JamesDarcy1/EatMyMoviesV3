@@ -4,12 +4,12 @@ Guidance for AI coding agents working in this repository.
 
 ## Project Overview
 
-EatMyMoviesV3 is a .NET 6 ASP.NET Core MVC application backed by Entity Framework Core and SQL Server.
+EatMyMoviesV3 is a .NET 10 ASP.NET Core MVC application backed by Entity Framework Core and SQL Server.
 
 - `EatMyMoviesV3.sln` is the solution entry point.
 - `EatMyMoviesSite/` contains the MVC web app, Razor views, services, DTOs, static assets, and app configuration.
 - `EatMyMovies.DataAccess/` contains EF Core models, `EatMyMoviesContext`, repositories, and migrations.
-- There is currently no dedicated test project in the solution.
+- `EatMyMovies.Tests/` contains the xUnit test project.
 
 The application integrates with TMDb and OMDb via `TMDbLib`, `OMDbSharp`, and `RestSharp`. Movie/list persistence is handled through repositories registered in `EatMyMoviesSite/Program.cs`.
 
@@ -95,11 +95,10 @@ Before handing off changes, run at least:
 
 ```powershell
 dotnet build EatMyMoviesV3.sln
+dotnet test EatMyMoviesV3.sln
 ```
 
 For UI or routing changes, also run the site with the Development launch profile and manually verify the relevant page(s).
-
-Because there is no test project today, note any behavior that was only manually verified.
 
 ## Git Notes
 

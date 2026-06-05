@@ -31,7 +31,7 @@
                     <p v-if="!allQuestionsAnswered" class="question-prompt">{{ prompts[currentQuestionIndex] }}</p>
 
                     <div v-if="currentQuestionIndex === 0">
-                        <div class="buttons is-centered mt-2">
+                        <div class="recommender-option-grid feeling-grid">
                             <button v-for="feeling in feelings"
                                     type="button"
                                     :key="feeling"
@@ -40,7 +40,9 @@
                                 {{ formatFeeling(feeling) }}
                             </button>
                         </div>
-                        <button type="button" class="button is-primary mt-2" :disabled="selectedFeelings.length === 0" v-on:click="nextQuestion()">Next</button>
+                        <div class="recommender-actions">
+                            <button type="button" class="button is-primary recommender-next" :disabled="selectedFeelings.length === 0" v-on:click="nextQuestion()">Next</button>
+                        </div>
                     </div>
 
                     <div v-if="currentQuestionIndex === 1">
@@ -53,7 +55,9 @@
                                 {{ duration }}
                             </button>
                         </div>
-                        <button type="button" class="button is-primary mt-2" :disabled="!durationPreference" v-on:click="nextQuestion()">Next</button>
+                        <div class="recommender-actions">
+                            <button type="button" class="button is-primary recommender-next" :disabled="!durationPreference" v-on:click="nextQuestion()">Next</button>
+                        </div>
                     </div>
 
                     <div v-if="currentQuestionIndex === 2">
@@ -71,7 +75,9 @@
                                 No
                             </button>
                         </div>
-                        <button type="button" class="button is-primary mt-2" :disabled="openToForeignFilm === null" v-on:click="nextQuestion()">Next</button>
+                        <div class="recommender-actions">
+                            <button type="button" class="button is-primary recommender-next" :disabled="openToForeignFilm === null" v-on:click="nextQuestion()">Next</button>
+                        </div>
                     </div>
 
                     <div v-if="currentQuestionIndex === 3 && !allQuestionsAnswered">
@@ -84,7 +90,9 @@
                                 {{ yearRange }}
                             </button>
                         </div>
-                        <button type="button" class="button is-primary mt-2" :disabled="!releaseYearRange" v-on:click="fetchRecommendedMovie()">Find me a movie</button>
+                        <div class="recommender-actions">
+                            <button type="button" class="button is-primary recommender-next" :disabled="!releaseYearRange" v-on:click="fetchRecommendedMovie()">Find me a movie</button>
+                        </div>
                     </div>
                 </div>
             </div>
