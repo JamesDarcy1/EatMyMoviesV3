@@ -5,31 +5,57 @@
 <meta name="description" content="@Model.Description" />
 <link rel="canonical" href="https://eatmymovies.com/list/@Model.Name.ToSlug()">
 
-<div class="has-text-centered">
-    <h1>@Model.Name</h1>
-    <p>
-        @Model.Description
-    </p> <br />
+<div class="ranked-marquee-list">
+    <header class="marquee-result movie-list-marquee-header">
+        <div class="marquee-hero movie-list-marquee-masthead">
+            <div class="marquee-hero-copy movie-list-marquee-copy">
+                <span class="marquee-kicker">Ranked List</span>
+                <h1 class="marquee-title">@Model.Name</h1>
+            </div>
+            <div class="marquee-hero-copy movie-list-marquee-summary">
+                <p class="marquee-genres movie-list-description">@Model.Description</p>
+            </div>
+        </div>
+    </header>
 
     @foreach (var movie in Model.Movies)
     {
-        <h1>@movie.Ranking</h1>
-        <article class="movie-block movie-card mt-0">
-            <a class="clickable-card" href="/movie/detail?tmdbId=@(movie.TmdbId)">
-                <div class="columns is-mobile m-0">
-                    <div class="column is-two-fifths-mobile is-one-third-desktop is-flex is-align-items-center is-justify-content-center">
-                        <img class="poster" loading="lazy" src="@movie.PosterPath" alt="@movie.Title poster" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
+        <article class="movie-block movie-card ranked-marquee-card mt-0">
+            <a class="clickable-card ranked-marquee-link" href="/movie/detail?tmdbId=@(movie.TmdbId)">
+                <div class="columns is-mobile m-0 ranked-marquee-layout">
+                    <div class="column is-two-fifths-mobile is-one-quarter-desktop is-flex is-align-items-center is-justify-content-center ranked-marquee-poster-column">
+                        <div class="marquee-poster-frame ranked-marquee-poster-frame">
+                            <span class="rank-badge ranked-marquee-rank">#@movie.Ranking</span>
+                            <img class="poster marquee-poster ranked-marquee-poster" loading="lazy" src="@movie.PosterPath" alt="@movie.Title poster" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
+                        </div>
                     </div>
-                    <div class="column is-one-third-desktop is-justify-content-center">
+                    <div class="column is-one-third-desktop is-flex is-flex-direction-column is-justify-content-center ranked-marquee-details">
                         <h4 class="movie-title mb-0">@movie.Title</h4>
-                        <small class="release-date">@movie.ReleaseDate</small>
-                        <small>@movie.Genres</small>
-                        <small>@movie.ImdbRating IMDB Rating</small>
-                        <small>@movie.Runtime Minutes</small>
-                        <small>@movie.Language</small>
-                        <small class="find-out-more">Find Out More</small>
+                        <div class="marquee-meta-rail ranked-movie-meta">
+                            <small class="marquee-meta-item">
+                                <span class="marquee-meta-label">Release</span>
+                                <span class="marquee-meta-value release-date">@movie.ReleaseDate</span>
+                            </small>
+                            <small class="marquee-meta-item">
+                                <span class="marquee-meta-label">Genres</span>
+                                <span class="marquee-meta-value">@movie.Genres</span>
+                            </small>
+                            <small class="marquee-meta-item">
+                                <span class="marquee-meta-label">IMDb</span>
+                                <span class="marquee-meta-value">@movie.ImdbRating IMDB Rating</span>
+                            </small>
+                            <small class="marquee-meta-item">
+                                <span class="marquee-meta-label">Runtime</span>
+                                <span class="marquee-meta-value">@movie.Runtime Minutes</span>
+                            </small>
+                            <small class="marquee-meta-item">
+                                <span class="marquee-meta-label">Language</span>
+                                <span class="marquee-meta-value">@movie.Language</span>
+                            </small>
+                        </div>
+                        <small class="find-out-more ranked-marquee-cta">Find Out More</small>
                     </div>
-                    <div class="column is-one-third-desktop is-hidden-mobile is-flex is-flex-direction-column is-justify-content-center">
+                    <div class="column is-one-third-desktop is-hidden-mobile is-flex is-flex-direction-column is-justify-content-center ranked-marquee-synopsis">
                         <small class="card-synopsis">@movie.Synopsis</small>
                     </div>
                 </div>
@@ -37,7 +63,6 @@
 
         </article>
     }
-
 </div>
 @await Html.PartialAsync("_PaginationPartial", new PaginationViewModel
 {

@@ -4,176 +4,194 @@
 
 @if (Model != null)
 {
+    string posterUrl = "https://image.tmdb.org/t/p/w500" + Model.PosterPath;
+    string formattedRuntime = "Unknown";
+
+    if (Model.Runtime.HasValue)
+    {
+        int hrs = Model.Runtime.Value / 60;
+        int mins = Model.Runtime.Value % 60;
+
+        formattedRuntime = $"{hrs}h {mins}m";
+    }
+
     <meta name="description" content="@Model.Overview" />
     <title>@Model.Title</title>
-    <div class="box movie-detail-hero">
-        <div class="columns is-vcentered">
-            <div class="column is-three-fifths movie-detail-copy">
-                <h1>@Model.Title</h1>
-                <i class="tagline">@Model.Tagline</i>
-                <div class="movie-meta-list">
-                    <div class="movie-meta-item">
-                        <span class="movie-meta-label">Release Date</span>
-                        <span class="movie-meta-value">@Model.ReleaseDate</span>
+
+    <article class="marquee-result detail-marquee-detail" style="--poster-backdrop: url('@posterUrl')">
+        <section class="marquee-hero detail-marquee-hero" aria-labelledby="movie-detail-title">
+            <div class="marquee-hero-glow detail-marquee-glow" aria-hidden="true"></div>
+
+            <div class="marquee-poster-frame detail-poster-frame">
+                <img class="poster poster-on-detail marquee-poster detail-marquee-poster" src="@posterUrl" alt="@Model.Title poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
+            </div>
+
+            <div class="marquee-hero-copy detail-hero-copy movie-detail-copy">
+                <span class="marquee-kicker detail-kicker">Feature presentation</span>
+                <h1 id="movie-detail-title" class="marquee-title detail-title">@Model.Title</h1>
+                <p class="marquee-genres detail-genre-line">@Model.Genres</p>
+
+                <div class="marquee-meta-rail detail-meta-rail" aria-label="Movie details">
+                    <div class="marquee-meta-item detail-meta-item">
+                        <span class="marquee-meta-label">Release</span>
+                        <span class="marquee-meta-value">@Model.ReleaseDate</span>
                     </div>
                     @if (Model.ImdbRating != null)
                     {
-                        <div class="movie-meta-item">
-                            <span class="movie-meta-label">IMDb Rating</span>
-                            <span class="movie-meta-value">@Model.ImdbRating</span>
+                        <div class="marquee-meta-item detail-meta-item">
+                            <span class="marquee-meta-label">IMDb</span>
+                            <span class="marquee-meta-value">@Model.ImdbRating</span>
                         </div>
                     }
-                    <div class="movie-meta-item">
-                        @{
-                            int hrs = Model.Runtime.Value / 60;
-                            int mins = Model.Runtime.Value % 60;
-
-                            string formattedRuntime = $"{hrs}h {mins}m";
-                        }
-                        <span class="movie-meta-label">Runtime</span>
-                        <span class="movie-meta-value">@formattedRuntime</span>
+                    <div class="marquee-meta-item detail-meta-item">
+                        <span class="marquee-meta-label">Runtime</span>
+                        <span class="marquee-meta-value">@formattedRuntime</span>
                     </div>
-                    <div class="movie-meta-item">
-                        <span class="movie-meta-label">Language</span>
-                        <span class="movie-meta-value">@Model.Language</span>
+                    <div class="marquee-meta-item detail-meta-item">
+                        <span class="marquee-meta-label">Audio</span>
+                        <span class="marquee-meta-value">@Model.Language</span>
                     </div>
-                    <div class="movie-meta-item">
-                        <span class="movie-meta-label">Genres</span>
-                        <span class="movie-meta-value">@Model.Genres</span>
+                    <div class="marquee-meta-item detail-meta-item">
+                        <span class="marquee-meta-label">Genres</span>
+                        <span class="marquee-meta-value">@Model.Genres</span>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div class="column is-two-fifths movie-detail-poster">
-                <img class="poster poster-on-detail" src=@("https://image.tmdb.org/t/p/w500" + Model.PosterPath) alt="@Model.Title poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
-            </div>
-        </div>
-        <p class="synopsis movie-detail-overview">@Model.Overview</p>
-    </div>
-
-    <div class="columns">
-        <div class="column has-text-centered trailer-container">
-            <iframe class="responsive-iframe"
-                    src=@(Model.TrailerPath)
-                    allowfullscreen>
-            </iframe>
-        </div>
-    </div>
-
-    <div class="box">
-        <!-- Director Section -->
-        <h2 class="pb-2 mt-0">Director</h2>
-        <div class="columns director-profile">
-            <div class="column is-one-quarter">
-                <figure class="image is-flex is-justify-content-center">
-                    <img class="profile-image is-rounded" src="@Model.Director.ProfilePath" alt="Director: @Model.Director.Name" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('profile-fallback');">
-                </figure>
-            </div>
-            <div class="column">
-                <p class="person-name">@Model.Director.Name</p>
-                <div class="director-section">
-                    <p>@Model.Director.Biography</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="box">
-        <h2 class="section-header mt-0 pb-2">Cast</h2>
-        <div class="cast-grid">
-            @foreach (var actor in Model.Actors)
+        <section class="marquee-copy detail-synopsis-section @(string.IsNullOrWhiteSpace(Model.Tagline) ? string.Empty : "has-tagline")">
+            @if (!string.IsNullOrWhiteSpace(Model.Tagline))
             {
-                <div class="cast-card">
-                    <figure class="image is-flex is-justify-content-center">
-                        <img class="profile-image is-rounded" src="@actor.ProfilePath" alt="@actor.Name" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('profile-fallback');">
-                    </figure>
-                    <div class="actor-section">
-                        <p class="person-name">@actor.Name</p>
-                        <p><i>@actor.Character</i></p>
+                <p class="marquee-tagline detail-tagline">"@Model.Tagline"</p>
+            }
+            <p class="synopsis marquee-synopsis movie-detail-overview detail-overview">@Model.Overview</p>
+        </section>
+
+        <section class="marquee-trailer detail-trailer-section" aria-label="Movie trailer">
+            <div class="marquee-section-label detail-section-label">Trailer</div>
+            <div class="marquee-trailer-screen detail-trailer-screen trailer-container">
+                <iframe class="responsive-iframe"
+                        src=@(Model.TrailerPath)
+                        title="@Model.Title trailer"
+                        allowfullscreen>
+                </iframe>
+            </div>
+        </section>
+
+        <section class="detail-people-section detail-director-panel" aria-labelledby="movie-detail-director">
+            <div class="marquee-section-label detail-section-label">Director</div>
+            <div class="box detail-marquee-panel">
+                <h2 id="movie-detail-director" class="pb-2 mt-0">Director</h2>
+                <div class="columns director-profile detail-director-profile">
+                    <div class="column is-one-quarter detail-director-image">
+                        <figure class="image is-flex is-justify-content-center">
+                            <img class="profile-image is-rounded" src="@Model.Director.ProfilePath" alt="Director: @Model.Director.Name" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('profile-fallback');">
+                        </figure>
+                    </div>
+                    <div class="column detail-director-copy">
+                        <p class="person-name">@Model.Director.Name</p>
+                        <div class="director-section">
+                            <p>@Model.Director.Biography</p>
+                        </div>
                     </div>
                 </div>
-            }
-        </div>
-    </div>
+            </div>
+        </section>
+
+        <section class="detail-people-section detail-cast-panel" aria-labelledby="movie-detail-cast">
+            <div class="marquee-section-label detail-section-label">Cast</div>
+            <div class="box detail-marquee-panel">
+                <h2 id="movie-detail-cast" class="section-header mt-0 pb-2">Cast</h2>
+                <div class="cast-grid detail-cast-grid">
+                    @foreach (var actor in Model.Actors)
+                    {
+                        <div class="cast-card detail-cast-card">
+                            <figure class="image is-flex is-justify-content-center">
+                                <img class="profile-image is-rounded" src="@actor.ProfilePath" alt="@actor.Name" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('profile-fallback');">
+                            </figure>
+                            <div class="actor-section">
+                                <p class="person-name">@actor.Name</p>
+                                <p><i>@actor.Character</i></p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    </article>
 
     @if (Model.CanEdit)
     {
-        <h2 class="title is-4">List Management</h2>
+        <section class="marquee-result detail-list-management" aria-labelledby="movie-detail-list-management">
+            <div class="detail-marquee-panel detail-management-panel">
+                <div class="marquee-section-label detail-section-label">Admin</div>
+                <h2 id="movie-detail-list-management" class="title is-4">List Management</h2>
 
-        <div class="box">
+                <div class="columns has-text-weight-semibold is-size-7 mb-2 detail-management-headings">
+                    <div class="column is-4">List</div>
+                    <div class="column is-3">Ranking</div>
+                    <div class="column is-5">Actions</div>
+                </div>
 
-            <div class="columns has-text-weight-semibold is-size-7 mb-2">
-                <div class="column is-4">List</div>
-                <div class="column is-3">Ranking</div>
-                <div class="column is-5">Actions</div>
-            </div>
+                @foreach (var ranking in Model.Rankings)
+                {
+                    <form method="post" action="/Storage/UpdateRanking" class="mb-2 detail-management-row">
+                        <div class="columns is-vcentered">
+                            <div class="column is-4">
+                                @ranking.ListName
+                            </div>
+                            <div class="column is-3">
+                                <input class="input is-small" type="number" name="newRanking" value="@ranking.Ranking" />
+                            </div>
+                            <div class="column is-5">
+                                <div class="buttons is-centered">
+                                    <input type="hidden" name="movieId" value="@ranking.MovieId" />
+                                    <input type="hidden" name="listId" value="@ranking.ListId" />
 
-            @foreach (var ranking in Model.Rankings)
-            {
-                <form method="post" action="/Storage/UpdateRanking" class="mb-2">
+                                    <button type="submit" class="button is-info is-small">Update</button>
+
+                                    <button formaction="/Storage/DeleteRanking"
+                                            formmethod="post"
+                                            name="movieId"
+                                            value="@ranking.MovieId"
+                                            class="button is-danger is-small"
+                                            onclick="this.form.listId.value='@ranking.ListId'">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                }
+
+                <!-- New form for adding a ranking -->
+                <form method="post" action="/Storage/AddMovieToList" class="mt-4 detail-management-add">
                     <div class="columns is-vcentered">
                         <div class="column is-4">
-                            @ranking.ListName
+                            <div class="select is-small is-fullwidth">
+                                <select name="listName" required>
+                                    <option value="">Select a list...</option>
+                                    @foreach (var list in Model.Lists)
+                                    {
+                                        <option value="@list.Name">@list.Name</option>
+                                    }
+                                </select>
+                            </div>
                         </div>
                         <div class="column is-3">
-                            <input class="input is-small" type="number" name="newRanking" value="@ranking.Ranking" />
+                            <input class="input is-small" type="number" name="ranking" placeholder="Ranking" required />
                         </div>
                         <div class="column is-5">
                             <div class="buttons is-centered">
-                                <input type="hidden" name="movieId" value="@ranking.MovieId" />
-                                <input type="hidden" name="listId" value="@ranking.ListId" />
-
-                                <button type="submit" class="button is-info is-small">Update</button>
-
-                                <button formaction="/Storage/DeleteRanking"
-                                        formmethod="post"
-                                        name="movieId"
-                                        value="@ranking.MovieId"
-                                        class="button is-danger is-small"
-                                        onclick="this.form.listId.value='@ranking.ListId'">
-                                    Delete
-                                </button>
+                                <input type="hidden" name="movieTitle" value="@Model.Title" />
+                                <button type="submit" class="button is-primary is-small">Add</button>
                             </div>
                         </div>
                     </div>
                 </form>
-            }
-
-            <!-- New form for adding a ranking -->
-            <form method="post" action="/Storage/AddMovieToList" class="mt-4">
-                <div class="columns is-vcentered">
-                    <div class="column is-4">
-                        <div class="select is-small is-fullwidth">
-                            <select name="listName" required>
-                                <option value="">Select a list...</option>
-                                @foreach (var list in Model.Lists)
-                                {
-                                    <option value="@list.Name">@list.Name</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                    <div class="column is-3">
-                        <input class="input is-small" type="number" name="ranking" placeholder="Ranking" required />
-                    </div>
-                    <div class="column is-5">
-                        <div class="buttons is-centered">
-                            <input type="hidden" name="movieTitle" value="@Model.Title" />
-                            <button type="submit" class="button is-primary is-small">Add</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-
-        </div>
-
-
+            </div>
+        </section>
     }
-
-
-
-
-
 }
 else
 {

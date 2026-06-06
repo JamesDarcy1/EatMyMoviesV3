@@ -525,7 +525,7 @@ a:hover,
     background:
         radial-gradient(circle at 18% 22%, rgba(255, 250, 240, 0.22), transparent 24rem),
         linear-gradient(125deg, rgba(31, 31, 36, 0.92), rgba(12, 12, 16, 0.98)),
-        var(--poster-backdrop);
+        var(--poster-backdrop, transparent);
     background-position: center;
     background-size: cover;
     color: #fff;
@@ -787,6 +787,357 @@ a:hover,
     color: rgba(255, 250, 240, 0.78);
     margin: 0;
     padding: 1rem;
+}
+
+.home-marquee-shell {
+    display: block;
+}
+
+.home-marquee-hero {
+    padding-bottom: 1rem;
+}
+
+.home-hero-card {
+    max-width: 100%;
+}
+
+.home-lobby-marquee {
+    grid-template-columns: 1fr;
+    min-height: 23rem;
+}
+
+.home-hero-copy {
+    max-width: 48rem;
+}
+
+.home-hero-cta {
+    min-height: 3.1rem;
+    min-width: 12rem;
+}
+
+.home-section-band,
+.home-feature-section,
+.home-list-section {
+    margin: 1.25rem auto;
+}
+
+.home-section-band {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 250, 240, 0.88)),
+        repeating-linear-gradient(90deg, rgba(185, 18, 43, 0.08) 0, rgba(185, 18, 43, 0.08) 1px, transparent 1px, transparent 18px),
+        var(--emm-surface);
+    border: 1px solid rgba(185, 18, 43, 0.18);
+    border-left: 5px solid var(--emm-red);
+    border-radius: var(--emm-radius);
+    box-shadow: var(--emm-shadow);
+    padding: 1.4rem 1.75rem;
+}
+
+.home-section-band h1,
+.home-section-title {
+    margin-top: 0.35rem;
+}
+
+.home-feature-card {
+    max-width: 920px;
+}
+
+.home-feature-link {
+    cursor: pointer;
+}
+
+.home-feature-marquee {
+    grid-template-columns: minmax(160px, 0.5fr) minmax(0, 1.5fr);
+    min-height: 21rem;
+}
+
+.home-feature-poster-frame {
+    --marquee-poster-width: min(100%, 14rem);
+}
+
+.home-feature-copy .marquee-title {
+    font-size: clamp(2.5rem, 6vw, 4.7rem);
+}
+
+.home-feature-meta,
+.ranked-movie-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.home-feature-action,
+.ranked-marquee-cta {
+    color: #fff;
+    font-weight: 900;
+    margin-top: 1rem;
+    text-transform: uppercase;
+}
+
+.home-feature-synopsis {
+    padding-bottom: 1.5rem;
+}
+
+.home-list-board {
+    max-width: 880px;
+}
+
+.home-list-button {
+    background-color: rgba(255, 250, 240, 0.94);
+    border: 2px solid rgba(185, 18, 43, 0.32);
+    box-shadow: 0 8px 0 rgba(185, 18, 43, 0.1);
+    color: var(--emm-ink);
+    min-height: 4rem;
+    text-transform: uppercase;
+}
+
+.ranked-marquee-list {
+    margin: 0 auto;
+    max-width: 960px;
+}
+
+.movie-list-marquee-header {
+    max-width: 100%;
+}
+
+.movie-list-marquee-masthead {
+    grid-template-columns: minmax(0, 0.9fr) minmax(16rem, 1.1fr);
+    min-height: 16rem;
+}
+
+.movie-list-marquee-summary {
+    align-self: center;
+}
+
+.movie-list-description {
+    color: rgba(255, 250, 240, 0.88);
+    font-size: 1.12rem;
+}
+
+.ranked-marquee-card {
+    background:
+        linear-gradient(180deg, rgba(31, 31, 36, 0.02), rgba(31, 31, 36, 0.06)),
+        var(--emm-surface);
+    border-color: rgba(185, 18, 43, 0.2);
+    max-width: 100%;
+}
+
+.ranked-marquee-layout {
+    align-items: stretch;
+}
+
+.ranked-marquee-poster-column {
+    background:
+        radial-gradient(circle at center, rgba(231, 24, 55, 0.22), transparent 70%),
+        linear-gradient(145deg, rgba(31, 31, 36, 0.98), rgba(12, 12, 16, 0.94));
+    position: relative;
+}
+
+.ranked-marquee-poster-frame {
+    --marquee-poster-width: min(100%, 12rem);
+    padding: 1rem;
+}
+
+.rank-badge {
+    align-items: center;
+    background-color: var(--emm-red);
+    border: 2px solid rgba(255, 250, 240, 0.78);
+    border-radius: 999px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+    color: #fff;
+    display: inline-flex;
+    font-family: 'Bangers', cursive;
+    font-size: 1.45rem;
+    height: 3.1rem;
+    justify-content: center;
+    left: 0.5rem;
+    line-height: 1;
+    min-width: 3.1rem;
+    padding: 0.2rem 0.55rem 0;
+    position: absolute;
+    top: 0.65rem;
+    z-index: 2;
+}
+
+.ranked-marquee-poster {
+    max-height: 250px;
+}
+
+.ranked-marquee-details {
+    padding: 1.25rem;
+}
+
+.ranked-marquee-details .movie-title {
+    margin-bottom: 0.8rem;
+}
+
+.ranked-marquee-synopsis {
+    background-color: rgba(255, 250, 240, 0.72);
+    border-left: 1px solid rgba(185, 18, 43, 0.14);
+    padding: 1.25rem;
+}
+
+.detail-marquee-detail,
+.detail-list-management {
+    max-width: 100%;
+}
+
+.detail-marquee-hero {
+    min-height: 31rem;
+}
+
+.detail-poster-frame {
+    --marquee-poster-width: min(100%, 18rem);
+}
+
+.detail-title {
+    font-size: clamp(3.2rem, 7vw, 6.4rem);
+}
+
+.detail-meta-rail {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.detail-synopsis-section {
+    padding-bottom: 1.4rem;
+}
+
+.detail-trailer-section,
+.detail-people-section {
+    padding: 0.75rem 2rem 2rem;
+}
+
+.detail-trailer-screen.trailer-container {
+    margin-top: 0;
+    width: 100%;
+}
+
+.detail-marquee-panel {
+    background-color: rgba(255, 250, 240, 0.96);
+    border: 1px solid rgba(185, 18, 43, 0.16);
+    border-radius: var(--emm-radius);
+    box-shadow: 0 14px 28px rgba(31, 31, 36, 0.12);
+    padding: 1.35rem;
+}
+
+.detail-marquee-panel h2 {
+    color: var(--emm-red);
+    font-family: 'Bangers', cursive;
+    font-size: 2rem;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.detail-list-management {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+}
+
+.detail-management-row,
+.detail-management-add {
+    background-color: rgba(255, 255, 255, 0.68);
+    border: 1px solid rgba(31, 31, 36, 0.08);
+    border-radius: 6px;
+    padding: 0.35rem 0.55rem;
+}
+
+.marquee-question-shell {
+    margin: 0 auto 1.25rem;
+    max-width: 920px;
+}
+
+.marquee-question-hero {
+    background:
+        radial-gradient(circle at 18% 22%, rgba(255, 250, 240, 0.2), transparent 22rem),
+        linear-gradient(125deg, rgba(31, 31, 36, 0.95), rgba(12, 12, 16, 0.98));
+    border: 1px solid rgba(185, 18, 43, 0.24);
+    border-radius: var(--emm-radius) var(--emm-radius) 0 0;
+    box-shadow: 0 22px 48px rgba(31, 31, 36, 0.18);
+    padding: 2rem 1.5rem 1.5rem;
+    position: relative;
+}
+
+.marquee-question-hero::before {
+    background:
+        linear-gradient(90deg, rgba(231, 24, 55, 0.24) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255, 250, 240, 0.08), rgba(255, 250, 240, 0));
+    background-size: 1.15rem 100%, 100% 100%;
+    content: "";
+    inset: 0;
+    opacity: 0.45;
+    pointer-events: none;
+    position: absolute;
+}
+
+.marquee-question-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+.marquee-question-hero h1 {
+    color: #fff;
+    font-size: clamp(2.7rem, 7vw, 5.5rem);
+    line-height: 0.96;
+    margin: 0;
+    text-shadow: 0 2px 0 var(--emm-red-dark), 0 8px 24px rgba(0, 0, 0, 0.52);
+}
+
+.marquee-question-ticket.question-card {
+    border-radius: 0 0 var(--emm-radius) var(--emm-radius);
+    margin: 0 auto;
+    max-width: 920px;
+    padding: 1.5rem;
+}
+
+.marquee-question-stage {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 250, 240, 0.92)),
+        repeating-linear-gradient(90deg, rgba(185, 18, 43, 0.07) 0, rgba(185, 18, 43, 0.07) 1px, transparent 1px, transparent 18px);
+    border: 1px dashed rgba(185, 18, 43, 0.34);
+    border-radius: 6px;
+    padding: 1.5rem;
+}
+
+.marquee-ticket-loading {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    min-height: 16rem;
+    justify-content: center;
+}
+
+.marquee-ticket-step-label {
+    color: var(--emm-red-dark);
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 900;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+}
+
+.marquee-ticket-prompt {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 46rem;
+}
+
+.marquee-progress-bulbs {
+    margin-bottom: 1rem;
+}
+
+.marquee-progress-bulb.progress-step {
+    border: 2px solid rgba(185, 18, 43, 0.38);
+    box-shadow: 0 5px 0 rgba(185, 18, 43, 0.1);
+}
+
+.marquee-ticket-button-group {
+    gap: 0.75rem;
+}
+
+.marquee-ticket-option {
+    border-style: dashed;
+}
+
+.marquee-ticket-stub {
+    max-width: 18rem;
 }
 
 .wide-button {
@@ -1241,6 +1592,120 @@ a:hover,
         padding: 1rem;
     }
 
+    .home-lobby-marquee,
+    .home-feature-marquee,
+    .movie-list-marquee-masthead,
+    .detail-marquee-hero {
+        gap: 1rem;
+        grid-template-columns: 1fr;
+        min-height: 0;
+        padding: 1rem;
+    }
+
+    .home-hero-copy,
+    .movie-list-marquee-copy,
+    .movie-list-marquee-summary,
+    .detail-hero-copy {
+        text-align: left;
+    }
+
+    .home-section-band {
+        padding: 1rem;
+    }
+
+    .home-feature-poster-frame,
+    .ranked-marquee-poster-frame,
+    .detail-poster-frame {
+        --marquee-poster-width: min(58vw, 13.5rem);
+        justify-self: start;
+        justify-content: flex-start;
+    }
+
+    .home-feature-copy .marquee-title,
+    .movie-list-marquee-copy .marquee-title,
+    .detail-title {
+        font-size: 3.2rem;
+    }
+
+    .home-feature-meta,
+    .ranked-movie-meta,
+    .detail-meta-rail {
+        gap: 0.45rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .home-feature-synopsis {
+        display: none;
+    }
+
+    .home-list-button {
+        min-height: 3.5rem;
+    }
+
+    .ranked-marquee-card .column {
+        padding: 0.65rem;
+    }
+
+    .ranked-marquee-poster-column {
+        min-height: 13rem;
+    }
+
+    .rank-badge {
+        font-size: 1.15rem;
+        height: 2.55rem;
+        min-width: 2.55rem;
+    }
+
+    .ranked-marquee-poster {
+        max-height: 180px;
+    }
+
+    .ranked-marquee-synopsis {
+        display: none;
+    }
+
+    .detail-trailer-section,
+    .detail-people-section {
+        padding: 0.6rem 1rem 1.2rem;
+    }
+
+    .detail-marquee-panel {
+        padding: 1rem;
+    }
+
+    .detail-list-management {
+        padding: 1rem;
+    }
+
+    .detail-management-headings {
+        display: none;
+    }
+
+    .marquee-question-hero {
+        padding: 1.3rem 1rem 1rem;
+    }
+
+    .marquee-question-hero h1 {
+        font-size: 2.8rem;
+    }
+
+    .marquee-question-ticket.question-card {
+        padding: 0.8rem;
+    }
+
+    .marquee-question-stage {
+        padding: 1rem;
+    }
+
+    .marquee-ticket-button-group {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .marquee-ticket-stub {
+        max-width: none;
+    }
+
     .question-prompt {
         font-size: 1.05rem;
         line-height: 1.35;
@@ -1257,6 +1722,11 @@ a:hover,
         position: sticky;
         right: 0;
         z-index: 3;
+    }
+
+    .marquee-ticket-actions {
+        margin-left: -1rem;
+        margin-right: -1rem;
     }
 
     .recommender-next {

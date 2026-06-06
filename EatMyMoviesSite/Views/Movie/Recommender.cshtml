@@ -2,100 +2,108 @@
 <meta name="description" content="We ask several questions, you tell us what you're looking for and we find the perfect movie recommendation" />
 
 <div id="recommenderApp" class="recommender-panel" v-cloak>
-    <h1 v-if="!recommendedMovie">Discover your next cinematic obsession</h1>
-
     <transition name="fade">
-        <div v-if="!showRecommendationBox" class="box question-card has-text-centered">
-            <div class="question-area">
-                <div v-if="isLoading">
-                    <p v-if="allQuestionsAnswered">Finding you a match</p>
-                    <loading-spinner></loading-spinner>
-                </div>
-                <div v-else>
-                    <div v-if="loadError" class="notification is-danger is-light">{{ loadError }}</div>
+        <section v-if="!showRecommendationBox" class="marquee-question-shell has-text-centered" aria-labelledby="recommender-question-title">
+            <header class="marquee-question-hero">
+                <span class="marquee-kicker">Build your bill</span>
+                <h1 id="recommender-question-title">Discover your next cinematic obsession</h1>
+            </header>
 
-                    <div class="progress-indicator" aria-label="Question progress">
-                        <button v-for="(question, index) in prompts"
-                                :key="index"
-                                type="button"
-                                :class="['progress-step', { 'is-current': currentQuestionIndex === index, 'is-clickable': index <= currentQuestionIndex }]"
-                                :aria-label="'Question ' + (index + 1)"
-                                :aria-current="currentQuestionIndex === index ? 'step' : null"
-                                :disabled="index > currentQuestionIndex"
-                                v-on:click="goToQuestion(index)">
-                            {{ index + 1 }}
-                        </button>
+            <div class="box question-card marquee-question-ticket">
+                <div class="question-area marquee-question-stage">
+                    <div v-if="isLoading" class="marquee-ticket-loading">
+                        <p v-if="allQuestionsAnswered" class="marquee-loading-copy">Finding you a match</p>
+                        <loading-spinner></loading-spinner>
                     </div>
+                    <div v-else class="marquee-question-content">
+                        <div v-if="loadError" class="notification is-danger is-light marquee-ticket-error">{{ loadError }}</div>
 
-                    <p v-if="!allQuestionsAnswered" class="question-prompt">{{ prompts[currentQuestionIndex] }}</p>
-
-                    <div v-if="currentQuestionIndex === 0">
-                        <div class="recommender-option-grid feeling-grid">
-                            <button v-for="feeling in feelings"
-                                    type="button"
-                                    :key="feeling"
-                                    :class="['button recommender-option genre-button', { 'is-primary': selectedFeelings.includes(feeling) }]"
-                                    v-on:click="toggleFeeling(feeling)">
-                                {{ formatFeeling(feeling) }}
-                            </button>
-                        </div>
-                        <div class="recommender-actions">
-                            <button type="button" class="button is-primary recommender-next" :disabled="selectedFeelings.length === 0" v-on:click="nextQuestion()">Next</button>
-                        </div>
-                    </div>
-
-                    <div v-if="currentQuestionIndex === 1">
-                        <div class="buttons is-centered">
-                            <button v-for="(duration, index) in durations"
-                                    type="button"
+                        <div class="progress-indicator marquee-progress-bulbs" aria-label="Question progress">
+                            <button v-for="(question, index) in prompts"
                                     :key="index"
-                                    :class="['button recommender-option wide-button', { 'is-primary': durationPreference === duration }]"
-                                    v-on:click="selectDuration(index)">
-                                {{ duration }}
-                            </button>
-                        </div>
-                        <div class="recommender-actions">
-                            <button type="button" class="button is-primary recommender-next" :disabled="!durationPreference" v-on:click="nextQuestion()">Next</button>
-                        </div>
-                    </div>
-
-                    <div v-if="currentQuestionIndex === 2">
-                        <div class="buttons is-centered">
-                            <button type="button"
-                                    class="button recommender-option"
-                                    :class="{ 'is-selected is-primary': openToForeignFilm === true }"
-                                    v-on:click="selectForeignFilm(true)">
-                                Yes
-                            </button>
-                            <button type="button"
-                                    class="button recommender-option"
-                                    :class="{ 'is-selected is-primary': openToForeignFilm === false }"
-                                    v-on:click="selectForeignFilm(false)">
-                                No
-                            </button>
-                        </div>
-                        <div class="recommender-actions">
-                            <button type="button" class="button is-primary recommender-next" :disabled="openToForeignFilm === null" v-on:click="nextQuestion()">Next</button>
-                        </div>
-                    </div>
-
-                    <div v-if="currentQuestionIndex === 3 && !allQuestionsAnswered">
-                        <div class="buttons is-centered">
-                            <button v-for="(yearRange, index) in yearRanges"
                                     type="button"
-                                    :key="index"
-                                    :class="['button recommender-option', { 'is-primary': releaseYearRange === yearRange }]"
-                                    v-on:click="selectYearRange(index)">
-                                {{ yearRange }}
+                                    :class="['progress-step', 'marquee-progress-bulb', { 'is-current': currentQuestionIndex === index, 'is-clickable': index <= currentQuestionIndex }]"
+                                    :aria-label="'Question ' + (index + 1)"
+                                    :aria-current="currentQuestionIndex === index ? 'step' : null"
+                                    :disabled="index > currentQuestionIndex"
+                                    v-on:click="goToQuestion(index)">
+                                {{ index + 1 }}
                             </button>
                         </div>
-                        <div class="recommender-actions">
-                            <button type="button" class="button is-primary recommender-next" :disabled="!releaseYearRange" v-on:click="fetchRecommendedMovie()">Find me a movie</button>
+
+                        <div class="marquee-ticket-question">
+                            <span v-if="!allQuestionsAnswered" class="marquee-ticket-step-label">Question {{ currentQuestionIndex + 1 }} of {{ maxQuestions }}</span>
+                            <p v-if="!allQuestionsAnswered" class="question-prompt marquee-ticket-prompt">{{ prompts[currentQuestionIndex] }}</p>
+                        </div>
+
+                        <div v-if="currentQuestionIndex === 0" class="marquee-ticket-panel marquee-ticket-panel-feelings">
+                            <div class="recommender-option-grid feeling-grid marquee-option-grid">
+                                <button v-for="feeling in feelings"
+                                        type="button"
+                                        :key="feeling"
+                                        :class="['button recommender-option genre-button marquee-ticket-option', { 'is-primary': selectedFeelings.includes(feeling) }]"
+                                        v-on:click="toggleFeeling(feeling)">
+                                    {{ formatFeeling(feeling) }}
+                                </button>
+                            </div>
+                            <div class="recommender-actions marquee-ticket-actions marquee-sticky-cta">
+                                <button type="button" class="button is-primary recommender-next marquee-ticket-next" :disabled="selectedFeelings.length === 0" v-on:click="nextQuestion()">Next</button>
+                            </div>
+                        </div>
+
+                        <div v-if="currentQuestionIndex === 1" class="marquee-ticket-panel">
+                            <div class="buttons is-centered marquee-ticket-button-group">
+                                <button v-for="(duration, index) in durations"
+                                        type="button"
+                                        :key="index"
+                                        :class="['button recommender-option wide-button marquee-ticket-option marquee-ticket-stub', { 'is-primary': durationPreference === duration }]"
+                                        v-on:click="selectDuration(index)">
+                                    {{ duration }}
+                                </button>
+                            </div>
+                            <div class="recommender-actions marquee-ticket-actions marquee-sticky-cta">
+                                <button type="button" class="button is-primary recommender-next marquee-ticket-next" :disabled="!durationPreference" v-on:click="nextQuestion()">Next</button>
+                            </div>
+                        </div>
+
+                        <div v-if="currentQuestionIndex === 2" class="marquee-ticket-panel">
+                            <div class="buttons is-centered marquee-ticket-button-group">
+                                <button type="button"
+                                        class="button recommender-option marquee-ticket-option marquee-ticket-stub"
+                                        :class="{ 'is-selected is-primary': openToForeignFilm === true }"
+                                        v-on:click="selectForeignFilm(true)">
+                                    Yes
+                                </button>
+                                <button type="button"
+                                        class="button recommender-option marquee-ticket-option marquee-ticket-stub"
+                                        :class="{ 'is-selected is-primary': openToForeignFilm === false }"
+                                        v-on:click="selectForeignFilm(false)">
+                                    No
+                                </button>
+                            </div>
+                            <div class="recommender-actions marquee-ticket-actions marquee-sticky-cta">
+                                <button type="button" class="button is-primary recommender-next marquee-ticket-next" :disabled="openToForeignFilm === null" v-on:click="nextQuestion()">Next</button>
+                            </div>
+                        </div>
+
+                        <div v-if="currentQuestionIndex === 3 && !allQuestionsAnswered" class="marquee-ticket-panel">
+                            <div class="buttons is-centered marquee-ticket-button-group">
+                                <button v-for="(yearRange, index) in yearRanges"
+                                        type="button"
+                                        :key="index"
+                                        :class="['button recommender-option marquee-ticket-option marquee-ticket-stub', { 'is-primary': releaseYearRange === yearRange }]"
+                                        v-on:click="selectYearRange(index)">
+                                    {{ yearRange }}
+                                </button>
+                            </div>
+                            <div class="recommender-actions marquee-ticket-actions marquee-sticky-cta">
+                                <button type="button" class="button is-primary recommender-next marquee-ticket-next" :disabled="!releaseYearRange" v-on:click="fetchRecommendedMovie()">Find me a movie</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     </transition>
 
     <div class="has-text-centered empty-recommendation" v-show="showRecommendationBox && !isLoading && !recommendedMovie">

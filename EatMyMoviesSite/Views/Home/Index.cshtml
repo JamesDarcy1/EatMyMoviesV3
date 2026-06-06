@@ -3,78 +3,105 @@
 
 <title>Eat My Movies</title>
 <meta name="description" content="Welcome to Eat My Movies - the place to discover your next cinematic obsession. By answering a few quetions we aim to find you the perfect movie for your night's viewing. Please enjoy our recommendations and have fun exploring our carefully curated lists." />
-<link rel="canonical" href="https://www.eatmymovies.com/" />.
+<link rel="canonical" href="https://www.eatmymovies.com/" />
 
-<form method="POST" action="/Movie/Detail">
-    <section class="hero is-medium home-hero">
-        <div>
-            <div class="has-text-centered">
-                <h1>
-                    Discover Your Next Cinematic Obsession
-                </h1>
-                <p>
-                    Don't know what to watch tonight?
-                </p>
-                <button class="button is-primary is-medium"
-                        asp-controller="Movie"
-                        asp-action="Recommender">
-                    Find me a movie
-                </button>
-
-                <h1 class="pt-6">
-                    How it works
-                </h1>
-                <p>
-                    We ask several questions, you tell us what you're looking for and we find the perfect recommendation
-                </p>
-
-
-                <h1 class="pt-6">
-                    Movie of the Week
-                    <span class="tooltip-icon updated-badge" tabindex="0" aria-label="Updated every Friday">
-                        <span aria-hidden="true">Fri</span>
-                        <span class="tooltip-text">Updated every Friday</span>
-                    </span>
-                </h1>
-
-                <article class="movie-block movie-card mt-0">
-                    <a class="clickable-card" onclick="window.location='@Url.Action("Detail", "Movie")?tmdbId=@(Model.TmdbId)';">
-                        <div class="columns is-mobile m-0">
-                            <div class="column is-two-fifths-mobile is-one-third-desktop is-flex is-align-items-center is-justify-content-center">
-                                <img class="poster" src="@Model.PosterPath" alt="@Model.Title poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
-                            </div>
-                            <div class="column is-one-third-desktop is-justify-content-center">
-                                <h4 class="movie-title mb-0">@Model.Title</h4>
-                                <small class="release-date">@Model.ReleaseDate</small>
-                                <small>@Model.Genres</small>
-                                <small>@Model.ImdbRating IMDB Rating</small>
-                                <small>@Model.Runtime Minutes</small>
-                                <small class="find-out-more">Find Out More</small>
-                            </div>
-                            <div class="column is-one-third-desktop is-hidden-mobile is-flex is-flex-direction-column is-justify-content-center">
-                                <small class="card-synopsis">@Model.Synopsis</small>
-                            </div>
-                        </div>
-
-                    </a>
-
-                </article>
-
-                <h1 class="pt-6">
-                    Movie Lists
-                </h1>
-                <div class="list-button-grid">
-                    <button class="button list-button" asp-controller="List" asp-action="Top100">Top 100</button>
-                    <button class="button list-button" asp-controller="List" asp-action="Christmas">Christmas</button>
-                    <button class="button list-button" asp-controller="List" asp-action="Comedies">Comedies</button>
-                    <button class="button list-button" asp-controller="List" asp-action="Disney">Disney</button>
-                    <button class="button list-button" asp-controller="List" asp-action="ForeignFilms">Foreign Films</button>
-                    <button class="button list-button" asp-controller="List" asp-action="Documentaries">Documentaries</button>
-                    <button class="button list-button" asp-controller="List" asp-action="StandoutSoundtracks">Standout Soundtracks</button>
-                    <button class="button list-button" asp-controller="List" asp-action="Iconic80s">Iconic 80s</button>
-                    <button class="button list-button" asp-controller="List" asp-action="Horrors">Horrors</button>
+<form method="POST" action="/Movie/Detail" class="home-marquee-shell">
+    <section class="hero is-medium home-hero home-marquee-hero">
+        <div class="marquee-result home-hero-card">
+            <div class="marquee-hero home-lobby-marquee">
+                <span class="marquee-hero-glow" aria-hidden="true"></span>
+                <div class="marquee-hero-copy home-hero-copy">
+                    <span class="marquee-kicker">Now Showing</span>
+                    <h1 class="marquee-title">
+                        Discover Your Next Cinematic Obsession
+                    </h1>
+                    <p class="marquee-genres">
+                        Don't know what to watch tonight?
+                    </p>
+                    <button class="button is-primary is-medium home-hero-cta"
+                            asp-controller="Movie"
+                            asp-action="Recommender">
+                        Find me a movie
+                    </button>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section class="home-section-band home-how-it-works has-text-centered">
+        <span class="marquee-section-label">How it works</span>
+        <h1>
+            How it works
+        </h1>
+        <p>
+            We ask several questions, you tell us what you're looking for and we find the perfect recommendation
+        </p>
+    </section>
+
+    <section class="home-feature-section">
+        <div class="has-text-centered">
+            <h1 class="pt-6 home-section-title">
+                Movie of the Week
+                <span class="tooltip-icon updated-badge" tabindex="0" aria-label="Updated every Friday">
+                    <span aria-hidden="true">Fri</span>
+                    <span class="tooltip-text">Updated every Friday</span>
+                </span>
+            </h1>
+        </div>
+
+        <article class="movie-block movie-card marquee-result home-feature-card mt-0">
+            <a class="clickable-card home-feature-link" onclick="window.location='@Url.Action("Detail", "Movie")?tmdbId=@(Model.TmdbId)';">
+                <div class="marquee-hero home-feature-marquee" style="--poster-backdrop: url('@Model.PosterPath');">
+                    <span class="marquee-hero-glow" aria-hidden="true"></span>
+                    <div class="marquee-poster-frame home-feature-poster-frame">
+                        <img class="poster marquee-poster" src="@Model.PosterPath" alt="@Model.Title poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
+                    </div>
+                    <div class="marquee-hero-copy home-feature-copy">
+                        <span class="marquee-kicker">Featured Pick</span>
+                        <h4 class="movie-title marquee-title mb-0">@Model.Title</h4>
+                        <div class="marquee-meta-rail home-feature-meta">
+                            <div class="marquee-meta-item">
+                                <span class="marquee-meta-label">Release</span>
+                                <span class="marquee-meta-value release-date">@Model.ReleaseDate</span>
+                            </div>
+                            <div class="marquee-meta-item">
+                                <span class="marquee-meta-label">Genres</span>
+                                <span class="marquee-meta-value">@Model.Genres</span>
+                            </div>
+                            <div class="marquee-meta-item">
+                                <span class="marquee-meta-label">IMDb</span>
+                                <span class="marquee-meta-value">@Model.ImdbRating IMDB Rating</span>
+                            </div>
+                            <div class="marquee-meta-item">
+                                <span class="marquee-meta-label">Runtime</span>
+                                <span class="marquee-meta-value">@Model.Runtime Minutes</span>
+                            </div>
+                        </div>
+                        <small class="find-out-more home-feature-action">Find Out More</small>
+                    </div>
+                </div>
+                <div class="marquee-copy home-feature-synopsis is-hidden-mobile">
+                    <small class="card-synopsis marquee-synopsis">@Model.Synopsis</small>
+                </div>
+            </a>
+        </article>
+    </section>
+
+    <section class="home-list-section has-text-centered">
+        <span class="marquee-section-label">Curated Programs</span>
+        <h1 class="pt-6 home-section-title">
+            Movie Lists
+        </h1>
+        <div class="list-button-grid home-list-board">
+            <button class="button list-button home-list-button" asp-controller="List" asp-action="Top100">Top 100</button>
+            <button class="button list-button home-list-button" asp-controller="List" asp-action="Christmas">Christmas</button>
+            <button class="button list-button home-list-button" asp-controller="List" asp-action="Comedies">Comedies</button>
+            <button class="button list-button home-list-button" asp-controller="List" asp-action="Disney">Disney</button>
+            <button class="button list-button home-list-button" asp-controller="List" asp-action="ForeignFilms">Foreign Films</button>
+            <button class="button list-button home-list-button" asp-controller="List" asp-action="Documentaries">Documentaries</button>
+            <button class="button list-button home-list-button" asp-controller="List" asp-action="StandoutSoundtracks">Standout Soundtracks</button>
+            <button class="button list-button home-list-button" asp-controller="List" asp-action="Iconic80s">Iconic 80s</button>
+            <button class="button list-button home-list-button" asp-controller="List" asp-action="Horrors">Horrors</button>
         </div>
     </section>
 </form>
