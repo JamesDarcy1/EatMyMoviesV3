@@ -54,11 +54,11 @@
 					<a class="navbar-item" asp-controller="Home" asp-action="About">About</a>
 					<a class="navbar-item" asp-controller="Movie" asp-action="Search">Search</a>
 					<a class="navbar-item" asp-controller="Home" asp-action="Contact">Contact us</a>
-					<div class="navbar-item has-dropdown is-hoverable">
-						<a class="navbar-link">
+					<div class="navbar-item has-dropdown is-hoverable nav-list-dropdown">
+						<a class="navbar-link nav-list-toggle" role="button" aria-expanded="false">
 							Lists
 						</a>
-						<div class="navbar-dropdown">
+						<div class="navbar-dropdown nav-list-menu">
 							<a class="navbar-item" asp-controller="List" asp-action="Top100">
 								Top 100
 							</a>

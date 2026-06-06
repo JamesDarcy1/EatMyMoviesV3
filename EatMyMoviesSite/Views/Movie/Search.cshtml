@@ -1,7 +1,7 @@
 <div id="searchApp" class="search-panel" v-cloak>
     <h1>Movie Search</h1>
-    <div class="columns is-mobile mt-2 is-align-items-start search-row">
-        <div class="column is-three-quarters search-field">
+    <div class="search-form">
+        <div class="search-field">
             <label class="is-sr-only" for="movie-search">Enter movie title</label>
             <input id="movie-search"
                    class="input search-input"
@@ -35,7 +35,7 @@
                 </div>
             </div>
         </div>
-        <div class="column search-action">
+        <div class="search-action">
             <button class="button is-primary m-0" v-on:click="handleSearch" :disabled="!searchQuery">
                 <span>Search</span>
             </button>

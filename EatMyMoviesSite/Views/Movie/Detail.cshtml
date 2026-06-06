@@ -11,7 +11,7 @@
             <div class="column is-three-fifths movie-detail-copy">
                 <h1>@Model.Title</h1>
                 <i class="tagline">@Model.Tagline</i>
-                <div class="movie-meta-grid">
+                <div class="movie-meta-list">
                     <div class="movie-meta-item">
                         <span class="movie-meta-label">Release Date</span>
                         <span class="movie-meta-value">@Model.ReleaseDate</span>
@@ -34,12 +34,12 @@
                         <span class="movie-meta-value">@formattedRuntime</span>
                     </div>
                     <div class="movie-meta-item">
-                        <span class="movie-meta-label">Genres</span>
-                        <span class="movie-meta-value">@Model.Genres</span>
-                    </div>
-                    <div class="movie-meta-item">
                         <span class="movie-meta-label">Language</span>
                         <span class="movie-meta-value">@Model.Language</span>
+                    </div>
+                    <div class="movie-meta-item">
+                        <span class="movie-meta-label">Genres</span>
+                        <span class="movie-meta-value">@Model.Genres</span>
                     </div>
                 </div>
             </div>
