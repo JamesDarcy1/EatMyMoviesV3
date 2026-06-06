@@ -1,107 +1,116 @@
-﻿@using EatMyMoviesSite.DTOs
+@using EatMyMoviesSite.DTOs
 @model ListMovie;
 
 <title>Eat My Movies</title>
-<meta name="description" content="Welcome to Eat My Movies - the place to discover your next cinematic obsession. By answering a few quetions we aim to find you the perfect movie for your night's viewing. Please enjoy our recommendations and have fun exploring our carefully curated lists." />
+<meta name="description" content="Welcome to Eat My Movies - the place to discover your next cinematic obsession. By answering a few questions we aim to find you the perfect movie for your night's viewing. Please enjoy our recommendations and have fun exploring our carefully curated lists." />
 <link rel="canonical" href="https://www.eatmymovies.com/" />
 
-<form method="POST" action="/Movie/Detail" class="home-marquee-shell">
-    <section class="hero is-medium home-hero home-marquee-hero">
-        <div class="marquee-result home-hero-card">
-            <div class="marquee-hero home-lobby-marquee">
-                <span class="marquee-hero-glow" aria-hidden="true"></span>
-                <div class="marquee-hero-copy home-hero-copy">
-                    <span class="marquee-kicker">Now Showing</span>
-                    <h1 class="marquee-title">
-                        Discover Your Next Cinematic Obsession
-                    </h1>
-                    <p class="marquee-genres">
-                        Don't know what to watch tonight?
-                    </p>
-                    <button class="button is-primary is-medium home-hero-cta"
-                            asp-controller="Movie"
-                            asp-action="Recommender">
-                        Find me a movie
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="home-section-band home-how-it-works has-text-centered">
-        <span class="marquee-section-label">How it works</span>
-        <h1>
-            How it works
-        </h1>
-        <p>
-            We ask several questions, you tell us what you're looking for and we find the perfect recommendation
-        </p>
-    </section>
-
-    <section class="home-feature-section">
-        <div class="has-text-centered">
-            <h1 class="pt-6 home-section-title">
-                Movie of the Week
-                <span class="tooltip-icon updated-badge" tabindex="0" aria-label="Updated every Friday">
-                    <span aria-hidden="true">Fri</span>
-                    <span class="tooltip-text">Updated every Friday</span>
-                </span>
+<div class="home-marquee-shell">
+    <section class="home-cinema-hero" aria-labelledby="home-hero-title">
+        <div class="home-hero-copy">
+            <h1 id="home-hero-title" class="home-hero-title">
+                Discover Your Next Cinematic Obsession
             </h1>
+            <p class="home-hero-subtitle">
+                Don't know what to watch tonight?
+            </p>
+            <a class="button is-primary home-hero-cta" asp-controller="Movie" asp-action="Recommender">
+                Find me a movie
+            </a>
+        </div>
+    </section>
+
+    <section class="home-how-strip" aria-labelledby="how-it-works-title">
+        <div class="home-section-heading">
+            <span aria-hidden="true"></span>
+            <h2 id="how-it-works-title">How it works</h2>
+            <span aria-hidden="true"></span>
         </div>
 
-        <article class="movie-block movie-card marquee-result home-feature-card mt-0">
-            <a class="clickable-card home-feature-link" onclick="window.location='@Url.Action("Detail", "Movie")?tmdbId=@(Model.TmdbId)';">
-                <div class="marquee-hero home-feature-marquee" style="--poster-backdrop: url('@Model.PosterPath');">
-                    <span class="marquee-hero-glow" aria-hidden="true"></span>
-                    <div class="marquee-poster-frame home-feature-poster-frame">
-                        <img class="poster marquee-poster" src="@Model.PosterPath" alt="@Model.Title poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
-                    </div>
-                    <div class="marquee-hero-copy home-feature-copy">
-                        <span class="marquee-kicker">Featured Pick</span>
-                        <h4 class="movie-title marquee-title mb-0">@Model.Title</h4>
-                        <div class="marquee-meta-rail home-feature-meta">
-                            <div class="marquee-meta-item">
-                                <span class="marquee-meta-label">Release</span>
-                                <span class="marquee-meta-value release-date">@Model.ReleaseDate</span>
-                            </div>
-                            <div class="marquee-meta-item">
-                                <span class="marquee-meta-label">Genres</span>
-                                <span class="marquee-meta-value">@Model.Genres</span>
-                            </div>
-                            <div class="marquee-meta-item">
-                                <span class="marquee-meta-label">IMDb</span>
-                                <span class="marquee-meta-value">@Model.ImdbRating IMDB Rating</span>
-                            </div>
-                            <div class="marquee-meta-item">
-                                <span class="marquee-meta-label">Runtime</span>
-                                <span class="marquee-meta-value">@Model.Runtime Minutes</span>
-                            </div>
-                        </div>
-                        <small class="find-out-more home-feature-action">Find Out More</small>
-                    </div>
+        <ol class="home-step-list">
+            <li class="home-step-card">
+                <span class="home-step-icon" aria-hidden="true">
+                    <svg viewBox="0 0 64 64" focusable="false">
+                        <path d="M17 21h34l-5 34H22L17 21Z" />
+                        <path d="M21 21 19 9l7 2 6-5 6 5 8-2-2 12" />
+                        <path d="M28 27v20M39 27v20" />
+                    </svg>
+                </span>
+                <span class="home-step-number">1</span>
+                <strong>Tell us what you like</strong>
+                <small>Answer a few quick questions about your taste in movies.</small>
+            </li>
+            <li class="home-step-card">
+                <span class="home-step-icon" aria-hidden="true">
+                    <svg viewBox="0 0 64 64" focusable="false">
+                        <path d="M13 22h38v30H13V22Z" />
+                        <path d="M13 22 48 12l4 11" />
+                        <path d="m20 19 5 7m7-10 5 7m7-10 5 7" />
+                        <path d="m29 31 12 7-12 7V31Z" />
+                    </svg>
+                </span>
+                <span class="home-step-number">2</span>
+                <strong>We find the perfect match</strong>
+                <small>Our algorithm analyzes your preferences to find movies you'll love.</small>
+            </li>
+            <li class="home-step-card">
+                <span class="home-step-icon" aria-hidden="true">
+                    <svg viewBox="0 0 64 64" focusable="false">
+                        <path d="M19 14h26v25H19V14Z" />
+                        <path d="M15 39h34M23 39l-7 13M41 39l7 13M32 39v13" />
+                        <path d="M24 20h16M24 27h16" />
+                    </svg>
+                </span>
+                <span class="home-step-number">3</span>
+                <strong>Enjoy your movie</strong>
+                <small>Get your recommendation and enjoy your next great movie night.</small>
+            </li>
+        </ol>
+    </section>
+
+    <section class="home-feature-section" aria-labelledby="movie-of-week-title">
+        <div class="home-section-heading home-section-heading-dark">
+            <span aria-hidden="true"></span>
+            <h2 id="movie-of-week-title">Movie of the Week</h2>
+            <span aria-hidden="true"></span>
+        </div>
+
+        <article class="home-week-card">
+            <a class="home-week-link" asp-controller="Movie" asp-action="Detail" asp-route-tmdbId="@Model.TmdbId">
+                <div class="home-week-poster-wrap">
+                    <img class="poster home-week-poster" src="@Model.PosterPath" alt="@Model.Title poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
                 </div>
-                <div class="marquee-copy home-feature-synopsis is-hidden-mobile">
-                    <small class="card-synopsis marquee-synopsis">@Model.Synopsis</small>
+                <div class="home-week-copy">
+                    <h3>@Model.Title</h3>
+                    <p class="home-week-meta">
+                        <span>@Model.ReleaseDate</span>
+                        <span>@Model.Genres</span>
+                        <span>IMDb @Model.ImdbRating/10</span>
+                        <span>@Model.Runtime min</span>
+                    </p>
+                    <p class="home-week-synopsis">@Model.Synopsis</p>
+                    <span class="button is-primary home-week-cta">Find out more</span>
                 </div>
             </a>
         </article>
     </section>
 
-    <section class="home-list-section has-text-centered">
-        <span class="marquee-section-label">Curated Programs</span>
-        <h1 class="pt-6 home-section-title">
-            Movie Lists
-        </h1>
+    <section class="home-list-section" aria-labelledby="movie-lists-title">
+        <div class="home-section-heading">
+            <span aria-hidden="true"></span>
+            <h2 id="movie-lists-title">Movie Lists</h2>
+            <span aria-hidden="true"></span>
+        </div>
         <div class="list-button-grid home-list-board">
-            <button class="button list-button home-list-button" asp-controller="List" asp-action="Top100">Top 100</button>
-            <button class="button list-button home-list-button" asp-controller="List" asp-action="Christmas">Christmas</button>
-            <button class="button list-button home-list-button" asp-controller="List" asp-action="Comedies">Comedies</button>
-            <button class="button list-button home-list-button" asp-controller="List" asp-action="Disney">Disney</button>
-            <button class="button list-button home-list-button" asp-controller="List" asp-action="ForeignFilms">Foreign Films</button>
-            <button class="button list-button home-list-button" asp-controller="List" asp-action="Documentaries">Documentaries</button>
-            <button class="button list-button home-list-button" asp-controller="List" asp-action="StandoutSoundtracks">Standout Soundtracks</button>
-            <button class="button list-button home-list-button" asp-controller="List" asp-action="Iconic80s">Iconic 80s</button>
-            <button class="button list-button home-list-button" asp-controller="List" asp-action="Horrors">Horrors</button>
+            <a class="button list-button home-list-button" asp-controller="List" asp-action="Top100"><span aria-hidden="true">TOP</span>Top 100</a>
+            <a class="button list-button home-list-button" asp-controller="List" asp-action="Christmas"><span aria-hidden="true">XMAS</span>Christmas</a>
+            <a class="button list-button home-list-button" asp-controller="List" asp-action="Comedies"><span aria-hidden="true">HA</span>Comedies</a>
+            <a class="button list-button home-list-button" asp-controller="List" asp-action="Disney"><span aria-hidden="true">MAG</span>Disney</a>
+            <a class="button list-button home-list-button" asp-controller="List" asp-action="ForeignFilms"><span aria-hidden="true">GLO</span>Foreign Films</a>
+            <a class="button list-button home-list-button" asp-controller="List" asp-action="Documentaries"><span aria-hidden="true">DOC</span>Documentaries</a>
+            <a class="button list-button home-list-button" asp-controller="List" asp-action="StandoutSoundtracks"><span aria-hidden="true">OST</span>Standout Soundtracks</a>
+            <a class="button list-button home-list-button" asp-controller="List" asp-action="Iconic80s"><span aria-hidden="true">80s</span>Iconic 80s</a>
+            <a class="button list-button home-list-button" asp-controller="List" asp-action="Horrors"><span aria-hidden="true">BOO</span>Horrors</a>
         </div>
     </section>
-</form>
+</div>
