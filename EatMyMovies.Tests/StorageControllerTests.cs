@@ -60,6 +60,7 @@ public class StorageControllerTests
         var movieRepository = new Mock<IMovieRepository>();
         var listRepository = new Mock<IListRepository>();
         var rankingRepository = new Mock<IRankingRepository>();
+        var storageService = new Mock<IStorageService>();
         movieRepository.Setup(repository => repository.GetMovieByTitleAsync("Existing Movie", It.IsAny<CancellationToken>()))
             .ReturnsAsync(movie);
         listRepository.Setup(repository => repository.GetListByNameAsync("Top 100", It.IsAny<CancellationToken>()))
@@ -69,14 +70,15 @@ public class StorageControllerTests
         var controller = CreateController(
             movieRepository: movieRepository,
             listRepository: listRepository,
-            rankingRepository: rankingRepository);
+            rankingRepository: rankingRepository,
+            storageService: storageService);
         SetReferer(controller);
 
         var result = await controller.AddMovieToList("Top 100", "Existing Movie", 5);
 
         var redirect = Assert.IsType<RedirectResult>(result);
         Assert.Equal("/previous-page", redirect.Url);
-        rankingRepository.Verify(repository => repository.InsertMovieToListAsync(
+        storageService.Verify(service => service.AddMovieToListAtRankingAsync(
             It.IsAny<Guid>(),
             It.IsAny<Guid>(),
             It.IsAny<int>(),
@@ -90,12 +92,6 @@ public class StorageControllerTests
         var list = TestHelpers.CreateList("Top 100");
         var tmdbMovie = TestHelpers.CreateTmdbMovie(title: "New Movie", genres: new[] { "Comedy" });
         var savedMovie = TestHelpers.CreateStoreMovie("New Movie", tmdbMovie.Id);
-        var insertedRanking = new ListRanking
-        {
-            ListId = list.ListId,
-            MovieId = savedMovie.MovieId,
-            Ranking = 2
-        };
         var movieRepository = new Mock<IMovieRepository>();
         var movieService = new Mock<IMovieService>();
         var listRepository = new Mock<IListRepository>();
@@ -113,8 +109,8 @@ public class StorageControllerTests
             .ReturnsAsync(list);
         rankingRepository.Setup(repository => repository.FilmExistsInListAsync(savedMovie.MovieId, list.ListId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
-        rankingRepository.Setup(repository => repository.InsertMovieToListAsync(savedMovie.MovieId, list.ListId, 2, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(insertedRanking);
+        storageService.Setup(service => service.AddMovieToListAtRankingAsync(savedMovie.MovieId, list.ListId, 2, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
         var controller = CreateController(
             movieRepository,
             movieService,
@@ -127,8 +123,7 @@ public class StorageControllerTests
 
         var redirect = Assert.IsType<RedirectResult>(result);
         Assert.Equal("/previous-page", redirect.Url);
-        storageService.Verify(service => service.ShuffleListDownIfNecessaryAsync(list.ListId, 2, It.IsAny<CancellationToken>()), Times.Once);
-        rankingRepository.Verify(repository => repository.InsertMovieToListAsync(savedMovie.MovieId, list.ListId, 2, It.IsAny<CancellationToken>()), Times.Once);
+        storageService.Verify(service => service.AddMovieToListAtRankingAsync(savedMovie.MovieId, list.ListId, 2, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

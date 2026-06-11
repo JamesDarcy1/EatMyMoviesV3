@@ -8,5 +8,7 @@ namespace EatMyMovies.DataAccess.Models
 		public Guid GenreId { get; set; }
 
         public string Name  { get; set; } = string.Empty;
+
+        public ICollection<MovieGenre> MovieGenres { get; set; } = [];
     }
 }

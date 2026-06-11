@@ -11,19 +11,14 @@ namespace EatMyMoviesSite.Services
 			_rankingRepository = rankingRepository;
 		}
 
-		public async Task ShuffleListDownIfNecessaryAsync(Guid listId, int newRanking, CancellationToken cancellationToken = default)
+		public Task AddMovieToListAtRankingAsync(Guid movieId, Guid listId, int ranking, CancellationToken cancellationToken = default)
 		{
-			var listRanking = await _rankingRepository.GetMovieAtRankingAsync(listId, newRanking, cancellationToken);
-			if (listRanking is null)
-			{
-				return;
-			}
+			return _rankingRepository.AddMovieToListAtRankingAsync(movieId, listId, ranking, cancellationToken);
+		}
 
-			var moviesInList = await _rankingRepository.GetRankingsAtOrAfterAsync(listId, newRanking, cancellationToken);
-			foreach (var movie in moviesInList)
-			{
-				await _rankingRepository.UpdateRankingAsync(movie, movie.Ranking + 1, cancellationToken);
-			}
+		public Task MoveMovieWithinListAsync(Guid movieId, Guid listId, int newRanking, CancellationToken cancellationToken = default)
+		{
+			return _rankingRepository.MoveMovieWithinListAsync(movieId, listId, newRanking, cancellationToken);
 		}
 	}
 }

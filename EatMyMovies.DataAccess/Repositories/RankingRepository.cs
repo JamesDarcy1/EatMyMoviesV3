@@ -1,6 +1,7 @@
 using EatMyMovies.DataAccess.Models;
 using EatMyMovies.DataAccess.QueryModels;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace EatMyMovies.DataAccess.Repositories
 {
@@ -19,9 +20,11 @@ namespace EatMyMovies.DataAccess.Repositories
             int moviesPerPage = 10,
             CancellationToken cancellationToken = default)
         {
+            var normalizedListName = NormalizeRequired(listName, nameof(listName));
+
             return _dbContext.ListRankings
                 .AsNoTracking()
-                .Where(listRanking => listRanking.List.Name == listName)
+                .Where(listRanking => listRanking.List.Name == normalizedListName)
                 .OrderBy(listRanking => listRanking.Ranking)
                 .Skip((page - 1) * moviesPerPage)
                 .Take(moviesPerPage)
@@ -35,9 +38,11 @@ namespace EatMyMovies.DataAccess.Repositories
 
         public Task<List<StoredMovieSummary>> GetMovieSummariesInListAsync(string listName, CancellationToken cancellationToken = default)
         {
+            var normalizedListName = NormalizeRequired(listName, nameof(listName));
+
             return _dbContext.ListRankings
                 .AsNoTracking()
-                .Where(listRanking => listRanking.List.Name == listName)
+                .Where(listRanking => listRanking.List.Name == normalizedListName)
                 .Select(listRanking => new StoredMovieSummary(
                     listRanking.MovieId,
                     listRanking.Movie.Title,
@@ -48,16 +53,20 @@ namespace EatMyMovies.DataAccess.Repositories
 
         public Task<int> GetListCountAsync(string listName, CancellationToken cancellationToken = default)
         {
+            var normalizedListName = NormalizeRequired(listName, nameof(listName));
+
             return _dbContext.ListRankings
                 .AsNoTracking()
-                .CountAsync(listRanking => listRanking.List.Name == listName, cancellationToken);
+                .CountAsync(listRanking => listRanking.List.Name == normalizedListName, cancellationToken);
         }
 
         public async Task<int> GetRankingOfMovieAsync(Guid movieId, string listName, CancellationToken cancellationToken = default)
         {
+            var normalizedListName = NormalizeRequired(listName, nameof(listName));
+
             var ranking = await _dbContext.ListRankings
                 .AsNoTracking()
-                .Where(listRanking => listRanking.List.Name == listName && listRanking.MovieId == movieId)
+                .Where(listRanking => listRanking.List.Name == normalizedListName && listRanking.MovieId == movieId)
                 .Select(listRanking => (int?)listRanking.Ranking)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -69,9 +78,22 @@ namespace EatMyMovies.DataAccess.Repositories
             return ranking.Value;
         }
 
-        public async Task<ListRanking> InsertMovieToListAsync(Guid movieId, Guid listId, int ranking, CancellationToken cancellationToken = default)
+        public async Task<ListRanking> AddMovieToListAtRankingAsync(Guid movieId, Guid listId, int ranking, CancellationToken cancellationToken = default)
         {
-            var result = _dbContext.ListRankings.Add(new ListRanking()
+            ValidateRanking(ranking);
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken);
+
+            if (await _dbContext.ListRankings.AnyAsync(
+                listRanking => listRanking.MovieId == movieId && listRanking.ListId == listId,
+                cancellationToken))
+            {
+                throw new InvalidOperationException("Movie already exists in list.");
+            }
+
+            await OpenRankingSlotAsync(listId, ranking, cancellationToken);
+
+            var result = _dbContext.ListRankings.Add(new ListRanking
             {
                 ListId = listId,
                 MovieId = movieId,
@@ -79,14 +101,66 @@ namespace EatMyMovies.DataAccess.Repositories
             });
 
             await _dbContext.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
 
             return result.Entity;
         }
 
-        public Task<ListRanking?> GetMovieAtRankingAsync(Guid listId, int ranking, CancellationToken cancellationToken = default)
+        public async Task<ListRanking> MoveMovieWithinListAsync(Guid movieId, Guid listId, int newRanking, CancellationToken cancellationToken = default)
         {
-            return _dbContext.ListRankings
-                .FirstOrDefaultAsync(listRanking => listRanking.ListId == listId && listRanking.Ranking == ranking, cancellationToken);
+            ValidateRanking(newRanking);
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken);
+
+            var listRanking = await _dbContext.ListRankings
+                .FirstOrDefaultAsync(
+                    ranking => ranking.MovieId == movieId && ranking.ListId == listId,
+                    cancellationToken)
+                ?? throw new InvalidOperationException("Movie does not exist in list.");
+
+            var currentRanking = listRanking.Ranking;
+            if (currentRanking == newRanking)
+            {
+                await transaction.CommitAsync(cancellationToken);
+                return listRanking;
+            }
+
+            var temporaryOffset = await GetTemporaryRankingOffsetAsync(listId, cancellationToken);
+            listRanking.Ranking += temporaryOffset;
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            if (newRanking < currentRanking)
+            {
+                var affectedRankings = await _dbContext.ListRankings
+                    .Where(ranking => ranking.ListId == listId && ranking.Ranking >= newRanking && ranking.Ranking < currentRanking)
+                    .ToListAsync(cancellationToken);
+
+                await MoveRankingsTemporarilyAsync(affectedRankings, temporaryOffset, cancellationToken);
+                foreach (var affectedRanking in affectedRankings)
+                {
+                    affectedRanking.Ranking = affectedRanking.Ranking - temporaryOffset + 1;
+                }
+            }
+            else
+            {
+                var affectedRankings = await _dbContext.ListRankings
+                    .Where(ranking => ranking.ListId == listId && ranking.Ranking > currentRanking && ranking.Ranking <= newRanking)
+                    .ToListAsync(cancellationToken);
+
+                await MoveRankingsTemporarilyAsync(affectedRankings, temporaryOffset, cancellationToken);
+                foreach (var affectedRanking in affectedRankings)
+                {
+                    affectedRanking.Ranking = affectedRanking.Ranking - temporaryOffset - 1;
+                }
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            listRanking.Ranking = newRanking;
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+
+            return listRanking;
         }
 
         public Task<bool> FilmExistsInListAsync(Guid movieId, Guid listId, CancellationToken cancellationToken = default)
@@ -94,34 +168,6 @@ namespace EatMyMovies.DataAccess.Repositories
             return _dbContext.ListRankings
                 .AsNoTracking()
                 .AnyAsync(listRanking => listRanking.MovieId == movieId && listRanking.ListId == listId, cancellationToken);
-        }
-
-        public Task<List<ListRanking>> GetRankingsAtOrAfterAsync(Guid listId, int ranking, CancellationToken cancellationToken = default)
-        {
-            return _dbContext.ListRankings
-                .Where(listRanking => listRanking.ListId == listId && listRanking.Ranking >= ranking)
-                .OrderBy(listRanking => listRanking.Ranking)
-                .ToListAsync(cancellationToken);
-        }
-
-        public async Task<ListRanking> UpdateRankingAsync(ListRanking listRanking, int newRanking, CancellationToken cancellationToken = default)
-        {
-            listRanking.Ranking = newRanking;
-            var updatedListRanking = _dbContext.ListRankings.Update(listRanking);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
-            return updatedListRanking.Entity;
-        }
-
-        public async Task RemoveRankingAsync(int ranking, Guid listId, CancellationToken cancellationToken = default)
-        {
-            var listRanking = await _dbContext.ListRankings
-                .FirstOrDefaultAsync(lr => lr.ListId == listId && lr.Ranking == ranking, cancellationToken);
-            if (listRanking != null)
-            {
-                _dbContext.ListRankings.Remove(listRanking);
-                await _dbContext.SaveChangesAsync(cancellationToken);
-            }
         }
 
         public Task<List<MovieRankingSummary>> GetListRankingsForMovieAsync(Guid movieId, CancellationToken cancellationToken = default)
@@ -153,6 +199,74 @@ namespace EatMyMovies.DataAccess.Repositories
                 _dbContext.ListRankings.Remove(listRanking);
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
+        }
+
+        private async Task OpenRankingSlotAsync(Guid listId, int ranking, CancellationToken cancellationToken)
+        {
+            var affectedRankings = await _dbContext.ListRankings
+                .Where(listRanking => listRanking.ListId == listId && listRanking.Ranking >= ranking)
+                .ToListAsync(cancellationToken);
+
+            if (affectedRankings.Count == 0)
+            {
+                return;
+            }
+
+            var temporaryOffset = await GetTemporaryRankingOffsetAsync(listId, cancellationToken);
+            await MoveRankingsTemporarilyAsync(affectedRankings, temporaryOffset, cancellationToken);
+
+            foreach (var affectedRanking in affectedRankings)
+            {
+                affectedRanking.Ranking = affectedRanking.Ranking - temporaryOffset + 1;
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task MoveRankingsTemporarilyAsync(
+            IEnumerable<ListRanking> rankings,
+            int temporaryOffset,
+            CancellationToken cancellationToken)
+        {
+            foreach (var ranking in rankings)
+            {
+                ranking.Ranking += temporaryOffset;
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task<int> GetTemporaryRankingOffsetAsync(Guid listId, CancellationToken cancellationToken)
+        {
+            var maxRanking = await _dbContext.ListRankings
+                .Where(listRanking => listRanking.ListId == listId)
+                .MaxAsync(listRanking => (int?)listRanking.Ranking, cancellationToken) ?? 0;
+
+            if (maxRanking > int.MaxValue / 2 - 1)
+            {
+                throw new InvalidOperationException("List rankings are too large to reorder safely.");
+            }
+
+            return maxRanking + 1;
+        }
+
+        private static void ValidateRanking(int ranking)
+        {
+            if (ranking <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(ranking), "Ranking must be positive.");
+            }
+        }
+
+        private static string NormalizeRequired(string value, string parameterName)
+        {
+            var normalizedValue = value?.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedValue))
+            {
+                throw new ArgumentException("Value cannot be blank.", parameterName);
+            }
+
+            return normalizedValue;
         }
     }
 }

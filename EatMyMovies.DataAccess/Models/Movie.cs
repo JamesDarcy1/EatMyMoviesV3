@@ -10,5 +10,9 @@ namespace EatMyMovies.DataAccess.Models
         public string Title { get; set; } = string.Empty;
 
         public int? TmdbId { get; set; }
+
+        public ICollection<ListRanking> ListRankings { get; set; } = [];
+
+        public ICollection<MovieGenre> MovieGenres { get; set; } = [];
     }
 }

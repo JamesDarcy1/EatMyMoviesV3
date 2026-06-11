@@ -40,7 +40,9 @@ public class RepositoryTests
     [Fact]
     public async Task RankingRepository_PreservesCurrentRankingOperations()
     {
-        using var context = TestHelpers.CreateContext();
+        using var connection = new Microsoft.Data.Sqlite.SqliteConnection("DataSource=:memory:");
+        connection.Open();
+        await using var context = TestHelpers.CreateSqliteContext(connection);
         var list = TestHelpers.CreateList("Comedies");
         var movie = TestHelpers.CreateStoreMovie("Some Like It Hot");
         context.Lists.Add(list);
@@ -48,7 +50,7 @@ public class RepositoryTests
         context.SaveChanges();
         var repository = new RankingRepository(context);
 
-        var inserted = await repository.InsertMovieToListAsync(movie.MovieId, list.ListId, 3);
+        var inserted = await repository.AddMovieToListAtRankingAsync(movie.MovieId, list.ListId, 3);
 
         Assert.True(await repository.FilmExistsInListAsync(movie.MovieId, list.ListId));
         Assert.Equal(3, await repository.GetRankingOfMovieAsync(movie.MovieId, "Comedies"));
@@ -57,7 +59,7 @@ public class RepositoryTests
         Assert.NotNull(found);
         Assert.Equal(inserted.ListRankingId, found.ListRankingId);
 
-        var updated = await repository.UpdateRankingAsync(inserted, 1);
+        var updated = await repository.MoveMovieWithinListAsync(inserted.MovieId, inserted.ListId, 1);
 
         Assert.Equal(1, updated.Ranking);
 

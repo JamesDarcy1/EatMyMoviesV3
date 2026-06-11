@@ -15,9 +15,15 @@ namespace EatMyMovies.DataAccess.Repositories
 
 		public async Task<Movie> SaveTmdbMovieAsync(string title, int tmdbId, decimal? imdbRating, CancellationToken cancellationToken = default)
 		{
+            var normalizedTitle = NormalizeRequired(title, nameof(title));
+            if (tmdbId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(tmdbId), "TMDb ID must be positive.");
+            }
+
 			var movie = _dbContext.Movies.Add(new Movie()
 			{
-				Title = title,
+				Title = normalizedTitle,
 				TmdbId = tmdbId,
 			});
 
@@ -28,9 +34,11 @@ namespace EatMyMovies.DataAccess.Repositories
 
 		public Task<Movie?> GetMovieByTitleAsync(string title, CancellationToken cancellationToken = default)
 		{
+            var normalizedTitle = NormalizeRequired(title, nameof(title));
+
 			return _dbContext.Movies
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Title == title, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Title == normalizedTitle, cancellationToken);
 		}
 
         public Task<List<StoredMovieSummary>> GetAllMovieSummariesAsync(CancellationToken cancellationToken = default)
@@ -88,7 +96,6 @@ namespace EatMyMovies.DataAccess.Repositories
 
                 _dbContext.MovieGenres.Add(new MovieGenre
                 {
-                    MovieGenreId = Guid.NewGuid(),
                     MovieId = movieId,
                     GenreId = existingByName[genreName].GenreId
                 });
@@ -119,5 +126,16 @@ namespace EatMyMovies.DataAccess.Repositories
                 .Distinct()
                 .ToListAsync(cancellationToken);
 		}
+
+        private static string NormalizeRequired(string value, string parameterName)
+        {
+            var normalizedValue = value?.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedValue))
+            {
+                throw new ArgumentException("Value cannot be blank.", parameterName);
+            }
+
+            return normalizedValue;
+        }
     }
 }

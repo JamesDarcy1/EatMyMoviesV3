@@ -31,11 +31,13 @@ namespace EatMyMoviesSite.Controllers
         [HttpPost]
         public async Task<Movie> SaveToDatabase(string title, CancellationToken cancellationToken = default)
         {
-            if (await _movieRepository.GetMovieByTitleAsync(title, cancellationToken) != null)
+            var normalizedTitle = NormalizeRequired(title, nameof(title));
+
+            if (await _movieRepository.GetMovieByTitleAsync(normalizedTitle, cancellationToken) != null)
             {
-                throw new Exception(title + " already in db");
+                throw new Exception(normalizedTitle + " already in db");
             }
-            var tmdbMovie = await _movieService.GetMovieByTitle(title);
+            var tmdbMovie = await _movieService.GetMovieByTitle(normalizedTitle);
             var rating = await _movieService.GetImdbRating(tmdbMovie.Title);
             var genres = tmdbMovie.Genres.Select(x => x.Name).Where(name => name != null).Select(name => name!);
             var entity = await _movieRepository.SaveTmdbMovieAsync(tmdbMovie.Title, tmdbMovie.Id, rating, cancellationToken);
@@ -46,20 +48,22 @@ namespace EatMyMoviesSite.Controllers
         [HttpGet]
         public async Task<TMDbLib.Objects.Movies.Movie> Search(string title)
         {
-            var tmdbMovie = await _movieService.GetMovieByTitle(title);
+            var tmdbMovie = await _movieService.GetMovieByTitle(NormalizeRequired(title, nameof(title)));
             return tmdbMovie;
         }
 
         [HttpPost("AddMovieToList")]
         public async Task<IActionResult> AddMovieToList(string listName, string movieTitle, int ranking, CancellationToken cancellationToken = default)
         {
-            var movie = await _movieRepository.GetMovieByTitleAsync(movieTitle, cancellationToken);
-            var list = await _listRepository.GetListByNameAsync(listName, cancellationToken)
-                ?? throw new Exception($"List '{listName}' was not found.");
+            var normalizedListName = NormalizeRequired(listName, nameof(listName));
+            var normalizedMovieTitle = NormalizeRequired(movieTitle, nameof(movieTitle));
+            var movie = await _movieRepository.GetMovieByTitleAsync(normalizedMovieTitle, cancellationToken);
+            var list = await _listRepository.GetListByNameAsync(normalizedListName, cancellationToken)
+                ?? throw new Exception($"List '{normalizedListName}' was not found.");
 
             if (movie == null)
             {
-                movie = await SaveToDatabase(movieTitle, cancellationToken);
+                movie = await SaveToDatabase(normalizedMovieTitle, cancellationToken);
             }
 
             if (await _rankingRepository.FilmExistsInListAsync(movie.MovieId, list.ListId, cancellationToken))
@@ -67,8 +71,7 @@ namespace EatMyMoviesSite.Controllers
                 return Redirect(Request.Headers["Referer"].ToString());
             }
 
-            await _storageService.ShuffleListDownIfNecessaryAsync(list.ListId, ranking, cancellationToken);
-            await _rankingRepository.InsertMovieToListAsync(movie.MovieId, list.ListId, ranking, cancellationToken);
+            await _storageService.AddMovieToListAtRankingAsync(movie.MovieId, list.ListId, ranking, cancellationToken);
 
             return Redirect(Request.Headers["Referer"].ToString());
         }
@@ -77,23 +80,21 @@ namespace EatMyMoviesSite.Controllers
         [HttpPost]
         public async Task<ListRanking> UpdateRankingInList(string listName, string movieTitle, int newRanking, CancellationToken cancellationToken = default)
         {
-            var movie = await _movieRepository.GetMovieByTitleAsync(movieTitle, cancellationToken)
-                ?? throw new Exception($"Movie '{movieTitle}' was not found.");
-            var list = await _listRepository.GetListByNameAsync(listName, cancellationToken)
-                ?? throw new Exception($"List '{listName}' was not found.");
+            var normalizedListName = NormalizeRequired(listName, nameof(listName));
+            var normalizedMovieTitle = NormalizeRequired(movieTitle, nameof(movieTitle));
+            var movie = await _movieRepository.GetMovieByTitleAsync(normalizedMovieTitle, cancellationToken)
+                ?? throw new Exception($"Movie '{normalizedMovieTitle}' was not found.");
+            var list = await _listRepository.GetListByNameAsync(normalizedListName, cancellationToken)
+                ?? throw new Exception($"List '{normalizedListName}' was not found.");
 
             if (!await _rankingRepository.FilmExistsInListAsync(movie.MovieId, list.ListId, cancellationToken))
             {
                 throw new Exception("Apparently film doesn't exist in the list");
             }
 
-            var currentRanking = await _rankingRepository.GetRankingOfMovieAsync(movie.MovieId, list.Name, cancellationToken);
-            await _storageService.ShuffleListDownIfNecessaryAsync(list.ListId, newRanking, cancellationToken);
-            var updatedListRanking = await _rankingRepository.InsertMovieToListAsync(movie.MovieId, list.ListId, newRanking, cancellationToken);
-
-            await _rankingRepository.RemoveRankingAsync(currentRanking, list.ListId, cancellationToken);
-
-            return updatedListRanking;
+            await _storageService.MoveMovieWithinListAsync(movie.MovieId, list.ListId, newRanking, cancellationToken);
+            return await _rankingRepository.GetListRankingAsync(movie.MovieId, list.ListId, cancellationToken)
+                ?? throw new InvalidOperationException("Ranking was not found after move.");
         }
 
         [HttpPost]
@@ -129,7 +130,7 @@ namespace EatMyMoviesSite.Controllers
                 return NotFound("Ranking not found");
             }
 
-            await _rankingRepository.UpdateRankingAsync(ranking, newRanking, cancellationToken);
+            await _storageService.MoveMovieWithinListAsync(movieId, listId, newRanking, cancellationToken);
 
             return Redirect(Request.Headers["Referer"].ToString());
         }
@@ -140,6 +141,17 @@ namespace EatMyMoviesSite.Controllers
             await _rankingRepository.RemoveListRankingAsync(movieId, listId, cancellationToken);
 
             return Redirect(Request.Headers["Referer"].ToString());
+        }
+
+        private static string NormalizeRequired(string value, string parameterName)
+        {
+            var normalizedValue = value?.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedValue))
+            {
+                throw new ArgumentException("Value cannot be blank.", parameterName);
+            }
+
+            return normalizedValue;
         }
     }
 }

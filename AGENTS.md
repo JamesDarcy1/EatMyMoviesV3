@@ -41,6 +41,7 @@ Development launch URLs are defined in `EatMyMoviesSite/Properties/launchSetting
 - Service interfaces and implementations live in `EatMyMoviesSite/Services`.
 - Data access should go through repository interfaces in `EatMyMovies.DataAccess/Repositories`.
 - EF entities live in `EatMyMovies.DataAccess/Models`.
+- EF entity configuration classes live in `EatMyMovies.DataAccess/ModelConfigurations`.
 - DTOs live in `EatMyMoviesSite/DTOs`.
 - View models live in `EatMyMoviesSite/Models`.
 - Enum types live in `EatMyMoviesSite/Enums`.
@@ -90,9 +91,13 @@ Use `EatMyMoviesSite/Config/README.md` as the source of truth for local user-sec
 
 The EF Core context is `EatMyMovies.DataAccess/EatMyMoviesContext.cs`.
 
+Entity configuration is split into `IEntityTypeConfiguration<T>` classes under `EatMyMovies.DataAccess/ModelConfigurations`; keep `OnModelCreating` as assembly-based configuration loading unless there is a strong reason to do otherwise.
+
 Repository reads should use async EF Core APIs, materialize bounded results inside the repository, and apply `AsNoTracking()` for read-only paths. Do not return `IQueryable` or lazily evaluated `IEnumerable` from repository interfaces. Use small projection records under `EatMyMovies.DataAccess/QueryModels` when services need summaries, list-page rows, or ranking context instead of tracked entity graphs.
 
 `ListRanking` and `MovieGenre` expose explicit FK properties. Prefer FK/scalar filters for repository queries and reserve tracked entity queries for write paths that update or delete rows.
+
+Movie/list/genre/list-ranking invariants are enforced by database constraints and unique indexes, not only repository checks. Keep list names, movie titles, non-null TMDb IDs, genre names, list rank slots, list movie memberships, and movie/genre links unique. Rankings and TMDb IDs must be positive. Use the transactional ranking repository methods for inserting or moving movies in lists so temporary reordering does not violate unique rank slots.
 
 Migrations are stored in `EatMyMovies.DataAccess/Migrations`. If adding or changing persisted models, add a migration from the repository root:
 

@@ -2,6 +2,7 @@ using DataList = EatMyMovies.DataAccess.Models.List;
 using DataMovie = EatMyMovies.DataAccess.Models.Movie;
 using EatMyMovies.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
 
@@ -16,6 +17,17 @@ internal static class TestHelpers
             .Options;
 
         return new EatMyMoviesContext(options);
+    }
+
+    public static EatMyMoviesContext CreateSqliteContext(SqliteConnection connection)
+    {
+        var options = new DbContextOptionsBuilder<EatMyMoviesContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var context = new EatMyMoviesContext(options);
+        context.Database.EnsureCreated();
+        return context;
     }
 
     public static Movie CreateTmdbMovie(
