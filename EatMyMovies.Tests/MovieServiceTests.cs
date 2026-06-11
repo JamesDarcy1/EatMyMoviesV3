@@ -1,12 +1,13 @@
-using System.Net;
 using EatMyMovies.DataAccess.Models;
 using EatMyMovies.DataAccess.Repositories;
+using EatMyMoviesSite.Options;
 using EatMyMoviesSite.Services;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Moq;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
+using TMDbLib.Objects.Search;
 using TmdbMovie = TMDbLib.Objects.Movies.Movie;
 using TmdbPerson = TMDbLib.Objects.People.Person;
 
@@ -41,14 +42,11 @@ public class MovieServiceTests
         var service = CreateService(
             rankingRepository: rankingRepository,
             listRepository: listRepository,
-            httpClient: new HttpClient(new StubHttpMessageHandler(_ =>
+            getImdbRating: _ =>
             {
                 ratingCalls++;
-                return new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = new StringContent("""{"imdbRating":"8.1"}""")
-                };
-            })),
+                return Task.FromResult<decimal?>(8.1m);
+            },
             getMovieById: id =>
             {
                 movieCalls++;
@@ -93,12 +91,12 @@ public class MovieServiceTests
             rankingRepository: rankingRepository,
             listRepository: listRepository,
             movieRepository: movieRepository,
-            httpClient: new HttpClient(new StubHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent("""{"imdbRating":"8.5"}""")
-            })),
+            getImdbRating: _ => Task.FromResult<decimal?>(8.5m),
             getMovieById: _ => Task.FromResult(tmdbMovie),
-            getTrailer: _ => Task.FromResult<Video?>(new Video { Type = "Trailer", Key = "abc123" }),
+            getMovieVideos: _ => Task.FromResult(new ResultContainer<Video>
+            {
+                Results = new List<Video> { new Video { Type = "Trailer", Key = "abc123" } }
+            }),
             getCredits: _ =>
             {
                 creditsCalls++;
@@ -132,26 +130,23 @@ public class MovieServiceTests
     }
 
     [Theory]
-    [InlineData("""{"imdbRating":"N/A"}""")]
-    [InlineData("""{"imdbRating":"not-a-rating"}""")]
-    [InlineData("""{}""")]
-    public async Task GetImdbRating_CachesUnknownRatingsAsNull(string response)
+    [InlineData(null)]
+    [InlineData("7.0")]
+    public async Task GetImdbRating_CachesRatings(string? expectedRating)
     {
+        decimal? ratingValue = expectedRating == null ? null : decimal.Parse(expectedRating);
         var requests = 0;
-        var service = CreateService(httpClient: new HttpClient(new StubHttpMessageHandler(_ =>
+        var service = CreateService(getImdbRating: _ =>
         {
             requests++;
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(response)
-            };
-        })));
+            return Task.FromResult(ratingValue);
+        });
 
-        var firstRating = await service.GetImdbRating("Unknown Movie");
-        var secondRating = await service.GetImdbRating("  unknown movie  ");
+        var firstRating = await service.GetImdbRating("Movie Title");
+        var secondRating = await service.GetImdbRating("  movie title  ");
 
-        Assert.Null(firstRating);
-        Assert.Null(secondRating);
+        Assert.Equal(ratingValue, firstRating);
+        Assert.Equal(ratingValue, secondRating);
         Assert.Equal(1, requests);
     }
 
@@ -159,51 +154,109 @@ public class MovieServiceTests
         Mock<IRankingRepository>? rankingRepository = null,
         Mock<IListRepository>? listRepository = null,
         Mock<IMovieRepository>? movieRepository = null,
-        HttpClient? httpClient = null,
+        Func<string, Task<SearchContainer<SearchMovie>>>? searchMovies = null,
         Func<string, Task<TmdbMovie>>? getMovieByTitle = null,
         Func<int, Task<TmdbMovie>>? getMovieById = null,
-        Func<int, Task<Video?>>? getTrailer = null,
+        Func<int, Task<ResultContainer<Video>>>? getMovieVideos = null,
         Func<int, Task<Credits>>? getCredits = null,
-        Func<int, Task<TmdbPerson?>>? getPerson = null)
+        Func<int, Task<TmdbPerson?>>? getPerson = null,
+        Func<string, Task<decimal?>>? getImdbRating = null)
     {
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Tmdb:ApiKey"] = "tmdb-key",
-                ["Omdb:ApiKey"] = "omdb-key",
-                ["ASPNETCORE_ENVIRONMENT"] = "Development"
-            })
-            .Build();
-
         return new MovieService(
             (rankingRepository ?? new Mock<IRankingRepository>()).Object,
-            configuration,
             (listRepository ?? new Mock<IListRepository>()).Object,
             (movieRepository ?? new Mock<IMovieRepository>()).Object,
             new MemoryCache(new MemoryCacheOptions()),
-            httpClient ?? new HttpClient(new StubHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent("""{"imdbRating":"7.0"}""")
-            })),
-            getMovieByTitle ?? (_ => Task.FromResult(TestHelpers.CreateTmdbMovie())),
-            getMovieById ?? (id => Task.FromResult(TestHelpers.CreateTmdbMovie(id: id))),
-            getTrailer ?? (_ => Task.FromResult<Video?>(null)),
-            getCredits ?? (_ => Task.FromResult(new Credits { Cast = new List<Cast>(), Crew = new List<Crew>() })),
-            getPerson ?? (_ => Task.FromResult<TmdbPerson?>(null)));
+            new FakeTmdbMovieClient(
+                searchMovies,
+                getMovieByTitle,
+                getMovieById,
+                getMovieVideos,
+                getCredits,
+                getPerson),
+            new FakeOmdbClient(getImdbRating),
+            Options.Create(new MovieExternalApiOptions()));
     }
 
-    private sealed class StubHttpMessageHandler : HttpMessageHandler
+    private sealed class FakeTmdbMovieClient : ITmdbMovieClient
     {
-        private readonly Func<HttpRequestMessage, HttpResponseMessage> _responseFactory;
+        private readonly Func<string, Task<SearchContainer<SearchMovie>>> _searchMovies;
+        private readonly Func<string, Task<TmdbMovie>> _getMovieByTitle;
+        private readonly Func<int, Task<TmdbMovie>> _getMovieById;
+        private readonly Func<int, Task<ResultContainer<Video>>> _getMovieVideos;
+        private readonly Func<int, Task<Credits>> _getCredits;
+        private readonly Func<int, Task<TmdbPerson?>> _getPerson;
 
-        public StubHttpMessageHandler(Func<HttpRequestMessage, HttpResponseMessage> responseFactory)
+        public FakeTmdbMovieClient(
+            Func<string, Task<SearchContainer<SearchMovie>>>? searchMovies,
+            Func<string, Task<TmdbMovie>>? getMovieByTitle,
+            Func<int, Task<TmdbMovie>>? getMovieById,
+            Func<int, Task<ResultContainer<Video>>>? getMovieVideos,
+            Func<int, Task<Credits>>? getCredits,
+            Func<int, Task<TmdbPerson?>>? getPerson)
         {
-            _responseFactory = responseFactory;
+            _searchMovies = searchMovies ?? (_ => Task.FromResult(new SearchContainer<SearchMovie>
+            {
+                Results = new List<SearchMovie> { new SearchMovie { Id = 1 } }
+            }));
+            _getMovieByTitle = getMovieByTitle ?? (_ => Task.FromResult(TestHelpers.CreateTmdbMovie()));
+            _getMovieById = getMovieById ?? (id => Task.FromResult(TestHelpers.CreateTmdbMovie(id: id)));
+            _getMovieVideos = getMovieVideos ?? (_ => Task.FromResult(new ResultContainer<Video>
+            {
+                Results = new List<Video>()
+            }));
+            _getCredits = getCredits ?? (_ => Task.FromResult(new Credits { Cast = new List<Cast>(), Crew = new List<Crew>() }));
+            _getPerson = getPerson ?? (_ => Task.FromResult<TmdbPerson?>(null));
         }
 
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public Task<SearchContainer<SearchMovie>> SearchMoviesAsync(string title)
         {
-            return Task.FromResult(_responseFactory(request));
+            return _searchMovies(title);
+        }
+
+        public Task<SearchContainer<SearchMovie>> SearchMoviesAsync(string title, int page)
+        {
+            return _searchMovies(title);
+        }
+
+        public async Task<TmdbMovie> GetMovieByIdAsync(int id)
+        {
+            if (id == 1)
+            {
+                return await _getMovieByTitle(string.Empty);
+            }
+
+            return await _getMovieById(id);
+        }
+
+        public Task<ResultContainer<Video>> GetMovieVideosAsync(int movieId)
+        {
+            return _getMovieVideos(movieId);
+        }
+
+        public Task<Credits> GetMovieCreditsAsync(int movieId)
+        {
+            return _getCredits(movieId);
+        }
+
+        public Task<TmdbPerson?> GetPersonAsync(int personId)
+        {
+            return _getPerson(personId);
+        }
+    }
+
+    private sealed class FakeOmdbClient : IOmdbClient
+    {
+        private readonly Func<string, Task<decimal?>> _getImdbRating;
+
+        public FakeOmdbClient(Func<string, Task<decimal?>>? getImdbRating)
+        {
+            _getImdbRating = getImdbRating ?? (_ => Task.FromResult<decimal?>(7.0m));
+        }
+
+        public Task<decimal?> GetImdbRatingAsync(string movieTitle)
+        {
+            return _getImdbRating(movieTitle);
         }
     }
 }

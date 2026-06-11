@@ -11,7 +11,7 @@ EatMyMoviesV3 is a .NET 10 ASP.NET Core MVC application backed by Entity Framewo
 - `EatMyMovies.DataAccess/` contains EF Core models, `EatMyMoviesContext`, repositories, and migrations.
 - `EatMyMovies.Tests/` contains the xUnit test project.
 
-The application integrates with TMDb via `TMDbLib` and calls OMDb directly through `HttpClient`. Movie/list persistence is handled through repositories registered in `EatMyMoviesSite/Program.cs`.
+The application integrates with TMDb via `TMDbLib` and OMDb through thin external client services. Movie/list persistence is handled through repositories registered in `EatMyMoviesSite/Program.cs`.
 
 ## Keep This File Current
 
@@ -55,11 +55,12 @@ Keep controller actions thin where practical. Put application logic in services 
 
 - loads JSON config, user secrets in Development, environment variables, and command-line args;
 - validates required configuration on startup;
-- registers repositories, `IMovieService`, `IStorageService`, memory cache, and `HttpClient`;
+- binds typed options for TMDb, OMDb, and movie external API defaults;
+- registers repositories, TMDb/OMDb external clients, `IMovieService`, `IStorageService`, memory cache, and the named OMDb `HttpClient`;
 - maps the default MVC route and falls back to `Home/Index`;
 - serves static files, including a long-lived cache header for static asset responses.
 
-`MovieService` owns TMDb/OMDb calls, caching, recommendation/list-building behavior, and API retry/concurrency helpers. Prefer keeping external movie API orchestration there or behind a service abstraction rather than moving it into controllers.
+`MovieService` owns movie caching, recommendation/list-building behavior, and movie detail composition. TMDb and OMDb transport logic belongs behind `ITmdbMovieClient` and `IOmdbClient`; keep external movie API orchestration in services rather than moving it into controllers.
 
 ## Configuration and Secrets
 
@@ -80,6 +81,8 @@ The app expects:
 - `ConnectionStrings:DbConnection`
 - `Tmdb:ApiKey`
 - `Omdb:ApiKey`
+
+`TmdbOptions`, `OmdbOptions`, and `MovieExternalApiOptions` bind optional retry, timeout, cache, concurrency, and query-limit settings while preserving defaults when the optional keys are absent. Startup validates required API keys through options validation and validates the database connection string explicitly.
 
 Use `EatMyMoviesSite/Config/README.md` as the source of truth for local user-secrets setup and Azure App Service environment variable names.
 
@@ -115,7 +118,7 @@ When changing the frontend:
 - Prefer async all the way through when calling TMDb/OMDb or other I/O.
 - Avoid bypassing repository interfaces from controllers.
 - Keep DTO/view model mapping in `Mapper.cs` or nearby mapping helpers where that matches the existing pattern.
-- Use `IHttpClientFactory` for injected HTTP clients in app services.
+- Use `IHttpClientFactory` for injected HTTP clients in app services; OMDb uses the named client registered by `OmdbClient.HttpClientName`.
 - Use `IMemoryCache` consistently for TMDb/OMDb lookups where caching already exists.
 - Keep test seams internal where useful; the web project exposes internals to `EatMyMovies.Tests`.
 - Do not introduce broad refactors while making small feature or bug-fix changes.

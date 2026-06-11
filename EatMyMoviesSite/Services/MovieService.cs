@@ -2,11 +2,9 @@
 using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.DTOs;
 using EatMyMoviesSite.Enums;
+using EatMyMoviesSite.Options;
 using Microsoft.Extensions.Caching.Memory;
-using System.Globalization;
-using System.Net.Http;
-using System.Text.Json.Serialization;
-using TMDbLib.Client;
+using Microsoft.Extensions.Options;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
 using Movie = TMDbLib.Objects.Movies.Movie;
@@ -14,75 +12,33 @@ using TmdbPerson = TMDbLib.Objects.People.Person;
 
 namespace EatMyMoviesSite.Services
 {
-    public class MovieService : IMovieService
+    internal class MovieService : IMovieService
     {
-        private readonly TMDbClient _tmdbClient;
-        private readonly HttpClient _httpClient;
-        private readonly string _omdbApiKey;
+        private readonly ITmdbMovieClient _tmdbClient;
+        private readonly IOmdbClient _omdbClient;
+        private readonly MovieExternalApiOptions _externalApiOptions;
         private readonly IRankingRepository _rankingRepository;
         private readonly IListRepository _listRepository;
         private readonly IMovieRepository _movieRepository;
         private readonly int _moviesPerPage = 10;
-        private const int TmdbMaxRetryAttempts = 3;
-        private const int ExternalApiConcurrency = 4;
-        private readonly bool _isDevelopment;
         private Guid ChristmasListId;
         private readonly IMemoryCache _cache;
-        private readonly Func<string, Task<Movie>> _getMovieByTitle;
-        private readonly Func<int, Task<Movie>> _getMovieById;
-        private readonly Func<int, Task<Video?>> _getTrailer;
-        private readonly Func<int, Task<Credits>> _getCredits;
-        private readonly Func<int, Task<TmdbPerson?>> _getPerson;
 
         public MovieService(IRankingRepository rankingRepository,
-                            IConfiguration configuration,
                             IListRepository listRepository,
                             IMovieRepository movieRepository,
                             IMemoryCache memoryCache,
-                            IHttpClientFactory httpClientFactory)
-            : this(rankingRepository,
-                  configuration,
-                  listRepository,
-                  movieRepository,
-                  memoryCache,
-                  httpClientFactory.CreateClient(),
-                  null,
-                  null,
-                  null,
-                  null,
-                  null)
+                            ITmdbMovieClient tmdbClient,
+                            IOmdbClient omdbClient,
+                            IOptions<MovieExternalApiOptions> externalApiOptions)
         {
-        }
-
-        internal MovieService(IRankingRepository rankingRepository,
-                            IConfiguration configuration,
-                            IListRepository listRepository,
-                            IMovieRepository movieRepository,
-                            IMemoryCache memoryCache,
-                            HttpClient httpClient,
-                            Func<string, Task<Movie>>? getMovieByTitle,
-                            Func<int, Task<Movie>>? getMovieById,
-                            Func<int, Task<Video?>>? getTrailer,
-                            Func<int, Task<Credits>>? getCredits,
-                            Func<int, Task<TmdbPerson?>>? getPerson)
-        {
-            _isDevelopment = configuration["ASPNETCORE_ENVIRONMENT"] == "Development";
-            _tmdbClient = new TMDbClient(configuration["Tmdb:ApiKey"])
-            {
-                MaxRetryCount = TmdbMaxRetryAttempts,
-                Timeout = TimeSpan.FromSeconds(30)
-            };
-            _httpClient = httpClient;
-            _omdbApiKey = configuration["Omdb:ApiKey"] ?? string.Empty;
             _rankingRepository = rankingRepository;
             _listRepository = listRepository;
             _movieRepository = movieRepository;
             _cache = memoryCache;
-            _getMovieByTitle = getMovieByTitle ?? SearchTmdbMovieByTitleAsync;
-            _getMovieById = getMovieById ?? GetTmdbMovieByIdAsync;
-            _getTrailer = getTrailer ?? GetTmdbTrailerAsync;
-            _getCredits = getCredits ?? GetTmdbCreditsAsync;
-            _getPerson = getPerson ?? GetTmdbPersonAsync;
+            _tmdbClient = tmdbClient;
+            _omdbClient = omdbClient;
+            _externalApiOptions = externalApiOptions.Value;
         }
 
         public async Task<Movie> GetMovieByTitle(string title)
@@ -91,9 +47,9 @@ namespace EatMyMoviesSite.Services
 
             if (!_cache.TryGetValue(cacheKey, out Movie movie))
             {
-                movie = await _getMovieByTitle(title);
-                _cache.Set(cacheKey, movie, TimeSpan.FromHours(6));
-                _cache.Set(GetMovieByIdCacheKey(movie.Id), movie, TimeSpan.FromHours(6));
+                movie = await SearchTmdbMovieByTitleAsync(title);
+                _cache.Set(cacheKey, movie, _externalApiOptions.MovieCacheDuration);
+                _cache.Set(GetMovieByIdCacheKey(movie.Id), movie, _externalApiOptions.MovieCacheDuration);
             }
 
             return movie;
@@ -101,9 +57,7 @@ namespace EatMyMoviesSite.Services
 
         public async Task<List<MovieDropdown>> SearchMoviesByTitle(string titleSearch)
         {
-            var searchResults = await ExecuteTmdbRequestAsync(
-                () => _tmdbClient.SearchMovieAsync(titleSearch, 1),
-                $"searching for movie title '{titleSearch}'");
+            var searchResults = await _tmdbClient.SearchMoviesAsync(titleSearch, 1);
             var reducedList = searchResults.Results.Where(x => x.PosterPath != null)
                                                     .Select(x =>
                                                         new MovieDropdown()
@@ -111,7 +65,7 @@ namespace EatMyMoviesSite.Services
                                                             Id = x.Id,
                                                             Title = x.Title,
                                                             PosterPath = x.PosterPath
-                                                        }).Take(5).ToList();
+                                                        }).Take(_externalApiOptions.SearchDropdownLimit).ToList();
             return reducedList;
         }
 
@@ -121,8 +75,8 @@ namespace EatMyMoviesSite.Services
 
             if (!_cache.TryGetValue(cacheKey, out Movie movie))
             {
-                movie = await _getMovieById(id);
-                _cache.Set(cacheKey, movie, TimeSpan.FromHours(6)); 
+                movie = await _tmdbClient.GetMovieByIdAsync(id);
+                _cache.Set(cacheKey, movie, _externalApiOptions.MovieCacheDuration); 
             }
             return movie;
         }
@@ -135,13 +89,13 @@ namespace EatMyMoviesSite.Services
             {
                 try
                 {
-                    trailer = await _getTrailer(movieId);
-                    _cache.Set(cacheKey, trailer, TimeSpan.FromHours(6));
+                    trailer = await GetTmdbTrailerAsync(movieId);
+                    _cache.Set(cacheKey, trailer, _externalApiOptions.TrailerCacheDuration);
                 }
                 catch
                 {
                     trailer = null;
-                    _cache.Set(cacheKey, trailer, TimeSpan.FromMinutes(15));
+                    _cache.Set(cacheKey, trailer, _externalApiOptions.TrailerFailureCacheDuration);
                 }
             }
 
@@ -153,26 +107,10 @@ namespace EatMyMoviesSite.Services
             var cacheKey = $"omdb:rating:{NormalizeTitleForCache(movieTitle)}";
 
             if (!_cache.TryGetValue(cacheKey, out RatingCacheValue? cachedRating)) {
-                decimal? rating = null;
-                var cacheDuration = TimeSpan.FromMinutes(30);
-
-                try
-                {
-                    var movie = await _httpClient.GetFromJsonAsync<OmdbMovieResponse>(
-                        $"https://www.omdbapi.com/?apikey={Uri.EscapeDataString(_omdbApiKey)}&t={Uri.EscapeDataString(movieTitle)}");
-                    if (movie?.ImdbRating != null && movie.ImdbRating != "N/A")
-                    {
-                        if (decimal.TryParse(movie.ImdbRating, CultureInfo.InvariantCulture, out var imdbRating))
-                        {
-                            rating = imdbRating;
-                            cacheDuration = TimeSpan.FromHours(6);
-                        }
-                    }
-                }
-                catch
-                {
-                    rating = null;
-                }
+                var rating = await _omdbClient.GetImdbRatingAsync(movieTitle);
+                var cacheDuration = rating.HasValue
+                    ? _externalApiOptions.ImdbRatingCacheDuration
+                    : _externalApiOptions.UnknownImdbRatingCacheDuration;
 
                 cachedRating = new RatingCacheValue(rating);
                 _cache.Set(cacheKey, cachedRating, cacheDuration);
@@ -236,7 +174,7 @@ namespace EatMyMoviesSite.Services
                 moviesList.CurrentPage = page;
 
                 var rankingByMovieId = rankings.ToDictionary(r => r.Movie.MovieId, r => r.Ranking);
-                var results = await ParallelSelectAsync(moviesForPage, ExternalApiConcurrency, async movie =>
+                var results = await ParallelSelectAsync(moviesForPage, _externalApiOptions.ExternalApiConcurrency, async movie =>
                 {
                     var ranking = rankingByMovieId[movie.MovieId];
 
@@ -282,7 +220,7 @@ namespace EatMyMoviesSite.Services
                 }
             }
 
-            var allMovies = await ParallelSelectAsync(storeMovies, ExternalApiConcurrency, movie => GetMovieById(movie.TmdbId.Value));
+            var allMovies = await ParallelSelectAsync(storeMovies, _externalApiOptions.ExternalApiConcurrency, movie => GetMovieById(movie.TmdbId.Value));
 
             allMovies = allMovies
                 .Where(movie => duration.Contains("Any") ||
@@ -323,7 +261,7 @@ namespace EatMyMoviesSite.Services
 
             storeMovies.UnionWith(_movieRepository.GetMoviesOfGenres(feelingsFormmated));
 
-            var filteredRecommendations = await ParallelSelectAsync(storeMovies, ExternalApiConcurrency, movie => GetMovieById(movie.TmdbId.Value));
+            var filteredRecommendations = await ParallelSelectAsync(storeMovies, _externalApiOptions.ExternalApiConcurrency, movie => GetMovieById(movie.TmdbId.Value));
 
             filteredRecommendations = filteredRecommendations
                 .Where(movie => duration.Contains("Any") ||
@@ -439,12 +377,6 @@ namespace EatMyMoviesSite.Services
             return list;
         }
 
-        private sealed class OmdbMovieResponse
-        {
-            [JsonPropertyName("imdbRating")]
-            public string? ImdbRating { get; set; }
-        }
-
         private sealed record RatingCacheValue(decimal? Rating);
 
         public async Task<Person> GetDirector(int movieId)
@@ -545,43 +477,18 @@ namespace EatMyMoviesSite.Services
 
         private async Task<Movie> SearchTmdbMovieByTitleAsync(string title)
         {
-            var searchResults = await ExecuteTmdbRequestAsync(
-                () => _tmdbClient.SearchMovieAsync(title),
-                $"searching for movie title '{title}'");
+            var searchResults = await _tmdbClient.SearchMoviesAsync(title);
             var bestResult = searchResults.Results.FirstOrDefault();
 
             if (bestResult == null) throw new Exception("Movie not found");
 
-            return await GetTmdbMovieByIdAsync(bestResult.Id);
-        }
-
-        private Task<Movie> GetTmdbMovieByIdAsync(int id)
-        {
-            return ExecuteTmdbRequestAsync(
-                () => _tmdbClient.GetMovieAsync(id),
-                $"getting movie {id}");
+            return await _tmdbClient.GetMovieByIdAsync(bestResult.Id);
         }
 
         private async Task<Video?> GetTmdbTrailerAsync(int movieId)
         {
-            var videos = await ExecuteTmdbRequestAsync(
-                () => _tmdbClient.GetMovieVideosAsync(movieId),
-                $"getting videos for movie {movieId}");
+            var videos = await _tmdbClient.GetMovieVideosAsync(movieId);
             return videos.Results?.FirstOrDefault(v => v.Type == "Trailer");
-        }
-
-        private Task<Credits> GetTmdbCreditsAsync(int movieId)
-        {
-            return ExecuteTmdbRequestAsync(
-                () => _tmdbClient.GetMovieCreditsAsync(movieId),
-                $"getting credits for movie {movieId}");
-        }
-
-        private Task<TmdbPerson?> GetTmdbPersonAsync(int personId)
-        {
-            return ExecuteTmdbRequestAsync(
-                () => _tmdbClient.GetPersonAsync(personId),
-                $"getting person {personId}");
         }
 
         private async Task<Credits> GetCreditsSafely(int movieId)
@@ -592,8 +499,8 @@ namespace EatMyMoviesSite.Services
             {
                 try
                 {
-                    credits = await _getCredits(movieId);
-                    _cache.Set(cacheKey, credits, TimeSpan.FromHours(6));
+                    credits = await _tmdbClient.GetMovieCreditsAsync(movieId);
+                    _cache.Set(cacheKey, credits, _externalApiOptions.CreditsCacheDuration);
                 }
                 catch
                 {
@@ -602,7 +509,7 @@ namespace EatMyMoviesSite.Services
                         Cast = new List<Cast>(),
                         Crew = new List<Crew>()
                     };
-                    _cache.Set(cacheKey, credits, TimeSpan.FromMinutes(15));
+                    _cache.Set(cacheKey, credits, _externalApiOptions.CreditsFailureCacheDuration);
                 }
             }
 
@@ -613,7 +520,7 @@ namespace EatMyMoviesSite.Services
         {
             try
             {
-                return await _getPerson(personId);
+                return await _tmdbClient.GetPersonAsync(personId);
             }
             catch
             {
@@ -655,34 +562,6 @@ namespace EatMyMoviesSite.Services
 
             await Task.WhenAll(tasks);
             return results;
-        }
-
-        private static async Task<T> ExecuteTmdbRequestAsync<T>(Func<Task<T>> request, string operation)
-        {
-            for (var attempt = 1; ; attempt++)
-            {
-                try
-                {
-                    return await request();
-                }
-                catch (Exception ex) when (attempt < TmdbMaxRetryAttempts && IsTransientTmdbException(ex))
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(250 * attempt));
-                }
-                catch (Exception ex) when (IsTransientTmdbException(ex))
-                {
-                    throw new HttpRequestException(
-                        $"TMDb request failed while {operation} after {TmdbMaxRetryAttempts} attempts.",
-                        ex);
-                }
-            }
-        }
-
-        private static bool IsTransientTmdbException(Exception exception)
-        {
-            return exception is HttpRequestException ||
-                   exception is IOException ||
-                   exception.InnerException != null && IsTransientTmdbException(exception.InnerException);
         }
 
     }

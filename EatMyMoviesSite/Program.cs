@@ -1,7 +1,9 @@
 using EatMyMovies.DataAccess;
 using EatMyMovies.DataAccess.Repositories;
+using EatMyMoviesSite.Options;
 using EatMyMoviesSite.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace EatMyMoviesSite
 {
@@ -12,7 +14,7 @@ namespace EatMyMoviesSite
             var builder = WebApplication.CreateBuilder(args);
 
             ConfigureAppConfiguration(builder, args);
-            ValidateRequiredConfiguration(builder.Configuration);
+            ValidateDbConnectionString(builder.Configuration);
 
             var connectionString = builder.Configuration.GetConnectionString("DbConnection");
 
@@ -20,7 +22,7 @@ namespace EatMyMoviesSite
 						options.UseSqlServer(connectionString));
 
 			builder.Services.AddControllersWithViews();
-            ConfigureServices(builder.Services);
+            ConfigureServices(builder.Services, builder.Configuration);
 
             var app = builder.Build();
 
@@ -75,35 +77,45 @@ namespace EatMyMoviesSite
                 .AddCommandLine(args);
         }
 
-        private static void ValidateRequiredConfiguration(IConfiguration configuration)
+        private static void ValidateDbConnectionString(IConfiguration configuration)
         {
-            var requiredKeys = new[]
+            if (string.IsNullOrWhiteSpace(configuration.GetConnectionString("DbConnection")))
             {
-                "ConnectionStrings:DbConnection",
-                "Tmdb:ApiKey",
-                "Omdb:ApiKey"
-            };
-
-            var missingKeys = requiredKeys
-                .Where(key => string.IsNullOrWhiteSpace(configuration[key]))
-                .ToList();
-
-            if (missingKeys.Any())
-            {
-                throw new InvalidOperationException(
-                    $"Missing required configuration value(s): {string.Join(", ", missingKeys)}.");
+                throw new InvalidOperationException("Missing required configuration value: ConnectionStrings:DbConnection.");
             }
         }
 
-		private static void ConfigureServices(IServiceCollection services)
+		private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 		{
+            services.AddOptions<TmdbOptions>()
+                .Bind(configuration.GetSection(TmdbOptions.SectionName))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
+            services.AddOptions<OmdbOptions>()
+                .Bind(configuration.GetSection(OmdbOptions.SectionName))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
+            services.AddOptions<MovieExternalApiOptions>()
+                .Bind(configuration.GetSection(MovieExternalApiOptions.SectionName))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
             services.AddScoped<IRankingRepository, RankingRepository>();
             services.AddScoped<IListRepository, ListRepository>();
             services.AddScoped<IMovieRepository, MovieRepository>();
+            services.AddScoped<ITmdbMovieClient, TmdbMovieClient>();
+            services.AddScoped<IOmdbClient, OmdbClient>();
             services.AddScoped<IMovieService, MovieService>();
             services.AddScoped<IStorageService, StorageService>();
             services.AddMemoryCache();
-            services.AddHttpClient();
+            services.AddHttpClient(OmdbClient.HttpClientName, (serviceProvider, httpClient) =>
+            {
+                var options = serviceProvider.GetRequiredService<IOptions<OmdbOptions>>().Value;
+                httpClient.BaseAddress = options.BaseUrl;
+                httpClient.Timeout = options.Timeout;
+            });
 		}
 	}
 }
