@@ -1,21 +1,22 @@
-﻿using EatMyMovies.DataAccess.Models;
+using EatMyMovies.DataAccess.Models;
+using EatMyMovies.DataAccess.QueryModels;
 
 namespace EatMyMovies.DataAccess.Repositories
 {
 	public interface IRankingRepository
 	{
-		bool FilmExistsInList(Guid movieId, Guid listId);
-        IQueryable<Movie> GetAllMoviesInList(string listName);
-        IEnumerable<ListRanking> GetAllRankingsInList(List list);
-        int GetListCount(string listName);
-        ListRanking GetListRanking(Guid movieId, Guid listId);
-        List<ListRanking> GetListRankingsForMovie(Guid movieId);
-        ListRanking GetMovieAtRanking(List list, int ranking);
-		IEnumerable<Movie> GetMoviesForListByPage(string listName, int page = 1);
-		int GetRankingOfMovie(Guid movieId, string listName);
-		ListRanking InsertMovieToList(Movie movie, List list, int ranking);
-        void RemoveListRanking(Guid movieId, Guid listId);
-        void RemoveRanking(int ranking, Guid listId);
-		ListRanking UpdateRanking(ListRanking listRanking, int newRanking);
+		Task<bool> FilmExistsInListAsync(Guid movieId, Guid listId, CancellationToken cancellationToken = default);
+        Task<List<StoredMovieSummary>> GetMovieSummariesInListAsync(string listName, CancellationToken cancellationToken = default);
+        Task<List<ListRanking>> GetRankingsAtOrAfterAsync(Guid listId, int ranking, CancellationToken cancellationToken = default);
+        Task<int> GetListCountAsync(string listName, CancellationToken cancellationToken = default);
+        Task<ListRanking?> GetListRankingAsync(Guid movieId, Guid listId, CancellationToken cancellationToken = default);
+        Task<List<MovieRankingSummary>> GetListRankingsForMovieAsync(Guid movieId, CancellationToken cancellationToken = default);
+        Task<ListRanking?> GetMovieAtRankingAsync(Guid listId, int ranking, CancellationToken cancellationToken = default);
+		Task<List<ListPageMovie>> GetMoviesForListByPageAsync(string listName, int page = 1, int moviesPerPage = 10, CancellationToken cancellationToken = default);
+		Task<int> GetRankingOfMovieAsync(Guid movieId, string listName, CancellationToken cancellationToken = default);
+		Task<ListRanking> InsertMovieToListAsync(Guid movieId, Guid listId, int ranking, CancellationToken cancellationToken = default);
+        Task RemoveListRankingAsync(Guid movieId, Guid listId, CancellationToken cancellationToken = default);
+        Task RemoveRankingAsync(int ranking, Guid listId, CancellationToken cancellationToken = default);
+		Task<ListRanking> UpdateRankingAsync(ListRanking listRanking, int newRanking, CancellationToken cancellationToken = default);
 	}
 }

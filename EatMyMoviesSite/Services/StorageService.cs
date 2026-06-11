@@ -1,30 +1,28 @@
-﻿using EatMyMovies.DataAccess.Models;
 using EatMyMovies.DataAccess.Repositories;
 
 namespace EatMyMoviesSite.Services
 {
 	public class StorageService : IStorageService
 	{
-		private IRankingRepository _rankingRepository;
+		private readonly IRankingRepository _rankingRepository;
+
 		public StorageService(IRankingRepository rankingRepository)
 		{
 			_rankingRepository = rankingRepository;
 		}
 
-		public void ShuffleListDownIfNecessary(List list, int newRanking)
+		public async Task ShuffleListDownIfNecessaryAsync(Guid listId, int newRanking, CancellationToken cancellationToken = default)
 		{
-			var listRanking = _rankingRepository.GetMovieAtRanking(list, newRanking);
-			if (listRanking is not null)
+			var listRanking = await _rankingRepository.GetMovieAtRankingAsync(listId, newRanking, cancellationToken);
+			if (listRanking is null)
 			{
-				var moviesInList = _rankingRepository.GetAllRankingsInList(list);
-				foreach (var movie in moviesInList)
-				{
-					if (movie.Ranking >= newRanking)
-					{
-						_rankingRepository.UpdateRanking(movie, movie.Ranking+1);
-					}
-				}
+				return;
+			}
 
+			var moviesInList = await _rankingRepository.GetRankingsAtOrAfterAsync(listId, newRanking, cancellationToken);
+			foreach (var movie in moviesInList)
+			{
+				await _rankingRepository.UpdateRankingAsync(movie, movie.Ranking + 1, cancellationToken);
 			}
 		}
 	}

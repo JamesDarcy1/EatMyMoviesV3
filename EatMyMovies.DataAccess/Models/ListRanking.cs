@@ -9,8 +9,12 @@ namespace EatMyMovies.DataAccess.Models
 
         public int Ranking { get; set; }
 
-        public Movie Movie { get; set; }
+        public Guid MovieId { get; set; }
 
-        public List List { get; set; }
+        public Movie Movie { get; set; } = null!;
+
+        public Guid ListId { get; set; }
+
+        public List List { get; set; } = null!;
     }
 }

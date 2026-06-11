@@ -27,11 +27,11 @@ namespace EatMyMoviesSite.Controllers
 
 
         [Route("detail")]
-        public async Task<IActionResult> Detail(string title, int? tmdbId = null)
+        public async Task<IActionResult> Detail(string title, int? tmdbId = null, CancellationToken cancellationToken = default)
         {
             try
             {
-                var movieDetail = await _movieService.BuildMovieDetail(title, tmdbId, includeListContext: true);
+                var movieDetail = await _movieService.BuildMovieDetail(title, tmdbId, includeListContext: true, cancellationToken);
                 return View(movieDetail);
             }
             catch (Exception ex)
@@ -63,9 +63,9 @@ namespace EatMyMoviesSite.Controllers
 		}
 
         [HttpGet("GetGenres")]
-        public List<string> GetGenres()
+        public async Task<List<string>> GetGenres(CancellationToken cancellationToken = default)
         {
-            var genres = _movieService.GetAllGenres();
+            var genres = await _movieService.GetAllGenresAsync(cancellationToken);
             var shuffledGenres = _movieService.ShuffleList<Genre>(genres);
             return genres.Select(x => x.Name).ToList();
         }
@@ -78,11 +78,11 @@ namespace EatMyMoviesSite.Controllers
         }
 
         [HttpGet("GetRecommendations")]
-        public async Task<List<MovieDetail>> GetRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange)
+        public async Task<List<MovieDetail>> GetRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange, CancellationToken cancellationToken = default)
         {
-            var recommendations = await _movieService.GetFastRecommendations(feelings, duration, openToForeignFilm, yearRange);
+            var recommendations = await _movieService.GetFastRecommendations(feelings, duration, openToForeignFilm, yearRange, cancellationToken);
             var movieDetails = await Task.WhenAll(recommendations.Select(movie =>
-                _movieService.BuildMovieDetail(movie.Title, movie.Id, includeListContext: false)));
+                _movieService.BuildMovieDetail(movie.Title, movie.Id, includeListContext: false, cancellationToken)));
 
             return movieDetails.ToList();
         }

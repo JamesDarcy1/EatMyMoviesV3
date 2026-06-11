@@ -1,5 +1,5 @@
-﻿using EatMyMovies.DataAccess.Models;
-using System.Net;
+using EatMyMovies.DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EatMyMovies.DataAccess.Repositories
 {
@@ -12,23 +12,26 @@ namespace EatMyMovies.DataAccess.Repositories
 			_dbContext = dbContext;
 		}
 
-		public List GetListByName(string listName)
+		public Task<List?> GetListByNameAsync(string listName, CancellationToken cancellationToken = default)
 		{
-			var list = _dbContext.Lists.FirstOrDefault(x => x.Name == listName);
-			return list;
+			return _dbContext.Lists
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Name == listName, cancellationToken);
 		}
 
-		public List AddList(string listName, string description)
+		public async Task<List> AddListAsync(string listName, string description, CancellationToken cancellationToken = default)
 		{
 			var result = _dbContext.Lists.Add(new List() { Name = listName, Description = description });
-			_dbContext.SaveChanges();
+			await _dbContext.SaveChangesAsync(cancellationToken);
 			return result.Entity;
 		}
 
-		public List<List> GetAllLists()
+		public Task<List<List>> GetAllListsAsync(CancellationToken cancellationToken = default)
 		{
-			var lists = _dbContext.Lists.ToList();
-			return lists;
+			return _dbContext.Lists
+                .AsNoTracking()
+                .OrderBy(list => list.Name)
+                .ToListAsync(cancellationToken);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using EatMyMovies.DataAccess.Models;
+using EatMyMovies.DataAccess.QueryModels;
 using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.DTOs;
 using EatMyMoviesSite.Enums;
@@ -7,6 +7,9 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
+using DataGenre = EatMyMovies.DataAccess.Models.Genre;
+using DataList = EatMyMovies.DataAccess.Models.List;
+using DataMovie = EatMyMovies.DataAccess.Models.Movie;
 using Movie = TMDbLib.Objects.Movies.Movie;
 using TmdbPerson = TMDbLib.Objects.People.Person;
 
@@ -21,7 +24,6 @@ namespace EatMyMoviesSite.Services
         private readonly IListRepository _listRepository;
         private readonly IMovieRepository _movieRepository;
         private readonly int _moviesPerPage = 10;
-        private Guid ChristmasListId;
         private readonly IMemoryCache _cache;
 
         public MovieService(IRankingRepository rankingRepository,
@@ -118,7 +120,7 @@ namespace EatMyMoviesSite.Services
             return cachedRating.Rating;
         }
 
-        public async Task<MovieDetail> BuildMovieDetail(string? title, int? tmdbId, bool includeListContext)
+        public async Task<MovieDetail> BuildMovieDetail(string? title, int? tmdbId, bool includeListContext, CancellationToken cancellationToken = default)
         {
             var movie = tmdbId.HasValue
                 ? await GetMovieById(tmdbId.Value)
@@ -140,142 +142,144 @@ namespace EatMyMoviesSite.Services
 
             if (includeListContext)
             {
-                movieDetail.Lists = GetAllLists();
+                movieDetail.Lists = await GetAllListsAsync(cancellationToken);
 
-                var storeMovie = GetStoreMovieByTitle(movie.Title);
+                var storeMovie = await GetStoreMovieByTitleAsync(movie.Title, cancellationToken);
                 if (storeMovie != null)
                 {
-                    movieDetail.Rankings = GetListRankingsForMovie(storeMovie.MovieId);
+                    movieDetail.Rankings = await GetListRankingsForMovieAsync(storeMovie.MovieId, cancellationToken);
                 }
             }
 
             return movieDetail;
         }
 
-        public async Task<MovieList> BuildMovieList(string listTitle, int page)
+        public async Task<MovieList> BuildMovieList(string listTitle, int page, CancellationToken cancellationToken = default)
         {
-            try
+            var list = await _listRepository.GetListByNameAsync(listTitle, cancellationToken);
+            if (list is null)
             {
-                var list = _listRepository.GetListByName(listTitle);
-                var moviesList = new MovieList()
-                {
-                    Name = list.Name,
-                    Description = list.Description,
-                    Movies = new List<ListMovie>()
-                };
-
-                var rankings = _rankingRepository.GetAllRankingsInList(list);
-                var totalMovies = _rankingRepository.GetListCount(listTitle);
-                var totalPages = Math.Max(1, (int)Math.Ceiling((double)totalMovies / _moviesPerPage));
-                page = Math.Max(1, Math.Min(page, totalPages));
-                var moviesForPage = _rankingRepository.GetMoviesForListByPage(listTitle, page).ToList();
-
-                moviesList.TotalPages = totalPages;
-                moviesList.CurrentPage = page;
-
-                var rankingByMovieId = rankings.ToDictionary(r => r.Movie.MovieId, r => r.Ranking);
-                var results = await ParallelSelectAsync(moviesForPage, _externalApiOptions.ExternalApiConcurrency, async movie =>
-                {
-                    var ranking = rankingByMovieId[movie.MovieId];
-
-                    var imdbTask = GetImdbRating(movie.Title);
-                    var tmdbTask = GetMovieById(movie.TmdbId.Value);
-
-                    var tmdbMovie = await tmdbTask;
-                    var imdbRating = await imdbTask;
-
-                    return Mapper.BuildListMovie(tmdbMovie, imdbRating, ranking);
-                });
-
-                moviesList.Movies.AddRange(results);
-
-                return moviesList;
+                throw new Exception($"List '{listTitle}' was not found.");
             }
-            catch (Exception ex)
+
+            var moviesList = new MovieList()
             {
-                throw new Exception(ex.Message);
-            }
+                Name = list.Name,
+                Description = list.Description,
+                Movies = new List<ListMovie>()
+            };
+
+            var totalMovies = await _rankingRepository.GetListCountAsync(listTitle, cancellationToken);
+            var totalPages = Math.Max(1, (int)Math.Ceiling((double)totalMovies / _moviesPerPage));
+            page = Math.Max(1, Math.Min(page, totalPages));
+            var moviesForPage = await _rankingRepository.GetMoviesForListByPageAsync(listTitle, page, _moviesPerPage, cancellationToken);
+
+            moviesList.TotalPages = totalPages;
+            moviesList.CurrentPage = page;
+
+            var results = await ParallelSelectAsync(moviesForPage, _externalApiOptions.ExternalApiConcurrency, async movie =>
+            {
+                if (!movie.TmdbId.HasValue)
+                {
+                    throw new Exception($"Movie '{movie.Title}' does not have a TMDb id.");
+                }
+
+                var imdbTask = GetImdbRating(movie.Title);
+                var tmdbTask = GetMovieById(movie.TmdbId.Value);
+
+                var tmdbMovie = await tmdbTask;
+                var imdbRating = await imdbTask;
+
+                return Mapper.BuildListMovie(tmdbMovie, imdbRating, movie.Ranking);
+            });
+
+            moviesList.Movies.AddRange(results);
+
+            return moviesList;
         }
 
-
-        public List<EatMyMovies.DataAccess.Models.Genre> GetAllGenres()
+        public Task<List<DataGenre>> GetAllGenresAsync(CancellationToken cancellationToken = default)
         {
-            return _movieRepository.GetAllGenres();
+            return _movieRepository.GetAllGenresAsync(cancellationToken);
         }
 
-        public async Task<List<Movie>> GetRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange)
+        public async Task<List<Movie>> GetRecommendations(
+            string feelings,
+            string duration,
+            bool openToForeignFilm,
+            string yearRange,
+            CancellationToken cancellationToken = default)
         {
-            ChristmasListId = _listRepository.GetListByName("Christmas").ListId;
+            var christmasMovies = await _rankingRepository.GetMovieSummariesInListAsync("Christmas", cancellationToken);
+            var christmasMovieIds = christmasMovies.Select(movie => movie.MovieId).ToHashSet();
 
             var associatedGenres = GetGenresLinkedToFeelings(feelings);
-            var storeMovies = new HashSet<EatMyMovies.DataAccess.Models.Movie>();
-            var tasks = new List<Task<Movie>>();
+            var moviesBelongingToGenres = await _movieRepository.GetMoviesOfGenresAsync(associatedGenres.Distinct().ToList(), cancellationToken);
+            var storeMovies = DistinctMoviesById(moviesBelongingToGenres)
+                .Where(movie => !christmasMovieIds.Contains(movie.MovieId) && movie.TmdbId.HasValue)
+                .ToList();
 
-            var moviesBeloningToGenres = _movieRepository.GetMoviesOfGenres(associatedGenres.Distinct().ToList());
-            foreach (var movie in moviesBeloningToGenres)
-            {
-                if (!storeMovies.Contains(movie) && !IsChristmasMovie(movie))
-                {
-                    storeMovies.Add(movie);
-                }
-            }
+            var allMovies = await ParallelSelectAsync(storeMovies, _externalApiOptions.ExternalApiConcurrency, movie => GetMovieById(movie.TmdbId!.Value));
 
-            var allMovies = await ParallelSelectAsync(storeMovies, _externalApiOptions.ExternalApiConcurrency, movie => GetMovieById(movie.TmdbId.Value));
-
-            allMovies = allMovies
-                .Where(movie => duration.Contains("Any") ||
-                                (duration.Contains("Short") && movie.Runtime <= 120) ||
-                                (duration.Contains("Long") && movie.Runtime > 120))
-                .Where(movie => openToForeignFilm || movie.OriginalLanguage == "en")
-                .Where(movie => yearRange == "Anytime" ||
-                                (yearRange == "After 2000" && movie.ReleaseDate.Value.Year >= 2000) ||
-                                (yearRange == "Before 2000" && movie.ReleaseDate.Value.Year < 2000))
-                .ToArray();
+            allMovies = FilterRecommendations(allMovies, duration, openToForeignFilm, yearRange);
 
             var relevanceScores = CalculateRelevanceScores(allMovies.ToList(), associatedGenres);
-
-            // Step 2: Add randomness to the relevance scores
             var adjustedScores = AddRandomness(relevanceScores);
 
-            // Step 3: Sort the movies by the adjusted relevance score (descending)
-            var topMovies = adjustedScores.OrderByDescending(pair => pair.Value)
-                                          .Take(10)
-                                          .Select(pair => pair.Key)
-                                          .ToList();
-
-            return topMovies;
-
+            return adjustedScores.OrderByDescending(pair => pair.Value)
+                                 .Take(10)
+                                 .Select(pair => pair.Key)
+                                 .ToList();
         }
 
-        public async Task<List<Movie>> GetFastRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange)
+        public async Task<List<Movie>> GetFastRecommendations(
+            string feelings,
+            string duration,
+            bool openToForeignFilm,
+            string yearRange,
+            CancellationToken cancellationToken = default)
         {
-            ChristmasListId = _listRepository.GetListByName("Christmas").ListId;
+            var formattedFeelings = FormatFeelings(feelings);
+            var storeMovies = new List<StoredMovieSummary>();
 
-            List<string> feelingsFormmated = FormatFeelings(feelings);
-            var storeMovies = new HashSet<EatMyMovies.DataAccess.Models.Movie>();
-
-            foreach(var feeling in feelingsFormmated)
+            foreach(var feeling in formattedFeelings)
             {
-                storeMovies.UnionWith(_rankingRepository.GetAllMoviesInList(feeling));
+                storeMovies.AddRange(await _rankingRepository.GetMovieSummariesInListAsync(feeling, cancellationToken));
             }
 
-            storeMovies.UnionWith(_movieRepository.GetMoviesOfGenres(feelingsFormmated));
+            storeMovies.AddRange(await _movieRepository.GetMoviesOfGenresAsync(formattedFeelings, cancellationToken));
 
-            var filteredRecommendations = await ParallelSelectAsync(storeMovies, _externalApiOptions.ExternalApiConcurrency, movie => GetMovieById(movie.TmdbId.Value));
+            var distinctMovies = DistinctMoviesById(storeMovies)
+                .Where(movie => movie.TmdbId.HasValue)
+                .ToList();
 
-            filteredRecommendations = filteredRecommendations
-                .Where(movie => duration.Contains("Any") ||
-                                (duration.Contains("Short") && movie.Runtime <= 120) ||
-                                (duration.Contains("Long") && movie.Runtime > 120))
-                .Where(movie => openToForeignFilm || movie.OriginalLanguage == "en")
-                .Where(movie => yearRange == "Anytime" ||
-                                (yearRange == "After 2000" && movie.ReleaseDate.Value.Year >= 2000) ||
-                                (yearRange == "Before 2000" && movie.ReleaseDate.Value.Year < 2000))
-                .ToArray();
+            var filteredRecommendations = await ParallelSelectAsync(distinctMovies, _externalApiOptions.ExternalApiConcurrency, movie => GetMovieById(movie.TmdbId!.Value));
+            filteredRecommendations = FilterRecommendations(filteredRecommendations, duration, openToForeignFilm, yearRange);
 
             var shuffledReccys = ShuffleList<Movie>(filteredRecommendations);
 
             return shuffledReccys.ToList();
+        }
+
+        private static Movie[] FilterRecommendations(IEnumerable<Movie> movies, string duration, bool openToForeignFilm, string yearRange)
+        {
+            return movies
+                .Where(movie => duration.Contains("Any") ||
+                                (duration.Contains("Short") && movie.Runtime <= 120) ||
+                                (duration.Contains("Long") && movie.Runtime > 120))
+                .Where(movie => openToForeignFilm || movie.OriginalLanguage == "en")
+                .Where(movie => yearRange == "Anytime" ||
+                                (yearRange == "After 2000" && movie.ReleaseDate.Value.Year >= 2000) ||
+                                (yearRange == "Before 2000" && movie.ReleaseDate.Value.Year < 2000))
+                .ToArray();
+        }
+
+        private static List<StoredMovieSummary> DistinctMoviesById(IEnumerable<StoredMovieSummary> movies)
+        {
+            return movies
+                .GroupBy(movie => movie.MovieId)
+                .Select(group => group.First())
+                .ToList();
         }
 
         private List<string> FormatFeelings(string feelings)
@@ -327,13 +331,8 @@ namespace EatMyMoviesSite.Services
 
             foreach (var movie in movies)
             {
-                // Count how many selected genres the movie matches
                 var matchingGenres = movie.Genres.Select(x => x.Name).Intersect(selectedGenres).Count();
-
-                // Calculate the relevance score (e.g., percentage of selected genres that match)
-                double relevanceScore = (double)matchingGenres / selectedGenres.Count;
-
-                // Assign the score to the movie
+                var relevanceScore = (double)matchingGenres / selectedGenres.Count;
                 relevanceScores[movie] = relevanceScore;
             }
 
@@ -346,25 +345,17 @@ namespace EatMyMoviesSite.Services
 
             foreach (var movie in relevanceScores.Keys.ToList())
             {
-                // Add a small random value to the relevance score
-                double randomFactor = random.NextDouble() * 99; // Adjust 0.2 for more/less randomness
-
+                double randomFactor = random.NextDouble() * 99;
                 relevanceScores[movie] += randomFactor;
             }
 
             return relevanceScores;
         }
 
-        private bool IsChristmasMovie(EatMyMovies.DataAccess.Models.Movie movie)
-        {
-            return _rankingRepository.FilmExistsInList(movie.MovieId, ChristmasListId);
-        }
-
         public IList<T> ShuffleList<T>(IList<T> list)
         {
             Random random = new Random();
 
-            // Step 4: Implement the Fisher-Yates shuffle
             for (int i = list.Count - 1; i > 0; i--)
             {
                 int j = random.Next(i + 1);
@@ -445,34 +436,32 @@ namespace EatMyMoviesSite.Services
             return actors;
         }
 
-        public List<MovieRanking> GetListRankingsForMovie(Guid movieId) {
-            var rankingsFromStore = _rankingRepository.GetListRankingsForMovie(movieId);
+        public async Task<List<MovieRanking>> GetListRankingsForMovieAsync(Guid movieId, CancellationToken cancellationToken = default) {
+            var rankingsFromStore = await _rankingRepository.GetListRankingsForMovieAsync(movieId, cancellationToken);
             var rankings = new List<MovieRanking>();
             foreach(var storeRanking in rankingsFromStore)
             {
                 rankings.Add(new MovieRanking()
                 {
-                    ListId = storeRanking.List.ListId,
-                    ListName = storeRanking.List.Name,
-                    MovieId = storeRanking.Movie.MovieId,
+                    ListId = storeRanking.ListId,
+                    ListName = storeRanking.ListName,
+                    MovieId = storeRanking.MovieId,
                     Ranking = storeRanking.Ranking,
                     ListRankingId = storeRanking.ListRankingId,
-
                 });
             }
 
             return rankings;
         }
 
-        public EatMyMovies.DataAccess.Models.Movie GetStoreMovieByTitle(string title)
+        public Task<DataMovie?> GetStoreMovieByTitleAsync(string title, CancellationToken cancellationToken = default)
         {
-            var storeMovie = _movieRepository.GetMovieByTitle(title);
-            return storeMovie;
+            return _movieRepository.GetMovieByTitleAsync(title, cancellationToken);
         }
 
-        public List<List> GetAllLists()
+        public Task<List<DataList>> GetAllListsAsync(CancellationToken cancellationToken = default)
         {
-            return _listRepository.GetAllLists();
+            return _listRepository.GetAllListsAsync(cancellationToken);
         }
 
         private async Task<Movie> SearchTmdbMovieByTitleAsync(string title)
@@ -563,6 +552,5 @@ namespace EatMyMoviesSite.Services
             await Task.WhenAll(tasks);
             return results;
         }
-
     }
 }

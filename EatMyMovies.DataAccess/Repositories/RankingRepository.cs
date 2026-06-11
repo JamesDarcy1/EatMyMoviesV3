@@ -1,130 +1,158 @@
-﻿using EatMyMovies.DataAccess.Models;
+using EatMyMovies.DataAccess.Models;
+using EatMyMovies.DataAccess.QueryModels;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
 
 namespace EatMyMovies.DataAccess.Repositories
 {
     public class RankingRepository : IRankingRepository
     {
         private readonly EatMyMoviesContext _dbContext;
-        private int MoviesPerPage = 10;
 
         public RankingRepository(EatMyMoviesContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Movie> GetMoviesForListByPage(string listName, int page = 1)
+        public Task<List<ListPageMovie>> GetMoviesForListByPageAsync(
+            string listName,
+            int page = 1,
+            int moviesPerPage = 10,
+            CancellationToken cancellationToken = default)
         {
-            var movies = _dbContext.ListRankings.Where(l => l.List.Name == listName)
-                                                .OrderBy(m => m.Ranking)
-                                                .Skip((page - 1) * MoviesPerPage)
-                                                .Take(MoviesPerPage)
-                                                .Select(m => m.Movie);
-            return movies;
+            return _dbContext.ListRankings
+                .AsNoTracking()
+                .Where(listRanking => listRanking.List.Name == listName)
+                .OrderBy(listRanking => listRanking.Ranking)
+                .Skip((page - 1) * moviesPerPage)
+                .Take(moviesPerPage)
+                .Select(listRanking => new ListPageMovie(
+                    listRanking.MovieId,
+                    listRanking.Movie.Title,
+                    listRanking.Movie.TmdbId,
+                    listRanking.Ranking))
+                .ToListAsync(cancellationToken);
         }
 
-        public IQueryable<Movie> GetAllMoviesInList(string listName)
+        public Task<List<StoredMovieSummary>> GetMovieSummariesInListAsync(string listName, CancellationToken cancellationToken = default)
         {
-            var movies = _dbContext.ListRankings.Where(l => l.List.Name == listName)
-                                                .Select(m => m.Movie);
-            return movies;
+            return _dbContext.ListRankings
+                .AsNoTracking()
+                .Where(listRanking => listRanking.List.Name == listName)
+                .Select(listRanking => new StoredMovieSummary(
+                    listRanking.MovieId,
+                    listRanking.Movie.Title,
+                    listRanking.Movie.TmdbId))
+                .Distinct()
+                .ToListAsync(cancellationToken);
         }
 
-
-        public int GetListCount(string listName)
+        public Task<int> GetListCountAsync(string listName, CancellationToken cancellationToken = default)
         {
-            var count = _dbContext.ListRankings.Count(l => l.List.Name == listName);
-
-            return count;
+            return _dbContext.ListRankings
+                .AsNoTracking()
+                .CountAsync(listRanking => listRanking.List.Name == listName, cancellationToken);
         }
 
-        public int GetRankingOfMovie(Guid movieId, string listName)
+        public async Task<int> GetRankingOfMovieAsync(Guid movieId, string listName, CancellationToken cancellationToken = default)
         {
-            var listRanking = _dbContext.ListRankings.FirstOrDefault(r => r.List.Name == listName && r.Movie.MovieId == movieId);
-            if (listRanking == null)
+            var ranking = await _dbContext.ListRankings
+                .AsNoTracking()
+                .Where(listRanking => listRanking.List.Name == listName && listRanking.MovieId == movieId)
+                .Select(listRanking => (int?)listRanking.Ranking)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (ranking == null)
             {
                 throw new Exception("Film does not exist in list");
             }
-            return listRanking.Ranking;
+
+            return ranking.Value;
         }
 
-        public ListRanking InsertMovieToList(Movie movie, List list, int ranking)
+        public async Task<ListRanking> InsertMovieToListAsync(Guid movieId, Guid listId, int ranking, CancellationToken cancellationToken = default)
         {
-            var result = _dbContext.Add(new ListRanking()
+            var result = _dbContext.ListRankings.Add(new ListRanking()
             {
-                List = list,
-                Movie = movie,
+                ListId = listId,
+                MovieId = movieId,
                 Ranking = ranking
             });
 
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return result.Entity;
         }
 
-        public ListRanking GetMovieAtRanking(List list, int ranking)
+        public Task<ListRanking?> GetMovieAtRankingAsync(Guid listId, int ranking, CancellationToken cancellationToken = default)
         {
-            var listRanking = _dbContext.ListRankings.FirstOrDefault(lr => lr.List == list && lr.Ranking == ranking);
-            return listRanking;
+            return _dbContext.ListRankings
+                .FirstOrDefaultAsync(listRanking => listRanking.ListId == listId && listRanking.Ranking == ranking, cancellationToken);
         }
 
-        public bool FilmExistsInList(Guid movieId, Guid listId)
+        public Task<bool> FilmExistsInListAsync(Guid movieId, Guid listId, CancellationToken cancellationToken = default)
         {
-            return _dbContext.ListRankings.Any(lr => lr.Movie.MovieId == movieId && lr.List.ListId == listId);
+            return _dbContext.ListRankings
+                .AsNoTracking()
+                .AnyAsync(listRanking => listRanking.MovieId == movieId && listRanking.ListId == listId, cancellationToken);
         }
 
-        public IEnumerable<ListRanking> GetAllRankingsInList(List list)
+        public Task<List<ListRanking>> GetRankingsAtOrAfterAsync(Guid listId, int ranking, CancellationToken cancellationToken = default)
         {
-            var listRankings = _dbContext.ListRankings.Where(lr => lr.List == list)
-                                                      .Include(lr => lr.Movie)
-                                                      .OrderBy(lr => lr.Ranking).ToList();
-            return listRankings;
+            return _dbContext.ListRankings
+                .Where(listRanking => listRanking.ListId == listId && listRanking.Ranking >= ranking)
+                .OrderBy(listRanking => listRanking.Ranking)
+                .ToListAsync(cancellationToken);
         }
 
-        public ListRanking UpdateRanking(ListRanking listRanking, int newRanking)
+        public async Task<ListRanking> UpdateRankingAsync(ListRanking listRanking, int newRanking, CancellationToken cancellationToken = default)
         {
             listRanking.Ranking = newRanking;
             var updatedListRanking = _dbContext.ListRankings.Update(listRanking);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return updatedListRanking.Entity;
         }
 
-        public void RemoveRanking(int ranking, Guid listId)
+        public async Task RemoveRankingAsync(int ranking, Guid listId, CancellationToken cancellationToken = default)
         {
-            var listRanking = _dbContext.ListRankings.FirstOrDefault(lr => lr.List.ListId == listId && lr.Ranking == ranking);
+            var listRanking = await _dbContext.ListRankings
+                .FirstOrDefaultAsync(lr => lr.ListId == listId && lr.Ranking == ranking, cancellationToken);
             if (listRanking != null)
             {
                 _dbContext.ListRankings.Remove(listRanking);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync(cancellationToken);
             }
         }
 
-        public List<ListRanking> GetListRankingsForMovie(Guid movieId)
+        public Task<List<MovieRankingSummary>> GetListRankingsForMovieAsync(Guid movieId, CancellationToken cancellationToken = default)
         {
-            var listRankings = _dbContext.ListRankings.Include(lr => lr.List).Where(lr => lr.Movie.MovieId == movieId);
-            return listRankings.ToList();
+            return _dbContext.ListRankings
+                .AsNoTracking()
+                .Where(listRanking => listRanking.MovieId == movieId)
+                .Select(listRanking => new MovieRankingSummary(
+                    listRanking.MovieId,
+                    listRanking.ListId,
+                    listRanking.List.Name,
+                    listRanking.Ranking,
+                    listRanking.ListRankingId))
+                .ToListAsync(cancellationToken);
         }
 
-        public ListRanking GetListRanking(Guid movieId, Guid listId)
+        public Task<ListRanking?> GetListRankingAsync(Guid movieId, Guid listId, CancellationToken cancellationToken = default)
         {
-            var listRanking = _dbContext.ListRankings.FirstOrDefault(lr => lr.Movie.MovieId == movieId && lr.List.ListId == listId);
-            return listRanking;
+            return _dbContext.ListRankings
+                .FirstOrDefaultAsync(listRanking => listRanking.MovieId == movieId && listRanking.ListId == listId, cancellationToken);
         }
 
-        public void RemoveListRanking(Guid movieId, Guid listId)
+        public async Task RemoveListRankingAsync(Guid movieId, Guid listId, CancellationToken cancellationToken = default)
         {
-            var listRanking = GetListRanking(movieId, listId);
+            var listRanking = await GetListRankingAsync(movieId, listId, cancellationToken);
             
             if (listRanking != null)
             {
                 _dbContext.ListRankings.Remove(listRanking);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync(cancellationToken);
             }
         }
-
-
     }
 }

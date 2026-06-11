@@ -4,8 +4,12 @@
     {
         public Guid MovieGenreId { get; set; }
 
-        public Genre Genre { get; set; }
+        public Guid GenreId { get; set; }
 
-        public Movie Movie  { get; set; }
+        public Genre Genre { get; set; } = null!;
+
+        public Guid MovieId { get; set; }
+
+        public Movie Movie  { get; set; } = null!;
     }
 }

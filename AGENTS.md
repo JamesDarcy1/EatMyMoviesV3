@@ -90,6 +90,10 @@ Use `EatMyMoviesSite/Config/README.md` as the source of truth for local user-sec
 
 The EF Core context is `EatMyMovies.DataAccess/EatMyMoviesContext.cs`.
 
+Repository reads should use async EF Core APIs, materialize bounded results inside the repository, and apply `AsNoTracking()` for read-only paths. Do not return `IQueryable` or lazily evaluated `IEnumerable` from repository interfaces. Use small projection records under `EatMyMovies.DataAccess/QueryModels` when services need summaries, list-page rows, or ranking context instead of tracked entity graphs.
+
+`ListRanking` and `MovieGenre` expose explicit FK properties. Prefer FK/scalar filters for repository queries and reserve tracked entity queries for write paths that update or delete rows.
+
 Migrations are stored in `EatMyMovies.DataAccess/Migrations`. If adding or changing persisted models, add a migration from the repository root:
 
 ```powershell

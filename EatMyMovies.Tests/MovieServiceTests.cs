@@ -1,4 +1,4 @@
-using EatMyMovies.DataAccess.Models;
+using EatMyMovies.DataAccess.QueryModels;
 using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.Options;
 using EatMyMoviesSite.Services;
@@ -22,20 +22,18 @@ public class MovieServiceTests
         var secondMovie = TestHelpers.CreateStoreMovie("Second Movie", 202);
         var list = TestHelpers.CreateList("Top 100");
         var rankingRepository = new Mock<IRankingRepository>();
-        rankingRepository.Setup(repository => repository.GetAllRankingsInList(list))
-            .Returns(new[]
+        rankingRepository.Setup(repository => repository.GetListCountAsync("Top 100", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(2);
+        rankingRepository.Setup(repository => repository.GetMoviesForListByPageAsync("Top 100", 1, 10, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<ListPageMovie>
             {
-                new ListRanking { List = list, Movie = firstMovie, Ranking = 1 },
-                new ListRanking { List = list, Movie = secondMovie, Ranking = 2 }
+                new(firstMovie.MovieId, firstMovie.Title, firstMovie.TmdbId, 1),
+                new(secondMovie.MovieId, secondMovie.Title, secondMovie.TmdbId, 2)
             });
-        rankingRepository.Setup(repository => repository.GetListCount("Top 100"))
-            .Returns(2);
-        rankingRepository.Setup(repository => repository.GetMoviesForListByPage("Top 100", 1))
-            .Returns(new[] { firstMovie, secondMovie });
 
         var listRepository = new Mock<IListRepository>();
-        listRepository.Setup(repository => repository.GetListByName("Top 100"))
-            .Returns(list);
+        listRepository.Setup(repository => repository.GetListByNameAsync("Top 100", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(list);
 
         var movieCalls = 0;
         var ratingCalls = 0;
@@ -69,22 +67,19 @@ public class MovieServiceTests
         var tmdbMovie = TestHelpers.CreateTmdbMovie(id: 42, title: "Alien");
         var list = TestHelpers.CreateList("Top 100");
         var storeMovie = TestHelpers.CreateStoreMovie("Alien", 42);
-        var listRanking = new ListRanking
-        {
-            List = list,
-            Movie = storeMovie,
-            Ranking = 1,
-            ListRankingId = Guid.NewGuid()
-        };
+        var listRankingId = Guid.NewGuid();
         var movieRepository = new Mock<IMovieRepository>();
-        movieRepository.Setup(repository => repository.GetMovieByTitle("Alien"))
-            .Returns(storeMovie);
+        movieRepository.Setup(repository => repository.GetMovieByTitleAsync("Alien", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(storeMovie);
         var listRepository = new Mock<IListRepository>();
-        listRepository.Setup(repository => repository.GetAllLists())
-            .Returns(new List<EatMyMovies.DataAccess.Models.List> { list });
+        listRepository.Setup(repository => repository.GetAllListsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<EatMyMovies.DataAccess.Models.List> { list });
         var rankingRepository = new Mock<IRankingRepository>();
-        rankingRepository.Setup(repository => repository.GetListRankingsForMovie(storeMovie.MovieId))
-            .Returns(new List<ListRanking> { listRanking });
+        rankingRepository.Setup(repository => repository.GetListRankingsForMovieAsync(storeMovie.MovieId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<MovieRankingSummary>
+            {
+                new(storeMovie.MovieId, list.ListId, list.Name, 1, listRankingId)
+            });
 
         var creditsCalls = 0;
         var service = CreateService(
