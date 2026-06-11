@@ -31,26 +31,7 @@ namespace EatMyMoviesSite.Controllers
         {
             try
             {
-                TMDbLib.Objects.Movies.Movie movie;
-                if(tmdbId != null)
-                {
-                    movie = await _movieService.GetMovieById(tmdbId.Value);
-                }
-                else { 
-                    movie = await _movieService.GetMovieByTitle(title);
-                }
-                var trailer = await _movieService.GetTrailer(movie.Id);
-                var rating = await _movieService.GetImdbRating(movie.Title);
-                Person director = await _movieService.GetDirector(movie.Id);
-                List<Person> actors = await _movieService.GetActors(movie.Id);
-                var movieDetail = Mapper.MapToMovieDetail(movie, trailer, rating, director, actors);
-                movieDetail.Lists = _movieService.GetAllLists();
-                
-                var storeMovie = _movieService.GetStoreMovieByTitle(movie.Title);
-                if (storeMovie != null)
-                {
-                    movieDetail.Rankings = _movieService.GetListRankingsForMovie(storeMovie.MovieId);
-                }
+                var movieDetail = await _movieService.BuildMovieDetail(title, tmdbId, includeListContext: true);
                 return View(movieDetail);
             }
             catch (Exception ex)
@@ -100,25 +81,8 @@ namespace EatMyMoviesSite.Controllers
         public async Task<List<MovieDetail>> GetRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange)
         {
             var recommendations = await _movieService.GetFastRecommendations(feelings, duration, openToForeignFilm, yearRange);
-
-            var movieDetailTasks = recommendations.Select(async movie =>
-            {
-                // Run the async operations in parallel
-                var trailerTask = _movieService.GetTrailer(movie.Id);
-                var ratingTask = _movieService.GetImdbRating(movie.Title);
-
-                // Await both tasks to complete
-                var trailer = await trailerTask;
-                var rating = await ratingTask;
-                Person director = await _movieService.GetDirector(movie.Id);
-                List<Person> actors = await _movieService.GetActors(movie.Id);
-                
-
-                return Mapper.MapToMovieDetail(movie, trailer, rating, director, actors);
-            });
-
-            // Wait for all tasks to complete
-            var movieDetails = await Task.WhenAll(movieDetailTasks);
+            var movieDetails = await Task.WhenAll(recommendations.Select(movie =>
+                _movieService.BuildMovieDetail(movie.Title, movie.Id, includeListContext: false)));
 
             return movieDetails.ToList();
         }

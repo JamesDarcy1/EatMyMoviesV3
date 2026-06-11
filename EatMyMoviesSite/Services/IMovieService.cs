@@ -8,6 +8,7 @@ namespace EatMyMoviesSite.Services
 	public interface IMovieService
 	{
 		Task<MovieList> BuildMovieList(string listTitle, int page);
+        Task<MovieDetail> BuildMovieDetail(string? title, int? tmdbId, bool includeListContext);
         List<EatMyMovies.DataAccess.Models.Genre> GetAllGenres();
         Task<decimal?> GetImdbRating(string movieTitle);
 		Task<Movie> GetMovieByTitle(string title);
