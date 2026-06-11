@@ -21,13 +21,13 @@ namespace EatMyMoviesSite
 				Ranking = ranking,
 				Synopsis = tmdbMovie.Overview,
 				Runtime = tmdbMovie.Runtime,
-				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("yyyy", CultureInfo.InvariantCulture),
+				ReleaseDate = FormatReleaseYear(tmdbMovie.ReleaseDate),
 				Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage),
                 TmdbId = tmdbMovie.Id,
             };
 		}
 
-		public static MovieDetail MapToMovieDetail(Movie tmdbMovie, Video trailer, decimal? imdbRating, Person director, List<Person> actors)
+		public static MovieDetail MapToMovieDetail(Movie tmdbMovie, Video? trailer, decimal? imdbRating, Person director, List<Person> actors)
 		{
 			return new MovieDetail
 			{
@@ -35,7 +35,7 @@ namespace EatMyMoviesSite
 				PosterPath = tmdbMovie.PosterPath,
 				BackdropPath = tmdbMovie.BackdropPath,
 				Overview = tmdbMovie.Overview,
-				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("yyyy", CultureInfo.InvariantCulture),
+				ReleaseDate = FormatReleaseYear(tmdbMovie.ReleaseDate),
 				TrailerPath = trailer != null ? $"https://www.youtube.com/embed/{trailer.Key}" : null,
 				Tagline = tmdbMovie.Tagline,
 				Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
@@ -59,7 +59,7 @@ namespace EatMyMoviesSite
                 ImdbRating = imdbRating,
                 Synopsis = tmdbMovie.Overview,
 				Runtime = tmdbMovie.Runtime,
-				ReleaseDate = tmdbMovie.ReleaseDate.Value.ToString("yyyy", CultureInfo.InvariantCulture),
+				ReleaseDate = FormatReleaseYear(tmdbMovie.ReleaseDate),
                 Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage),
                 TmdbId= tmdbMovie.Id,
                 Director = director,
@@ -84,5 +84,12 @@ namespace EatMyMoviesSite
             { Feeling.Inspiring, new List<string> { "Documentary", "Drama", "History", "War" } }
         };
         }
+
+		private static string FormatReleaseYear(DateTime? releaseDate)
+		{
+			return releaseDate.HasValue
+				? releaseDate.Value.ToString("yyyy", CultureInfo.InvariantCulture)
+				: "Unknown";
+		}
     }
 }

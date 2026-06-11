@@ -1039,6 +1039,56 @@ a:hover,
     padding: 0.35rem 0.55rem;
 }
 
+.movie-not-found {
+    align-items: center;
+    background:
+        radial-gradient(circle at 50% 0, rgba(231, 24, 55, 0.2), transparent 20rem),
+        linear-gradient(180deg, rgba(31, 31, 36, 0.98), rgba(5, 6, 7, 0.98));
+    border: 1px solid rgba(253, 240, 213, 0.22);
+    border-radius: var(--emm-radius);
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    min-height: 28rem;
+    padding: 2rem;
+    text-align: center;
+}
+
+.movie-not-found-ticket {
+    background:
+        linear-gradient(180deg, rgba(255, 250, 240, 0.98), rgba(253, 240, 213, 0.96)),
+        repeating-linear-gradient(90deg, rgba(185, 18, 43, 0.08) 0, rgba(185, 18, 43, 0.08) 1px, transparent 1px, transparent 18px);
+    border: 1px dashed rgba(185, 18, 43, 0.45);
+    border-radius: 6px;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.34);
+    max-width: 34rem;
+    padding: 2rem 1.5rem;
+    width: 100%;
+}
+
+.movie-not-found h1 {
+    font-size: clamp(2.8rem, 9vw, 5rem);
+    margin: 0.1rem 0 0.65rem;
+}
+
+.movie-not-found-kicker {
+    margin-bottom: 0.4rem;
+}
+
+.movie-not-found-copy {
+    color: var(--emm-ink);
+    font-size: 1.08rem;
+    font-weight: 800;
+    line-height: 1.45;
+    margin: 0 auto;
+    max-width: 24rem;
+    padding: 0;
+}
+
+.movie-not-found-action {
+    margin-top: 1.25rem;
+}
+
 .marquee-question-shell {
     margin: 0 auto 1.25rem;
     max-width: 920px;
@@ -1675,6 +1725,15 @@ a:hover,
 
     .detail-list-management {
         padding: 1rem;
+    }
+
+    .movie-not-found {
+        min-height: 22rem;
+        padding: 1rem;
+    }
+
+    .movie-not-found-ticket {
+        padding: 1.45rem 1rem;
     }
 
     .detail-management-headings {

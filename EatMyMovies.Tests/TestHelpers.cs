@@ -24,7 +24,7 @@ internal static class TestHelpers
         string posterPath = "/poster.jpg",
         string originalLanguage = "en",
         int runtime = 101,
-        int releaseYear = 1999,
+        int? releaseYear = 1999,
         params string[] genres)
     {
         return new Movie
@@ -35,7 +35,7 @@ internal static class TestHelpers
             BackdropPath = "/backdrop.jpg",
             Overview = "A movie used by tests.",
             Runtime = runtime,
-            ReleaseDate = new DateTime(releaseYear, 7, 16),
+            ReleaseDate = releaseYear.HasValue ? new DateTime(releaseYear.Value, 7, 16) : null,
             OriginalLanguage = originalLanguage,
             Tagline = "A useful tagline",
             Genres = genres.DefaultIfEmpty("Drama")

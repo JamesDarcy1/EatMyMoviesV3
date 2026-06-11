@@ -69,6 +69,18 @@ public class MapperTests
     }
 
     [Fact]
+    public void MapToMovieDetail_UsesUnknownWhenReleaseDateIsMissing()
+    {
+        var movie = TestHelpers.CreateTmdbMovie(releaseYear: null);
+        var director = new Person { Id = 1, Name = "A Director", Role = "Director" };
+
+        var result = Mapper.MapToMovieDetail(movie, trailer: null, imdbRating: null, director, new List<Person>());
+
+        Assert.Equal("Unknown", result.ReleaseDate);
+        Assert.Null(result.TrailerPath);
+    }
+
+    [Fact]
     public void GetFeelingToGenreMapping_PreservesRecommendationMappings()
     {
         var mapping = Mapper.GetFeelingToGenreMapping();

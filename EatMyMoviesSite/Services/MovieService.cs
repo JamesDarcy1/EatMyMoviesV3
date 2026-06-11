@@ -101,12 +101,12 @@ namespace EatMyMoviesSite.Services
             return movie;
         }
 
-        public async Task<Video> GetTrailer(int movieId)
+        public async Task<Video?> GetTrailer(int movieId)
         {
             var videos = await ExecuteTmdbRequestAsync(
                 () => _tmdbClient.GetMovieVideosAsync(movieId),
                 $"getting videos for movie {movieId}");
-            var trailer = videos.Results.FirstOrDefault(v => v.Type == "Trailer");
+            var trailer = videos.Results?.FirstOrDefault(v => v.Type == "Trailer");
             return trailer;
         }
 
@@ -371,7 +371,18 @@ namespace EatMyMoviesSite.Services
             var credits = await ExecuteTmdbRequestAsync(
                 () => _tmdbClient.GetMovieCreditsAsync(movieId),
                 $"getting credits for movie {movieId}");
-            var tmdbDirector = credits.Crew.FirstOrDefault(x => x.Job == "Director");
+            var tmdbDirector = credits.Crew?.FirstOrDefault(x => x.Job == "Director");
+            if (tmdbDirector == null)
+            {
+                return new Person()
+                {
+                    Name = "Director unavailable",
+                    Role = "Director",
+                    ProfilePath = "/icon_only.png",
+                    Biography = "Director information is not available for this film yet."
+                };
+            }
+
             var directorInfo = await ExecuteTmdbRequestAsync(
                 () => _tmdbClient.GetPersonAsync(tmdbDirector.Id),
                 $"getting person {tmdbDirector.Id}");
@@ -380,9 +391,13 @@ namespace EatMyMoviesSite.Services
             {
                 Id = tmdbDirector.Id,
                 Name = tmdbDirector.Name,
-                ProfilePath = "https://image.tmdb.org/t/p/w185" + tmdbDirector.ProfilePath,
+                ProfilePath = tmdbDirector.ProfilePath != null
+                    ? "https://image.tmdb.org/t/p/w185" + tmdbDirector.ProfilePath
+                    : "/icon_only.png",
                 Role = "Director",
-                Biography = directorInfo.Biography
+                Biography = string.IsNullOrWhiteSpace(directorInfo?.Biography)
+                    ? "Director biography is not available for this film yet."
+                    : directorInfo.Biography
             };
 
             return director;
@@ -393,7 +408,7 @@ namespace EatMyMoviesSite.Services
             var credits = await ExecuteTmdbRequestAsync(
                 () => _tmdbClient.GetMovieCreditsAsync(movieId),
                 $"getting credits for movie {movieId}");
-            var tmdbActors = credits.Cast.Where(x => x.KnownForDepartment == "Acting" && x.ProfilePath != null);
+            var tmdbActors = credits.Cast?.Where(x => x.KnownForDepartment == "Acting" && x.ProfilePath != null) ?? Enumerable.Empty<Cast>();
 
             List<Person> actors = new List<Person>();
 

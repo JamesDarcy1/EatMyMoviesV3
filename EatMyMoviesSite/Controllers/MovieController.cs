@@ -12,9 +12,12 @@ namespace EatMyMoviesSite.Controllers
     public class MovieController : Controller
     {
         private readonly IMovieService _movieService;
-        public MovieController(IMovieService movieService)
+        private readonly ILogger<MovieController> _logger;
+
+        public MovieController(IMovieService movieService, ILogger<MovieController> logger)
         {
             _movieService = movieService;
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -52,6 +55,7 @@ namespace EatMyMoviesSite.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogWarning(ex, "Unable to load movie detail for title '{Title}' and TMDb id '{TmdbId}'.", title, tmdbId);
                 return View();
             }
         }

@@ -13,7 +13,7 @@ namespace EatMyMoviesSite.Services
 		Task<Movie> GetMovieByTitle(string title);
 		Task<Movie> GetMovieById(int id);
         Task<List<MovieDropdown>> SearchMoviesByTitle(string titleSearch);
-        Task<Video> GetTrailer(int movieId);
+        Task<Video?> GetTrailer(int movieId);
         IList<T> ShuffleList<T>(IList<T> list);
         Task<List<Movie>> GetRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange);
         Task<Person> GetDirector(int movieId);

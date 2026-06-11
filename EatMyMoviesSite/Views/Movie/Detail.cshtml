@@ -195,10 +195,14 @@
 }
 else
 {
-    <div class="opaque-box">
-        <h1 class="text-danger">Movie not found</h1>
-        <h2 class="text-danger">Please go back and try again</h2>
-    </div>
+    <section class="movie-not-found" aria-labelledby="movie-not-found-title">
+        <div class="movie-not-found-ticket">
+            <p class="marquee-section-label movie-not-found-kicker">Feature unavailable</p>
+            <h1 id="movie-not-found-title">Movie not found</h1>
+            <p class="movie-not-found-copy">Please go back and try again.</p>
+            <a class="button is-primary movie-not-found-action" asp-controller="Home" asp-action="Index">Back home</a>
+        </div>
+    </section>
 }
 
 
