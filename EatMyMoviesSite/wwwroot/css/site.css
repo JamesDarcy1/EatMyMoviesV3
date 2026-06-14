@@ -1,3 +1,4 @@
+/* Bangers is intentionally kept as the marquee display face; see wwwroot/lib/README.md for the dependency strategy. */
 @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
 
 :root {
@@ -3521,5 +3522,617 @@ main {
         font-size: 0.72rem;
         padding-left: 0.48rem;
         padding-right: 0.48rem;
+    }
+}
+
+/* Frontend refresh: extend the midnight marquee language to supporting flows. */
+[v-cloak] {
+    display: none;
+}
+
+.navbar > .navbar-menu > .navbar-start > a.navbar-item.is-active::after,
+.navbar > .navbar-menu > .navbar-start > .nav-list-dropdown.is-active-route > .navbar-link::before {
+    opacity: 1;
+}
+
+.navbar > .navbar-menu > .navbar-start > a.navbar-item.is-active,
+.navbar > .navbar-menu > .navbar-start > .nav-list-dropdown.is-active-route > .navbar-link {
+    background-color: transparent !important;
+    color: #fff;
+}
+
+.navbar > .navbar-menu > .navbar-start > a.navbar-item.is-active:hover,
+.navbar > .navbar-menu > .navbar-start > a.navbar-item.is-active:focus {
+    background-color: transparent !important;
+    color: #fff;
+}
+
+.navbar-burger:focus-visible,
+.nav-list-toggle:focus-visible,
+.navbar-item:focus-visible,
+.navbar-link:focus-visible {
+    box-shadow: 0 0 0 3px rgba(255, 207, 90, 0.34);
+    outline: none;
+}
+
+.search-panel {
+    background:
+        linear-gradient(90deg, rgba(255, 250, 240, 0.05), transparent 18%, transparent 82%, rgba(255, 250, 240, 0.05)),
+        repeating-linear-gradient(90deg, rgba(255, 250, 240, 0.04) 0, rgba(255, 250, 240, 0.04) 1px, transparent 1px, transparent 18px),
+        linear-gradient(180deg, #222225 0, #111113 38%, #09090a 100%);
+    border: 1px solid rgba(255, 250, 240, 0.28);
+    border-left: 4px solid var(--emm-red);
+    border-right: 4px solid var(--emm-red);
+    border-radius: 8px;
+    box-shadow:
+        inset 0 0 0 1px rgba(231, 24, 55, 0.28),
+        0 22px 56px rgba(0, 0, 0, 0.58);
+    margin-top: 1.4rem;
+    padding: 1.35rem clamp(1rem, 4vw, 2rem) 1.65rem;
+    position: relative;
+}
+
+.search-panel::before {
+    background:
+        linear-gradient(90deg, transparent, rgba(231, 24, 55, 0.86), transparent),
+        linear-gradient(90deg, transparent, rgba(255, 207, 90, 0.42), transparent);
+    background-position: center 0, center 0.55rem;
+    background-repeat: no-repeat;
+    background-size: 94% 1px, 86% 1px;
+    content: "";
+    height: 1.1rem;
+    left: 1rem;
+    opacity: 0.82;
+    pointer-events: none;
+    position: absolute;
+    right: 1rem;
+    top: 0.85rem;
+}
+
+.search-panel h1 {
+    color: #ffcf5a;
+    font-size: clamp(2.75rem, 8vw, 4.9rem);
+    line-height: 0.95;
+    margin-bottom: 1.2rem;
+    text-shadow: 0 2px 0 var(--emm-red-dark), 0 8px 22px rgba(0, 0, 0, 0.48);
+}
+
+.search-form {
+    position: relative;
+    z-index: 1;
+}
+
+.search-input.input {
+    background-color: rgba(255, 250, 240, 0.96);
+    border: 2px solid rgba(255, 207, 90, 0.54);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.74);
+    color: #201819;
+    font-weight: 800;
+}
+
+.search-input.input:focus {
+    border-color: #ffcf5a;
+    box-shadow: 0 0 0 3px rgba(255, 207, 90, 0.28), inset 0 0 0 1px rgba(255, 255, 255, 0.74);
+}
+
+.search-dropdown .dropdown-content {
+    background-color: rgba(255, 250, 240, 0.98);
+    border: 1px solid rgba(255, 207, 90, 0.42);
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.42);
+}
+
+.search-result {
+    border-bottom: 1px solid rgba(185, 18, 43, 0.08);
+    min-height: 4.1rem;
+}
+
+.search-result:last-child {
+    border-bottom: 0;
+}
+
+.search-result.is-active,
+.search-result:hover,
+.search-result:focus {
+    background-color: rgba(231, 24, 55, 0.14);
+    color: var(--emm-red-dark);
+}
+
+.search-action .button {
+    box-shadow: 0 8px 0 rgba(0, 0, 0, 0.28);
+}
+
+.ranked-marquee-card {
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.ranked-marquee-card:hover,
+.ranked-marquee-card:focus-within {
+    border-color: rgba(255, 207, 90, 0.58);
+    box-shadow: 0 22px 52px rgba(0, 0, 0, 0.34);
+    transform: translateY(-2px);
+}
+
+.ranked-marquee-link:focus-visible {
+    box-shadow: 0 0 0 3px rgba(255, 207, 90, 0.34);
+    outline: none;
+}
+
+.pagination {
+    margin-bottom: 1.8rem;
+}
+
+.pagination-list {
+    background:
+        linear-gradient(180deg, rgba(255, 250, 240, 0.98), rgba(253, 240, 213, 0.97)),
+        repeating-linear-gradient(90deg, rgba(185, 18, 43, 0.08) 0, rgba(185, 18, 43, 0.08) 1px, transparent 1px, transparent 18px);
+    border: 1px dashed rgba(185, 18, 43, 0.42);
+    border-radius: 6px;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24);
+    padding: 0.55rem;
+}
+
+.pagination-link {
+    background-color: rgba(255, 250, 240, 0.78);
+    border-color: rgba(31, 31, 36, 0.22);
+    border-radius: 5px;
+    color: #201819;
+    font-weight: 900;
+    min-width: 2.35rem;
+}
+
+.pagination-step-icon {
+    display: none;
+}
+
+.pagination-link:hover,
+.pagination-link:focus {
+    background-color: rgba(231, 24, 55, 0.12);
+    border-color: var(--emm-red);
+    color: var(--emm-red-dark);
+}
+
+.pagination-link.is-current {
+    background: linear-gradient(180deg, #e63b34, #c61125);
+    border-color: #ff7759;
+    box-shadow: 0 6px 14px rgba(185, 18, 43, 0.28);
+    color: #fff;
+}
+
+.pagination-current {
+    cursor: default;
+    min-width: 8.6rem;
+}
+
+.pagination-step-link {
+    min-width: 5.4rem;
+}
+
+.detail-management-panel .input,
+.detail-management-panel .select select {
+    font-weight: 800;
+}
+
+.detail-management-row:focus-within,
+.detail-management-add:focus-within {
+    border-color: rgba(231, 24, 55, 0.38);
+    box-shadow: 0 0 0 3px rgba(231, 24, 55, 0.12);
+}
+
+.movie-not-found-ticket {
+    background:
+        linear-gradient(180deg, rgba(255, 250, 240, 0.98), rgba(253, 240, 213, 0.97)),
+        repeating-linear-gradient(90deg, rgba(185, 18, 43, 0.08) 0, rgba(185, 18, 43, 0.08) 1px, transparent 1px, transparent 18px);
+    border: 1px dashed rgba(185, 18, 43, 0.42);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .button:not(:disabled):hover,
+    .clickable-card:hover .poster,
+    .ranked-marquee-card:hover,
+    .ranked-marquee-card:focus-within,
+    .marquee-poster {
+        transform: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-panel {
+        border-left: 0;
+        border-radius: 0;
+        border-right: 0;
+        margin-top: 0;
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
+    }
+
+    .search-panel h1 {
+        margin-top: 1rem;
+    }
+
+    .pagination-list {
+        border-left: 0;
+        border-right: 0;
+        border-radius: 0;
+    }
+
+    .pagination-step-link {
+        min-width: 4.2rem;
+    }
+}
+
+/* Compact ranked lists: keep the marquee mood, but make list browsing denser. */
+.ranked-marquee-list {
+    max-width: 900px;
+}
+
+.ranked-marquee-list .movie-list-marquee-header {
+    margin-bottom: 0.8rem;
+}
+
+.ranked-marquee-list .movie-list-marquee-masthead {
+    min-height: 11rem;
+    padding: 1.35rem 1.6rem;
+}
+
+.ranked-marquee-list .movie-list-marquee-copy .marquee-title {
+    font-size: clamp(3rem, 7vw, 5.2rem);
+}
+
+.ranked-marquee-list .movie-list-description {
+    font-size: 0.98rem;
+    line-height: 1.45;
+}
+
+.ranked-marquee-card.movie-block {
+    margin-bottom: 0.8rem;
+}
+
+.ranked-marquee-card .columns {
+    min-height: 13rem;
+}
+
+.ranked-marquee-poster-frame {
+    --marquee-poster-width: min(100%, 8.75rem);
+    padding: 0.8rem;
+}
+
+.ranked-marquee-poster {
+    max-height: 11.5rem;
+}
+
+.ranked-marquee-details {
+    padding: 0.95rem 1rem;
+}
+
+.ranked-marquee-details .movie-title {
+    display: block;
+    font-size: clamp(1.55rem, 2.25vw, 2rem);
+    line-height: 1.16;
+    margin-bottom: 1.05rem;
+    max-height: 1.16em;
+    min-height: 1.16em;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ranked-movie-meta.marquee-meta-rail {
+    gap: 0.45rem;
+}
+
+.ranked-movie-meta .marquee-meta-item {
+    border-radius: 5px;
+    box-shadow: 0 5px 14px rgba(31, 31, 36, 0.08);
+    padding: 0.52rem 0.6rem;
+}
+
+.ranked-movie-meta .marquee-meta-label {
+    font-size: 0.62rem;
+}
+
+.ranked-movie-meta .marquee-meta-value {
+    font-size: 0.9rem;
+    line-height: 1.16;
+}
+
+.ranked-marquee-cta {
+    align-items: center;
+    color: var(--emm-red-dark);
+    display: inline-flex;
+    font-weight: 900;
+    gap: 0.45rem;
+    margin-top: 0.65rem;
+    text-transform: uppercase;
+}
+
+.ranked-marquee-cta-icon {
+    align-items: center;
+    background-color: var(--emm-red);
+    border: 1px solid rgba(255, 250, 240, 0.68);
+    border-radius: 999px;
+    color: #fff;
+    display: inline-flex;
+    height: 1.85rem;
+    justify-content: center;
+    width: 1.85rem;
+}
+
+.ranked-marquee-cta-icon svg {
+    fill: none;
+    height: 1rem;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2.35;
+    width: 1rem;
+}
+
+.ranked-marquee-synopsis {
+    padding: 1rem;
+}
+
+.ranked-marquee-synopsis .card-synopsis {
+    -webkit-line-clamp: 6;
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+@media (max-width: 1023px) {
+    .ranked-marquee-list {
+        max-width: 100%;
+    }
+
+    .ranked-marquee-list .movie-list-marquee-header {
+        border-radius: 0 0 8px 8px;
+        margin-bottom: 0.7rem;
+    }
+
+    .ranked-marquee-list .movie-list-marquee-masthead {
+        gap: 0.7rem;
+        min-height: 0;
+        padding: 1rem;
+    }
+
+    .ranked-marquee-list .movie-list-marquee-copy .marquee-kicker {
+        font-size: 1.3rem;
+        margin-bottom: 0.45rem;
+        padding: 0.32rem 0.55rem 0.26rem;
+    }
+
+    .ranked-marquee-list .movie-list-marquee-copy .marquee-title {
+        font-size: clamp(2.55rem, 11vw, 4.1rem);
+    }
+
+    .ranked-marquee-list .movie-list-description {
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 4;
+        display: -webkit-box;
+        font-size: 0.88rem;
+        line-height: 1.34;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .ranked-marquee-card.movie-block {
+        border-left: 0;
+        border-radius: 0;
+        border-right: 0;
+        margin-bottom: 0.55rem;
+    }
+
+    .ranked-marquee-card .columns {
+        min-height: 0;
+    }
+
+    .ranked-marquee-poster-column.column {
+        flex: 0 0 8.2rem;
+        min-height: 0;
+        width: 8.2rem;
+    }
+
+    .ranked-marquee-poster-frame {
+        --marquee-poster-width: 6rem;
+        justify-content: center;
+        justify-self: center;
+        padding: 0.65rem 0.4rem;
+    }
+
+    .ranked-marquee-poster {
+        max-height: 9rem;
+    }
+
+    .rank-badge {
+        font-size: 0.95rem;
+        height: 2.1rem;
+        left: 0.15rem;
+        min-width: 2.1rem;
+        top: 0.35rem;
+    }
+
+    .ranked-marquee-details.column {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 0.78rem 3.15rem 0.82rem 0.78rem;
+        position: relative;
+    }
+
+    .ranked-marquee-details .movie-title {
+        font-size: clamp(1.22rem, 3.8vw, 1.48rem);
+        line-height: 1.16;
+        margin-bottom: 0.78rem;
+        max-height: 1.16em;
+        min-height: 1.16em;
+    }
+
+    .ranked-movie-meta.marquee-meta-rail {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.36rem;
+    }
+
+    .ranked-movie-meta .marquee-meta-item {
+        align-items: baseline;
+        background-color: rgba(255, 250, 240, 0.78);
+        display: inline-flex;
+        flex: 0 1 auto;
+        gap: 0.3rem;
+        max-width: 100%;
+        min-height: 0;
+        padding: 0.28rem 0.45rem;
+    }
+
+    .ranked-movie-meta .marquee-meta-label,
+    .ranked-movie-meta .marquee-meta-value {
+        display: inline;
+    }
+
+    .ranked-movie-meta .marquee-meta-label {
+        font-size: 0.56rem;
+        margin-bottom: 0;
+    }
+
+    .ranked-movie-meta .marquee-meta-label::after {
+        content: "";
+    }
+
+    .ranked-movie-meta .marquee-meta-value {
+        font-size: 0.75rem;
+        line-height: 1.1;
+    }
+
+    .ranked-movie-meta .marquee-meta-item:last-child {
+        display: none;
+    }
+
+    .ranked-marquee-cta {
+        bottom: 0.82rem;
+        font-size: 0;
+        margin-top: 0;
+        position: absolute;
+        right: 0.8rem;
+    }
+
+    .ranked-marquee-cta-icon {
+        box-shadow: 0 6px 12px rgba(185, 18, 43, 0.22);
+        height: 1.9rem;
+        width: 1.9rem;
+    }
+
+    .ranked-marquee-cta-icon svg {
+        height: 1.02rem;
+        width: 1.02rem;
+    }
+}
+
+@media (max-width: 520px) {
+    .ranked-marquee-poster-column.column {
+        flex-basis: 7.1rem;
+        width: 7.1rem;
+    }
+
+    .ranked-marquee-poster-frame {
+        --marquee-poster-width: 5.05rem;
+        padding-left: 0.32rem;
+        padding-right: 0.32rem;
+    }
+
+    .ranked-marquee-poster {
+        max-height: 7.6rem;
+    }
+
+    .ranked-marquee-details.column {
+        padding: 0.72rem 2.9rem 0.78rem 0.72rem;
+    }
+
+    .ranked-marquee-details .movie-title {
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        font-size: clamp(1.08rem, 5.1vw, 1.36rem);
+        margin-bottom: 0.62rem;
+        max-height: 2.32em;
+        min-height: 2.32em;
+        white-space: normal;
+    }
+
+    .ranked-movie-meta .marquee-meta-item {
+        padding: 0.23rem 0.34rem;
+    }
+
+    .ranked-movie-meta .marquee-meta-label {
+        font-size: 0.52rem;
+    }
+
+    .ranked-movie-meta .marquee-meta-value {
+        font-size: 0.68rem;
+    }
+
+    .ranked-marquee-cta {
+        bottom: 0.72rem;
+        display: inline-flex;
+        margin-top: 0;
+        right: 0.68rem;
+    }
+
+    .ranked-marquee-cta-icon {
+        height: 1.72rem;
+        width: 1.72rem;
+    }
+
+    .ranked-marquee-cta-icon svg {
+        height: 0.95rem;
+        width: 0.95rem;
+    }
+
+    .pagination {
+        margin-bottom: 1.1rem;
+        margin-top: 1rem !important;
+    }
+
+    .pagination-list {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        gap: 0.28rem;
+        padding: 0 0.65rem;
+    }
+
+    .pagination-link {
+        background-color: rgba(255, 250, 240, 0.94);
+        font-size: 0.86rem;
+        min-height: 2.15rem;
+        min-width: 2.15rem;
+        padding-left: 0.55rem;
+        padding-right: 0.55rem;
+    }
+
+    .pagination-step-link {
+        min-width: 2.15rem;
+        padding-left: 0.55rem;
+        padding-right: 0.55rem;
+    }
+
+    .pagination-current {
+        min-width: 7.7rem;
+    }
+
+    .pagination-step-text {
+        display: none;
+    }
+
+    .pagination-step-icon {
+        display: inline;
+        font-size: 1.2rem;
+        line-height: 1;
     }
 }
