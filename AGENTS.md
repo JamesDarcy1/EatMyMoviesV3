@@ -11,6 +11,8 @@ EatMyMoviesV3 is a .NET 10 ASP.NET Core MVC application backed by Entity Framewo
 - `EatMyMovies.DataAccess/` contains EF Core models, `EatMyMoviesContext`, repositories, and migrations.
 - `EatMyMovies.Tests/` contains the xUnit test project.
 
+`EatMyMovies.DataAccess` is a standard .NET class library. Keep web SDK, runtime identifier, self-contained, and other deployment settings in `EatMyMoviesSite`; adding them to the data project can create stale RID-specific reference assemblies during publish.
+
 The application integrates with TMDb via `TMDbLib` and OMDb through thin external client services. Movie/list persistence is handled through repositories registered in `EatMyMoviesSite/Program.cs`.
 
 ## Keep This File Current
