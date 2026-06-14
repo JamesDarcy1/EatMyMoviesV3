@@ -21,6 +21,12 @@ namespace EatMyMoviesSite.Controllers
             return View("~/Views/list/list.cshtml", list);
         }
 
+        [HttpGet("top100")]
+        public IActionResult LegacyTop100(int page = 1)
+        {
+            return RedirectToActionPermanent(nameof(Top100), new { page });
+        }
+
 
         [Route("comedies")]
         public async Task<IActionResult> Comedies(int page = 1, CancellationToken cancellationToken = default)

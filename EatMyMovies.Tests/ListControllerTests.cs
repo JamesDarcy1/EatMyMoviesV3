@@ -38,4 +38,19 @@ public class ListControllerTests
         Assert.Same(movieList, viewResult.Model);
         movieService.Verify(service => service.BuildMovieList(listName, 3), Times.Once);
     }
+
+    [Fact]
+    public void LegacyTop100_RedirectsPermanentlyToCanonicalActionAndPreservesPage()
+    {
+        var movieService = new Mock<IMovieService>();
+        var controller = new ListController(movieService.Object);
+
+        var result = controller.LegacyTop100(4);
+
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.True(redirect.Permanent);
+        Assert.Equal(nameof(ListController.Top100), redirect.ActionName);
+        Assert.Equal(4, redirect.RouteValues?["page"]);
+        movieService.VerifyNoOtherCalls();
+    }
 }

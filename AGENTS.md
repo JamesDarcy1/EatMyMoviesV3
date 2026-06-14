@@ -115,10 +115,13 @@ The UI uses Razor views, Bulma CSS from `wwwroot/lib/bulma`, jQuery, Vue from `w
 When changing the frontend:
 
 - Keep styles consistent with the existing red/cream movie-themed visual language.
+- Treat the home page and recommender flow as the strongest current design reference. Preserve the midnight marquee/ticket-booth direction and extend it to supporting pages instead of redesigning those pages away from it.
 - Reuse Bulma classes and existing CSS utilities before introducing new patterns.
 - Check both desktop and mobile breakpoints; `site.css` has explicit rules around `768px`.
 - Keep static assets under `wwwroot`.
 - Preserve local vendored assets under `wwwroot/lib`; do not replace them with CDN-only dependencies unless the user explicitly wants that.
+- `EatMyMoviesSite/wwwroot/lib/README.md` documents frontend vendor versions, source URLs, licenses, and the manual update process. Update it whenever vendored frontend assets change.
+- Use readable vendor files in Development and minified vendor files outside Development where the layout or view has environment-specific includes.
 
 ## Coding Conventions
 
@@ -144,6 +147,8 @@ dotnet test EatMyMoviesV3.sln
 The current test suite covers repositories, `MovieService`, `StorageService`, mapper behavior, and list/storage controllers. Add or update focused tests when changing those areas.
 
 For UI or routing changes, also run the site with the Development launch profile and manually verify the relevant page(s). Use the Development URLs listed above.
+
+For frontend UX refreshes, manually verify the home page, recommender, movie list, movie detail, and search flows across desktop and mobile widths. Confirm refreshed supporting pages still feel consistent with the midnight marquee direction used by the home and recommender pages.
 
 ## Git Notes
 

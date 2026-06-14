@@ -30,7 +30,7 @@
                         </div>
                     </div>
                     <div class="column is-one-third-desktop is-flex is-flex-direction-column is-justify-content-center ranked-marquee-details">
-                        <h4 class="movie-title mb-0">@movie.Title</h4>
+                        <h2 class="movie-title">@movie.Title</h2>
                         <div class="marquee-meta-rail ranked-movie-meta">
                             <small class="marquee-meta-item">
                                 <span class="marquee-meta-label">Release</span>
@@ -42,18 +42,27 @@
                             </small>
                             <small class="marquee-meta-item">
                                 <span class="marquee-meta-label">IMDb</span>
-                                <span class="marquee-meta-value">@movie.ImdbRating IMDB Rating</span>
+                                <span class="marquee-meta-value">@movie.ImdbRating</span>
                             </small>
                             <small class="marquee-meta-item">
                                 <span class="marquee-meta-label">Runtime</span>
-                                <span class="marquee-meta-value">@movie.Runtime Minutes</span>
+                                <span class="marquee-meta-value">@movie.Runtime min</span>
                             </small>
                             <small class="marquee-meta-item">
                                 <span class="marquee-meta-label">Language</span>
                                 <span class="marquee-meta-value">@movie.Language</span>
                             </small>
                         </div>
-                        <small class="find-out-more ranked-marquee-cta">Find Out More</small>
+                        <span class="ranked-marquee-cta" aria-hidden="true">
+                            <span class="ranked-marquee-cta-text">Find Out More</span>
+                            <span class="ranked-marquee-cta-icon">
+                                <svg viewBox="0 0 24 24" focusable="false">
+                                    <path d="M5 12h14"></path>
+                                    <path d="m13 6 6 6-6 6"></path>
+                                </svg>
+                            </span>
+                        </span>
+                        <span class="is-sr-only">Find out more about @movie.Title</span>
                     </div>
                     <div class="column is-one-third-desktop is-hidden-mobile is-flex is-flex-direction-column is-justify-content-center ranked-marquee-synopsis">
                         <small class="card-synopsis">@movie.Synopsis</small>

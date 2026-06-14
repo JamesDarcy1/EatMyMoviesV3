@@ -3814,16 +3814,17 @@ main {
 }
 
 .ranked-marquee-details .movie-title {
-    display: block;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
     font-size: clamp(1.55rem, 2.25vw, 2rem);
     line-height: 1.16;
     margin-bottom: 1.05rem;
-    max-height: 1.16em;
-    min-height: 1.16em;
+    max-height: 2.32em;
     overflow: hidden;
     overflow-wrap: break-word;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
 }
 
 .ranked-movie-meta.marquee-meta-rail {
@@ -3970,8 +3971,6 @@ main {
         font-size: clamp(1.22rem, 3.8vw, 1.48rem);
         line-height: 1.16;
         margin-bottom: 0.78rem;
-        max-height: 1.16em;
-        min-height: 1.16em;
     }
 
     .ranked-movie-meta.marquee-meta-rail {
@@ -4055,14 +4054,8 @@ main {
     }
 
     .ranked-marquee-details .movie-title {
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        display: -webkit-box;
         font-size: clamp(1.08rem, 5.1vw, 1.36rem);
         margin-bottom: 0.62rem;
-        max-height: 2.32em;
-        min-height: 2.32em;
-        white-space: normal;
     }
 
     .ranked-movie-meta .marquee-meta-item {

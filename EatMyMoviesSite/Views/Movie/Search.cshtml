@@ -12,8 +12,11 @@
                    v-on:keydown.down.prevent="moveSelection(1)"
                    v-on:keydown.up.prevent="moveSelection(-1)"
                    v-on:keydown.esc="clearResults"
+                   role="combobox"
                    aria-autocomplete="list"
+                   aria-haspopup="listbox"
                    aria-controls="movie-search-results"
+                   :aria-activedescendant="activeDescendant"
                    :aria-expanded="showDropdown.toString()" />
 
             <div :class="['dropdown search-dropdown', { 'is-active': showDropdown }]">
@@ -24,11 +27,13 @@
                         <div v-else-if="showEmptyState" class="dropdown-item search-status">No movies found</div>
                         <a v-for="(movie, index) in searchResults"
                            :key="movie.id"
+                           :id="'movie-search-option-' + index"
                            :class="['dropdown-item search-result', { 'is-active': highlightedIndex === index }]"
                            role="option"
+                           :aria-selected="(highlightedIndex === index).toString()"
                            v-on:mouseenter="highlightedIndex = index"
                            v-on:click="selectMovie(movie)">
-                            <img :src="posterUrl(movie.posterPath)" :alt="movie.title + ' poster'" class="dropdown-poster" loading="lazy" />
+                            <img :src="posterUrl(movie.posterPath)" :alt="movie.title + ' poster'" class="dropdown-poster" loading="lazy" v-on:error="usePosterFallback" />
                             <span class="dropdown-title">{{ movie.title }}</span>
                         </a>
                     </div>
@@ -36,7 +41,7 @@
             </div>
         </div>
         <div class="search-action">
-            <button class="button is-primary m-0" v-on:click="handleSearch" :disabled="!searchQuery">
+            <button type="button" class="button is-primary m-0" v-on:click="handleSearch" :disabled="!searchQuery">
                 <span>Search</span>
             </button>
         </div>
@@ -44,7 +49,12 @@
 </div>
 
 @section Scripts {
-    <script src="~/lib/vue/vue.global.prod.js"></script>
+    <environment include="Development">
+        <script src="~/lib/vue/vue.global.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/vue/vue.global.prod.js"></script>
+    </environment>
     <script>
         const { createApp } = Vue;
 
@@ -68,6 +78,9 @@
                 },
                 showEmptyState() {
                     return this.hasSearched && !this.isLoading && !this.searchError && this.searchQuery.length >= 2 && this.searchResults.length === 0;
+                },
+                activeDescendant() {
+                    return this.highlightedIndex >= 0 ? `movie-search-option-${this.highlightedIndex}` : null;
                 }
             },
             watch: {
@@ -157,6 +170,12 @@
                 },
                 posterUrl(posterPath) {
                     return posterPath ? `https://image.tmdb.org/t/p/w92${posterPath}` : '/icon_only.png';
+                },
+                usePosterFallback(event) {
+                    if (!event.target.src.endsWith('/icon_only.png')) {
+                        event.target.src = '/icon_only.png';
+                        event.target.classList.add('poster-fallback');
+                    }
                 }
             }
         }).mount('#searchApp');

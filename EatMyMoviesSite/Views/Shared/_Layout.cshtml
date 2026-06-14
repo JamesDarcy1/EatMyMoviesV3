@@ -1,4 +1,13 @@
 ﻿<!DOCTYPE html>
+@{
+	var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+	var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+	var isHomeActive = string.Equals(currentController, "Home", StringComparison.OrdinalIgnoreCase)
+		&& string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase);
+	var isAboutActive = string.Equals(currentController, "Home", StringComparison.OrdinalIgnoreCase)
+		&& string.Equals(currentAction, "About", StringComparison.OrdinalIgnoreCase);
+	var isListActive = string.Equals(currentController, "List", StringComparison.OrdinalIgnoreCase);
+}
 <html lang="en">
 <head>
 	<link rel="preconnect" href="https://image.tmdb.org" crossorigin>
@@ -6,7 +15,12 @@
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<link rel="stylesheet" href="~/lib/bulma/css/bulma.css" />
+	<environment include="Development">
+		<link rel="stylesheet" href="~/lib/bulma/css/bulma.css" />
+	</environment>
+	<environment exclude="Development">
+		<link rel="stylesheet" href="~/lib/bulma/css/bulma.min.css" />
+	</environment>
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/EatMyMoviesSite.styles.css" asp-append-version="true" />
 	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
@@ -41,7 +55,7 @@
 				<a class="navbar-logo" asp-controller="Home" asp-action="Index" aria-label="Eat My Movies home">
 					<img class="logo" src="~/no_background_logo.png" alt="Eat My Movies">
 				</a>
-				<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" aria-controls="navbar-target" data-target="navbar-target">
+				<a role="button" class="navbar-burger" aria-label="Open menu" aria-expanded="false" aria-controls="navbar-target" data-target="navbar-target" tabindex="0">
 					<span aria-hidden="true"></span>
 					<span aria-hidden="true"></span>
 					<span aria-hidden="true"></span>
@@ -50,9 +64,9 @@
 
 			<div id="navbar-target" class="navbar-menu">
 				<div class="navbar-start">
-					<a class="navbar-item" asp-controller="Home" asp-action="Index">Home</a>
-					<div class="navbar-item has-dropdown is-hoverable nav-list-dropdown">
-						<a class="navbar-link nav-list-toggle" role="button" aria-expanded="false">
+					<a class="navbar-item @(isHomeActive ? "is-active" : null)" asp-controller="Home" asp-action="Index" aria-current="@(isHomeActive ? "page" : null)">Home</a>
+					<div class="navbar-item has-dropdown is-hoverable nav-list-dropdown @(isListActive ? "is-active-route" : null)">
+						<a class="navbar-link nav-list-toggle" role="button" aria-expanded="false" tabindex="0" aria-current="@(isListActive ? "page" : null)">
 							Movie Lists
 						</a>
 						<div class="navbar-dropdown nav-list-menu">
@@ -85,7 +99,7 @@
 							</a>
 						</div>
 					</div>
-					<a class="navbar-item" asp-controller="Home" asp-action="About">About</a>
+					<a class="navbar-item @(isAboutActive ? "is-active" : null)" asp-controller="Home" asp-action="About" aria-current="@(isAboutActive ? "page" : null)">About</a>
 					@if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
 					{
 						<a class="navbar-item nav-dev-link" asp-controller="Authentication" asp-action="Login">Login</a>
@@ -108,7 +122,12 @@
 		</div>
 	</footer>
 
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<environment include="Development">
+		<script src="~/lib/jquery/dist/jquery.js"></script>
+	</environment>
+	<environment exclude="Development">
+		<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	</environment>
 	<script src="~/js/site.js" asp-append-version="true"></script>
 	@await RenderSectionAsync("Scripts", required: false)
 	@RenderSection("VueComponents", required: false)

@@ -141,7 +141,8 @@
                                 @ranking.ListName
                             </div>
                             <div class="column is-3">
-                                <input class="input is-small" type="number" name="newRanking" value="@ranking.Ranking" />
+                                <label class="is-sr-only" for="ranking-@ranking.ListId-@ranking.MovieId">Ranking for @ranking.ListName</label>
+                                <input id="ranking-@ranking.ListId-@ranking.MovieId" class="input is-small" type="number" name="newRanking" value="@ranking.Ranking" min="1" />
                             </div>
                             <div class="column is-5">
                                 <div class="buttons is-centered">
@@ -168,8 +169,9 @@
                 <form method="post" action="/Storage/AddMovieToList" class="mt-4 detail-management-add">
                     <div class="columns is-vcentered">
                         <div class="column is-4">
+                            <label class="is-sr-only" for="new-list-name">List name</label>
                             <div class="select is-small is-fullwidth">
-                                <select name="listName" required>
+                                <select id="new-list-name" name="listName" required>
                                     <option value="">Select a list...</option>
                                     @foreach (var list in Model.Lists)
                                     {
@@ -179,7 +181,8 @@
                             </div>
                         </div>
                         <div class="column is-3">
-                            <input class="input is-small" type="number" name="ranking" placeholder="Ranking" required />
+                            <label class="is-sr-only" for="new-list-ranking">Ranking</label>
+                            <input id="new-list-ranking" class="input is-small" type="number" name="ranking" placeholder="Ranking" min="1" required />
                         </div>
                         <div class="column is-5">
                             <div class="buttons is-centered">
