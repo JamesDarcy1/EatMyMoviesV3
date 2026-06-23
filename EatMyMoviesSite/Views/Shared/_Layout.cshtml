@@ -7,6 +7,8 @@
 	var isAboutActive = string.Equals(currentController, "Home", StringComparison.OrdinalIgnoreCase)
 		&& string.Equals(currentAction, "About", StringComparison.OrdinalIgnoreCase);
 	var isListActive = string.Equals(currentController, "List", StringComparison.OrdinalIgnoreCase);
+	var isAdminActive = string.Equals(currentController, "Admin", StringComparison.OrdinalIgnoreCase);
+	var isAdminSignedIn = User.Identity?.IsAuthenticated == true && User.HasClaim("Admin", "true");
 }
 <html lang="en">
 <head>
@@ -100,9 +102,9 @@
 						</div>
 					</div>
 					<a class="navbar-item @(isAboutActive ? "is-active" : null)" asp-controller="Home" asp-action="About" aria-current="@(isAboutActive ? "page" : null)">About</a>
-					@if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+					@if (isAdminSignedIn)
 					{
-						<a class="navbar-item nav-dev-link" asp-controller="Authentication" asp-action="Login">Login</a>
+						<a class="navbar-item @(isAdminActive ? "is-active" : null)" asp-controller="Admin" asp-action="Index" aria-current="@(isAdminActive ? "page" : null)">Admin</a>
 					}
 				</div>
 			</div>

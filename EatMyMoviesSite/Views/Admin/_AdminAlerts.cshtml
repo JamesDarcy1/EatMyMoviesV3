@@ -1,0 +1,13 @@
+@if (TempData["AdminSuccess"] is string successMessage)
+{
+    <div class="notification is-success admin-notification" role="status">
+        @successMessage
+    </div>
+}
+
+@if (TempData["AdminError"] is string errorMessage)
+{
+    <div class="notification is-danger admin-notification" role="alert">
+        @errorMessage
+    </div>
+}

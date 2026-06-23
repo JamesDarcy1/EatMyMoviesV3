@@ -1,0 +1,71 @@
+@using EatMyMoviesSite.Models.Admin
+@model AdminMoviesViewModel
+
+<title>Admin Movies | Eat My Movies</title>
+
+<section class="admin-shell" aria-labelledby="admin-movies-title">
+    <div class="admin-header">
+        <div>
+            <span class="marquee-kicker">Back office</span>
+            <h1 id="admin-movies-title" class="admin-title">Movies</h1>
+        </div>
+        <a class="button is-light" asp-controller="Admin" asp-action="Index">Dashboard</a>
+    </div>
+
+    @await Html.PartialAsync("_AdminAlerts")
+
+    <form method="get" asp-controller="Admin" asp-action="Movies" class="admin-panel admin-inline-form admin-search-form">
+        <div class="field admin-field-grow">
+            <label class="label" for="movie-search-term">Search stored movies</label>
+            <input id="movie-search-term" class="input" name="searchTerm" value="@Model.SearchTerm" autocomplete="off" />
+        </div>
+        <button type="submit" class="button is-primary admin-form-button">Search</button>
+    </form>
+
+    <div class="admin-panel admin-table-panel">
+        <div class="table-container">
+            <table class="table is-fullwidth admin-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>TMDb</th>
+                        <th>Lists</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var movie in Model.Movies)
+                    {
+                        <tr>
+                            <td>@movie.Title</td>
+                            <td>@movie.TmdbId</td>
+                            <td>@movie.ListCount</td>
+                            <td>
+                                <a class="button is-small is-light" asp-controller="Admin" asp-action="MovieDetail" asp-route-movieId="@movie.MovieId">Open</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="pagination admin-pagination" role="navigation" aria-label="pagination">
+                <a class="pagination-previous @(Model.CurrentPage <= 1 ? "is-disabled" : null)"
+                   asp-controller="Admin"
+                   asp-action="Movies"
+                   asp-route-searchTerm="@Model.SearchTerm"
+                   asp-route-page="@(Model.CurrentPage - 1)">Previous</a>
+                <a class="pagination-next @(Model.CurrentPage >= Model.TotalPages ? "is-disabled" : null)"
+                   asp-controller="Admin"
+                   asp-action="Movies"
+                   asp-route-searchTerm="@Model.SearchTerm"
+                   asp-route-page="@(Model.CurrentPage + 1)">Next</a>
+                <ul class="pagination-list">
+                    <li><span class="pagination-link is-current">@Model.CurrentPage of @Model.TotalPages</span></li>
+                </ul>
+            </nav>
+        }
+    </div>
+</section>

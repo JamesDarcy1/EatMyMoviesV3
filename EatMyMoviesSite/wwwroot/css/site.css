@@ -1040,6 +1040,264 @@ a:hover,
     padding: 0.35rem 0.55rem;
 }
 
+.admin-shell,
+.admin-login-shell {
+    margin: 0 auto 2rem;
+    max-width: 72rem;
+}
+
+.admin-shell {
+    background:
+        linear-gradient(180deg, rgba(255, 250, 240, 0.98), rgba(253, 240, 213, 0.95)),
+        repeating-linear-gradient(90deg, rgba(185, 18, 43, 0.06) 0, rgba(185, 18, 43, 0.06) 1px, transparent 1px, transparent 22px);
+    border: 1px solid rgba(185, 18, 43, 0.18);
+    border-radius: var(--emm-radius);
+    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.24);
+    padding: 1.25rem;
+}
+
+.admin-login-shell {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 32rem;
+}
+
+.admin-login-panel,
+.admin-panel,
+.admin-stat,
+.admin-search-result {
+    background-color: rgba(255, 255, 255, 0.74);
+    border: 1px solid rgba(31, 31, 36, 0.1);
+    border-radius: 6px;
+}
+
+.admin-login-panel {
+    max-width: 28rem;
+    padding: 1.5rem;
+    width: 100%;
+}
+
+.admin-header {
+    align-items: flex-start;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.admin-title {
+    color: var(--emm-red);
+    font-family: 'Bangers', cursive;
+    font-size: 2.35rem;
+    letter-spacing: 0;
+    line-height: 1;
+    margin: 0.2rem 0 0;
+    text-transform: uppercase;
+}
+
+.admin-subtle-link {
+    color: var(--emm-red);
+    font-weight: 700;
+}
+
+.admin-notification {
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.admin-validation-summary:empty {
+    display: none;
+}
+
+.admin-stat-grid,
+.admin-action-grid {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.admin-stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 1rem;
+}
+
+.admin-stat {
+    color: var(--emm-ink);
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+a.admin-stat:hover,
+a.admin-stat:focus {
+    border-color: rgba(185, 18, 43, 0.42);
+    color: var(--emm-red);
+}
+
+.admin-stat-value {
+    color: var(--emm-red);
+    font-family: 'Bangers', cursive;
+    font-size: 2.15rem;
+    letter-spacing: 0;
+    line-height: 1;
+}
+
+.admin-stat-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.admin-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-action-button.button,
+.admin-form-button.button {
+    min-height: 2.75rem;
+}
+
+.admin-panel {
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+
+.admin-panel-title {
+    color: var(--emm-red);
+    font-family: 'Bangers', cursive;
+    font-size: 1.55rem;
+    letter-spacing: 0;
+    margin: 0 0 0.7rem;
+    text-transform: uppercase;
+}
+
+.admin-inline-form,
+.admin-row-form,
+.admin-rank-form,
+.admin-search-result {
+    align-items: flex-end;
+    display: flex;
+    gap: 0.7rem;
+}
+
+.admin-field-grow,
+.admin-row-name,
+.admin-row-description,
+.admin-search-title {
+    flex: 1 1 auto;
+}
+
+.admin-row-form {
+    align-items: center;
+}
+
+.admin-row-name {
+    min-width: 12rem;
+}
+
+.admin-row-description {
+    min-width: 16rem;
+}
+
+.admin-count-pill {
+    background-color: rgba(185, 18, 43, 0.1);
+    border: 1px solid rgba(185, 18, 43, 0.18);
+    border-radius: 999px;
+    color: var(--emm-red);
+    font-weight: 800;
+    min-width: 2.6rem;
+    padding: 0.38rem 0.7rem;
+    text-align: center;
+}
+
+.admin-row-actions,
+.admin-rank-form {
+    flex: 0 0 auto;
+}
+
+.admin-table {
+    background-color: transparent;
+}
+
+.admin-table th {
+    color: var(--emm-red);
+}
+
+.admin-table td {
+    vertical-align: middle;
+}
+
+.admin-rank-input {
+    max-width: 5rem;
+}
+
+.admin-remove-form {
+    margin: 0;
+}
+
+.admin-search-form {
+    margin-bottom: 0.9rem;
+}
+
+.admin-search-results {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.admin-search-result {
+    align-items: center;
+    padding: 0.5rem;
+}
+
+.admin-search-poster {
+    border-radius: 4px;
+    height: 4.2rem;
+    object-fit: cover;
+    width: 2.8rem;
+}
+
+.admin-search-title {
+    font-weight: 800;
+}
+
+.admin-pagination {
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .admin-shell {
+        padding: 0.85rem;
+    }
+
+    .admin-header,
+    .admin-inline-form,
+    .admin-row-form,
+    .admin-rank-form,
+    .admin-search-result {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-stat-grid,
+    .admin-action-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-rank-input,
+    .admin-row-name,
+    .admin-row-description {
+        max-width: none;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .admin-row-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+}
+
 .movie-not-found {
     align-items: center;
     background:
@@ -3382,8 +3640,16 @@ main {
         box-shadow:
             inset 0 0 0 9px rgba(255, 250, 240, 0.72),
             0 14px 24px rgba(0, 0, 0, 0.36);
-        min-height: 25.5rem;
+        display: flex;
+        flex-direction: column;
+        min-height: 34rem;
         padding: 1rem 1rem 0.95rem;
+    }
+
+    .recommender-booth .marquee-question-content {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
     }
 
     .marquee-ticket-heading {
@@ -3406,6 +3672,9 @@ main {
     }
 
     .recommender-booth .marquee-ticket-panel {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
         margin-top: 0.9rem;
     }
 
@@ -3449,15 +3718,15 @@ main {
     .recommender-booth .marquee-ticket-actions {
         background:
             linear-gradient(180deg, rgba(10, 10, 10, 0), rgba(10, 10, 10, 0.95) 28%);
-        bottom: -0.1rem;
+        bottom: auto;
         gap: 0.5rem;
-        left: 0;
+        left: auto;
         margin-left: -1rem;
         margin-right: -1rem;
-        margin-top: 0.85rem;
-        padding: 1rem 0.85rem max(0.85rem, env(safe-area-inset-bottom));
-        position: sticky;
-        right: 0;
+        margin-top: auto;
+        padding: 1.85rem 0.85rem max(0.85rem, env(safe-area-inset-bottom));
+        position: static;
+        right: auto;
         z-index: 3;
     }
 
@@ -3500,7 +3769,7 @@ main {
     }
 
     .recommender-booth .marquee-question-stage {
-        min-height: 24.5rem;
+        min-height: 34rem;
         padding-left: 0.82rem;
         padding-right: 0.82rem;
     }
@@ -4127,5 +4396,99 @@ main {
         display: inline;
         font-size: 1.2rem;
         line-height: 1;
+    }
+}
+
+/* Final admin refinements: keep admin text and controls readable over pale panels. */
+.admin-shell,
+.admin-login-shell,
+.admin-panel,
+.admin-login-panel,
+.admin-table,
+.admin-table td {
+    color: #201819;
+}
+
+.admin-panel .label,
+.admin-login-panel .label {
+    color: var(--emm-red-dark);
+    font-weight: 900;
+    opacity: 1;
+}
+
+.admin-panel .input,
+.admin-panel .select select,
+.admin-login-panel .input {
+    background-color: rgba(255, 255, 255, 0.98);
+    border-color: rgba(31, 31, 36, 0.22);
+    color: #201819;
+    font-weight: 750;
+}
+
+.admin-panel .input:focus,
+.admin-panel .select select:focus,
+.admin-login-panel .input:focus {
+    border-color: var(--emm-red);
+    box-shadow: var(--emm-focus);
+}
+
+.admin-panel .table.admin-table thead th,
+.admin-panel table.admin-table thead th,
+.admin-table thead th {
+    border-bottom-color: rgba(31, 31, 36, 0.76) !important;
+    color: #201819 !important;
+    font-weight: 900;
+    opacity: 1;
+}
+
+.admin-table td {
+    border-color: rgba(31, 31, 36, 0.62);
+    font-weight: 700;
+}
+
+.admin-table a {
+    color: var(--emm-red-dark);
+    font-weight: 800;
+}
+
+.admin-inline-form {
+    align-items: flex-end;
+}
+
+.admin-inline-form .field {
+    margin-bottom: 0;
+}
+
+.admin-inline-form .input,
+.admin-inline-form .select select {
+    min-height: 3.25rem;
+}
+
+.admin-form-button.button {
+    align-self: flex-end;
+    min-height: 3.25rem;
+}
+
+.admin-rank-form {
+    align-items: center;
+}
+
+.admin-rank-form .button {
+    min-height: 2.55rem;
+}
+
+.admin-rank-input {
+    color: #201819;
+    font-weight: 800;
+}
+
+@media (max-width: 768px) {
+    .admin-inline-form,
+    .admin-rank-form {
+        align-items: stretch;
+    }
+
+    .admin-form-button.button {
+        align-self: stretch;
     }
 }

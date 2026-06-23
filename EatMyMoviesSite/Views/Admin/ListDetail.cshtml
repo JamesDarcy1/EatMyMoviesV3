@@ -1,0 +1,109 @@
+@using EatMyMoviesSite.Models.Admin
+@model AdminListDetailViewModel
+
+<title>@Model.Name Admin | Eat My Movies</title>
+
+<section class="admin-shell" aria-labelledby="admin-list-detail-title">
+    <div class="admin-header">
+        <div>
+            <span class="marquee-kicker">List editor</span>
+            <h1 id="admin-list-detail-title" class="admin-title">@Model.Name</h1>
+        </div>
+        <a class="button is-light" asp-controller="Admin" asp-action="Lists">All Lists</a>
+    </div>
+
+    @await Html.PartialAsync("_AdminAlerts")
+
+    <form method="post" asp-controller="Admin" asp-action="UpdateList" asp-route-listId="@Model.ListId" class="admin-panel admin-create-list-form">
+        @Html.AntiForgeryToken()
+        <h2 class="admin-panel-title">List Details</h2>
+        <div class="admin-inline-form">
+            <div class="field admin-field-grow">
+                <label class="label" for="list-name">Name</label>
+                <input id="list-name" class="input" name="listName" value="@Model.Name" required />
+            </div>
+            <div class="field admin-field-grow">
+                <label class="label" for="list-description">Description</label>
+                <input id="list-description" class="input" name="description" value="@Model.Description" />
+            </div>
+            <button type="submit" class="button is-info admin-form-button">Save</button>
+        </div>
+    </form>
+
+    <div class="admin-panel">
+        <h2 class="admin-panel-title">Add From TMDb</h2>
+        <form method="get" asp-controller="Admin" asp-action="ListDetail" asp-route-listId="@Model.ListId" class="admin-inline-form admin-search-form">
+            <div class="field admin-field-grow">
+                <label class="label" for="tmdb-query">Movie title</label>
+                <input id="tmdb-query" class="input" name="tmdbQuery" value="@Model.TmdbQuery" autocomplete="off" />
+            </div>
+            <button type="submit" class="button is-primary admin-form-button">Search</button>
+        </form>
+
+        @if (Model.TmdbSearchResults.Count > 0)
+        {
+            <div class="admin-search-results">
+                @foreach (var movie in Model.TmdbSearchResults)
+                {
+                    var posterUrl = movie.PosterPath != null ? $"https://image.tmdb.org/t/p/w92{movie.PosterPath}" : "/icon_only.png";
+                    <form method="post" asp-controller="Admin" asp-action="AddTmdbMovieToList" asp-route-listId="@Model.ListId" class="admin-search-result">
+                        @Html.AntiForgeryToken()
+                        <img src="@posterUrl" alt="@movie.Title poster" class="admin-search-poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
+                        <span class="admin-search-title">@movie.Title</span>
+                        <input type="hidden" name="tmdbId" value="@movie.Id" />
+                        <input type="hidden" name="tmdbQuery" value="@Model.TmdbQuery" />
+                        <label class="is-sr-only" for="add-rank-@movie.Id">Ranking</label>
+                        <input id="add-rank-@movie.Id" class="input admin-rank-input" type="number" name="ranking" value="@Model.NextRanking" min="1" required />
+                        <button type="submit" class="button is-small is-primary">Add</button>
+                    </form>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="admin-panel admin-table-panel">
+        <h2 class="admin-panel-title">Ranked Movies</h2>
+        <div class="table-container">
+            <table class="table is-fullwidth admin-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Movie</th>
+                        <th>TMDb</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var movie in Model.Movies)
+                    {
+                        <tr>
+                            <td>
+                                <form method="post" asp-controller="Admin" asp-action="MoveMovieInList" asp-route-listId="@Model.ListId" asp-route-movieId="@movie.MovieId" class="admin-rank-form">
+                                    @Html.AntiForgeryToken()
+                                    <label class="is-sr-only" for="rank-@movie.MovieId">Ranking for @movie.Title</label>
+                                    <input id="rank-@movie.MovieId" class="input admin-rank-input" type="number" name="ranking" value="@movie.Ranking" min="1" required />
+                                    <button type="submit" class="button is-small is-info">Move</button>
+                                </form>
+                            </td>
+                            <td>
+                                <a asp-controller="Admin" asp-action="MovieDetail" asp-route-movieId="@movie.MovieId">@movie.Title</a>
+                            </td>
+                            <td>
+                                @if (movie.TmdbId.HasValue)
+                                {
+                                    <a href="/movie/detail?tmdbId=@movie.TmdbId">@movie.TmdbId</a>
+                                }
+                            </td>
+                            <td>
+                                <form method="post" asp-controller="Admin" asp-action="RemoveMovieFromList" asp-route-listId="@Model.ListId" asp-route-movieId="@movie.MovieId" class="admin-remove-form">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="button is-small is-danger">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

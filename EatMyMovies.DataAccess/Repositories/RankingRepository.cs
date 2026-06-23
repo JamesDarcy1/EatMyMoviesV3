@@ -60,6 +60,27 @@ namespace EatMyMovies.DataAccess.Repositories
                 .CountAsync(listRanking => listRanking.List.Name == normalizedListName, cancellationToken);
         }
 
+        public Task<int> CountRankingsAsync(CancellationToken cancellationToken = default)
+        {
+            return _dbContext.ListRankings
+                .AsNoTracking()
+                .CountAsync(cancellationToken);
+        }
+
+        public Task<List<AdminListMovieRow>> GetListMovieRowsAsync(Guid listId, CancellationToken cancellationToken = default)
+        {
+            return _dbContext.ListRankings
+                .AsNoTracking()
+                .Where(listRanking => listRanking.ListId == listId)
+                .OrderBy(listRanking => listRanking.Ranking)
+                .Select(listRanking => new AdminListMovieRow(
+                    listRanking.MovieId,
+                    listRanking.Movie.Title,
+                    listRanking.Movie.TmdbId,
+                    listRanking.Ranking))
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task<int> GetRankingOfMovieAsync(Guid movieId, string listName, CancellationToken cancellationToken = default)
         {
             var normalizedListName = NormalizeRequired(listName, nameof(listName));
@@ -184,10 +205,54 @@ namespace EatMyMovies.DataAccess.Repositories
                 .ToListAsync(cancellationToken);
         }
 
+        public Task<List<AdminMovieMembership>> GetMovieMembershipsAsync(Guid movieId, CancellationToken cancellationToken = default)
+        {
+            return _dbContext.ListRankings
+                .AsNoTracking()
+                .Where(listRanking => listRanking.MovieId == movieId)
+                .OrderBy(listRanking => listRanking.List.Name)
+                .Select(listRanking => new AdminMovieMembership(
+                    listRanking.MovieId,
+                    listRanking.ListId,
+                    listRanking.List.Name,
+                    listRanking.Ranking))
+                .ToListAsync(cancellationToken);
+        }
+
         public Task<ListRanking?> GetListRankingAsync(Guid movieId, Guid listId, CancellationToken cancellationToken = default)
         {
             return _dbContext.ListRankings
                 .FirstOrDefaultAsync(listRanking => listRanking.MovieId == movieId && listRanking.ListId == listId, cancellationToken);
+        }
+
+        public async Task RemoveListRankingAndCloseGapAsync(Guid movieId, Guid listId, CancellationToken cancellationToken = default)
+        {
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken);
+
+            var listRanking = await _dbContext.ListRankings
+                .FirstOrDefaultAsync(ranking => ranking.MovieId == movieId && ranking.ListId == listId, cancellationToken);
+
+            if (listRanking == null)
+            {
+                await transaction.CommitAsync(cancellationToken);
+                return;
+            }
+
+            var removedRanking = listRanking.Ranking;
+            _dbContext.ListRankings.Remove(listRanking);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            var rankingsToClose = await _dbContext.ListRankings
+                .Where(ranking => ranking.ListId == listId && ranking.Ranking > removedRanking)
+                .ToListAsync(cancellationToken);
+
+            foreach (var ranking in rankingsToClose)
+            {
+                ranking.Ranking -= 1;
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
         }
 
         public async Task RemoveListRankingAsync(Guid movieId, Guid listId, CancellationToken cancellationToken = default)

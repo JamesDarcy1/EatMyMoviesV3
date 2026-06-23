@@ -1,0 +1,38 @@
+@using EatMyMoviesSite.Models.Admin
+@model AdminLoginViewModel
+
+<title>Admin Login | Eat My Movies</title>
+
+<section class="admin-login-shell" aria-labelledby="admin-login-title">
+    <form method="post" asp-controller="Admin" asp-action="Login" class="admin-login-panel">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="ReturnUrl" />
+
+        <span class="marquee-kicker">Back office</span>
+        <h1 id="admin-login-title" class="admin-title">Admin Login</h1>
+
+        <div asp-validation-summary="ModelOnly" class="notification is-danger admin-validation-summary"></div>
+
+        <div class="field">
+            <label class="label" asp-for="Username"></label>
+            <div class="control">
+                <input class="input" asp-for="Username" autocomplete="username" />
+            </div>
+            <span class="help is-danger" asp-validation-for="Username"></span>
+        </div>
+
+        <div class="field">
+            <label class="label" asp-for="Password"></label>
+            <div class="control">
+                <input class="input" asp-for="Password" autocomplete="current-password" />
+            </div>
+            <span class="help is-danger" asp-validation-for="Password"></span>
+        </div>
+
+        <button type="submit" class="button is-primary admin-action-button">Login</button>
+    </form>
+</section>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

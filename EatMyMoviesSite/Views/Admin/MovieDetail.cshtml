@@ -1,0 +1,86 @@
+@using EatMyMoviesSite.Models.Admin
+@model AdminMovieDetailViewModel
+@{
+    var membershipListIds = Model.Memberships.Select(membership => membership.ListId).ToHashSet();
+    var availableLists = Model.Lists.Where(list => !membershipListIds.Contains(list.ListId)).ToList();
+}
+
+<title>@Model.Title Admin | Eat My Movies</title>
+
+<section class="admin-shell" aria-labelledby="admin-movie-detail-title">
+    <div class="admin-header">
+        <div>
+            <span class="marquee-kicker">Movie editor</span>
+            <h1 id="admin-movie-detail-title" class="admin-title">@Model.Title</h1>
+            @if (Model.TmdbId.HasValue)
+            {
+                <a class="admin-subtle-link" href="/movie/detail?tmdbId=@Model.TmdbId">View public detail</a>
+            }
+        </div>
+        <a class="button is-light" asp-controller="Admin" asp-action="Movies">All Movies</a>
+    </div>
+
+    @await Html.PartialAsync("_AdminAlerts")
+
+    @if (availableLists.Count > 0)
+    {
+        <form method="post" asp-controller="Admin" asp-action="AddStoredMovieToList" asp-route-movieId="@Model.MovieId" class="admin-panel admin-inline-form">
+            @Html.AntiForgeryToken()
+            <div class="field admin-field-grow">
+                <label class="label" for="add-to-list">Add to list</label>
+                <div class="select is-fullwidth">
+                    <select id="add-to-list" name="listId" required>
+                        @foreach (var list in availableLists)
+                        {
+                            <option value="@list.ListId">@list.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label" for="add-to-list-rank">Rank</label>
+                <input id="add-to-list-rank" class="input admin-rank-input" type="number" name="ranking" min="1" value="1" required />
+            </div>
+            <button type="submit" class="button is-primary admin-form-button">Add</button>
+        </form>
+    }
+
+    <div class="admin-panel admin-table-panel">
+        <h2 class="admin-panel-title">List Memberships</h2>
+        <div class="table-container">
+            <table class="table is-fullwidth admin-table">
+                <thead>
+                    <tr>
+                        <th>List</th>
+                        <th>Rank</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var membership in Model.Memberships)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Admin" asp-action="ListDetail" asp-route-listId="@membership.ListId">@membership.ListName</a>
+                            </td>
+                            <td>
+                                <form method="post" asp-controller="Admin" asp-action="MoveMovieFromMovieDetail" asp-route-movieId="@Model.MovieId" asp-route-listId="@membership.ListId" class="admin-rank-form">
+                                    @Html.AntiForgeryToken()
+                                    <label class="is-sr-only" for="movie-rank-@membership.ListId">Ranking in @membership.ListName</label>
+                                    <input id="movie-rank-@membership.ListId" class="input admin-rank-input" type="number" name="ranking" value="@membership.Ranking" min="1" required />
+                                    <button type="submit" class="button is-small is-info">Move</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form method="post" asp-controller="Admin" asp-action="RemoveMovieFromMovieDetail" asp-route-movieId="@Model.MovieId" asp-route-listId="@membership.ListId" class="admin-remove-form">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="button is-small is-danger">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

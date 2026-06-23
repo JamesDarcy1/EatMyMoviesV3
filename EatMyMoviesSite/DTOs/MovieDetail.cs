@@ -19,7 +19,6 @@ namespace EatMyMoviesSite.DTOs
 		public Person Director { get; set; }	
 		public List<Person> Actors { get; set; }
 		public string Language { get; set; }
-		public bool CanEdit { get; set; }
 		public List<MovieRanking> Rankings { get; set; } = new List<MovieRanking>();
 
 		public List<List> Lists { get; set; }

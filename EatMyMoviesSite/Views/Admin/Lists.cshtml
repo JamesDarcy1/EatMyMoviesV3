@@ -1,0 +1,67 @@
+@using EatMyMoviesSite.Models.Admin
+@model AdminListsViewModel
+
+<title>Admin Lists | Eat My Movies</title>
+
+<section class="admin-shell" aria-labelledby="admin-lists-title">
+    <div class="admin-header">
+        <div>
+            <span class="marquee-kicker">Back office</span>
+            <h1 id="admin-lists-title" class="admin-title">Lists</h1>
+        </div>
+        <a class="button is-light" asp-controller="Admin" asp-action="Index">Dashboard</a>
+    </div>
+
+    @await Html.PartialAsync("_AdminAlerts")
+
+    <form method="post" asp-controller="Admin" asp-action="CreateList" class="admin-panel admin-create-list-form">
+        @Html.AntiForgeryToken()
+        <h2 class="admin-panel-title">Create List</h2>
+        <div class="admin-inline-form">
+            <div class="field admin-field-grow">
+                <label class="label" for="new-list-name">Name</label>
+                <input id="new-list-name" class="input" name="listName" required />
+            </div>
+            <div class="field admin-field-grow">
+                <label class="label" for="new-list-description">Description</label>
+                <input id="new-list-description" class="input" name="description" />
+            </div>
+            <button type="submit" class="button is-primary admin-form-button">Create</button>
+        </div>
+    </form>
+
+    <div class="admin-panel admin-table-panel">
+        <h2 class="admin-panel-title">Existing Lists</h2>
+        <div class="table-container">
+            <table class="table is-fullwidth admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Movies</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var list in Model.Lists)
+                    {
+                        <tr>
+                            <td colspan="4">
+                                <form method="post" asp-controller="Admin" asp-action="UpdateList" asp-route-listId="@list.ListId" class="admin-row-form">
+                                    @Html.AntiForgeryToken()
+                                    <input class="input admin-row-name" name="listName" value="@list.Name" aria-label="List name" />
+                                    <input class="input admin-row-description" name="description" value="@list.Description" aria-label="List description" />
+                                    <span class="admin-count-pill">@list.MovieCount</span>
+                                    <div class="admin-row-actions">
+                                        <a class="button is-small is-light" asp-controller="Admin" asp-action="ListDetail" asp-route-listId="@list.ListId">Open</a>
+                                        <button type="submit" class="button is-small is-info">Save</button>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

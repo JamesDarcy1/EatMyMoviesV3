@@ -41,11 +41,10 @@ namespace EatMyMoviesSite
 				Genres = string.Join(", ", tmdbMovie.Genres.Select(g => g.Name)),
 				ImdbRating = imdbRating != null ? imdbRating : null,
 				Runtime = tmdbMovie.Runtime,
-				TmdbId = tmdbMovie.Id,
+                TmdbId = tmdbMovie.Id,
                 Language = LanguageHelper.GetLanguageName(tmdbMovie.OriginalLanguage),
                 Director = director,
-                Actors = actors.Take(6).ToList(),
-                CanEdit = string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "development", StringComparison.InvariantCultureIgnoreCase)
+                Actors = actors.Take(6).ToList()
             };
 		}
 

@@ -32,6 +32,25 @@ namespace EatMyMovies.DataAccess.Repositories
 			return movie.Entity;
 		}
 
+        public Task<Movie?> GetMovieByIdAsync(Guid movieId, CancellationToken cancellationToken = default)
+        {
+            return _dbContext.Movies
+                .AsNoTracking()
+                .FirstOrDefaultAsync(movie => movie.MovieId == movieId, cancellationToken);
+        }
+
+        public Task<Movie?> GetMovieByTmdbIdAsync(int tmdbId, CancellationToken cancellationToken = default)
+        {
+            if (tmdbId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(tmdbId), "TMDb ID must be positive.");
+            }
+
+            return _dbContext.Movies
+                .AsNoTracking()
+                .FirstOrDefaultAsync(movie => movie.TmdbId == tmdbId, cancellationToken);
+        }
+
 		public Task<Movie?> GetMovieByTitleAsync(string title, CancellationToken cancellationToken = default)
 		{
             var normalizedTitle = NormalizeRequired(title, nameof(title));
@@ -46,6 +65,33 @@ namespace EatMyMovies.DataAccess.Repositories
             return _dbContext.Movies
                 .AsNoTracking()
                 .Select(movie => new StoredMovieSummary(movie.MovieId, movie.Title, movie.TmdbId))
+                .ToListAsync(cancellationToken);
+        }
+
+        public Task<int> CountMoviesAsync(string? searchTerm = null, CancellationToken cancellationToken = default)
+        {
+            return ApplyMovieSearch(_dbContext.Movies.AsNoTracking(), searchTerm)
+                .CountAsync(cancellationToken);
+        }
+
+        public Task<List<AdminMovieSummary>> SearchMoviesAsync(
+            string? searchTerm,
+            int page = 1,
+            int pageSize = 20,
+            CancellationToken cancellationToken = default)
+        {
+            page = Math.Max(1, page);
+            pageSize = Math.Max(1, pageSize);
+
+            return ApplyMovieSearch(_dbContext.Movies.AsNoTracking(), searchTerm)
+                .OrderBy(movie => movie.Title)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(movie => new AdminMovieSummary(
+                    movie.MovieId,
+                    movie.Title,
+                    movie.TmdbId,
+                    movie.ListRankings.Count))
                 .ToListAsync(cancellationToken);
         }
 
@@ -136,6 +182,17 @@ namespace EatMyMovies.DataAccess.Repositories
             }
 
             return normalizedValue;
+        }
+
+        private static IQueryable<Movie> ApplyMovieSearch(IQueryable<Movie> query, string? searchTerm)
+        {
+            var normalizedSearchTerm = searchTerm?.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedSearchTerm))
+            {
+                return query;
+            }
+
+            return query.Where(movie => movie.Title.Contains(normalizedSearchTerm));
         }
     }
 }

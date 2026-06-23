@@ -1,0 +1,39 @@
+@using EatMyMoviesSite.Models.Admin
+@model AdminDashboardViewModel
+
+<title>Admin | Eat My Movies</title>
+
+<section class="admin-shell" aria-labelledby="admin-title">
+    <div class="admin-header">
+        <div>
+            <span class="marquee-kicker">Back office</span>
+            <h1 id="admin-title" class="admin-title">Admin</h1>
+        </div>
+        <form method="post" asp-controller="Admin" asp-action="Logout">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="button is-light admin-logout-button">Logout</button>
+        </form>
+    </div>
+
+    @await Html.PartialAsync("_AdminAlerts")
+
+    <div class="admin-stat-grid">
+        <a class="admin-stat" asp-controller="Admin" asp-action="Movies">
+            <span class="admin-stat-value">@Model.MovieCount</span>
+            <span class="admin-stat-label">Stored movies</span>
+        </a>
+        <a class="admin-stat" asp-controller="Admin" asp-action="Lists">
+            <span class="admin-stat-value">@Model.ListCount</span>
+            <span class="admin-stat-label">Lists</span>
+        </a>
+        <span class="admin-stat">
+            <span class="admin-stat-value">@Model.RankingCount</span>
+            <span class="admin-stat-label">List memberships</span>
+        </span>
+    </div>
+
+    <div class="admin-action-grid">
+        <a class="button is-primary admin-action-button" asp-controller="Admin" asp-action="Lists">Manage Lists</a>
+        <a class="button is-info admin-action-button" asp-controller="Admin" asp-action="Movies">Manage Movies</a>
+    </div>
+</section>

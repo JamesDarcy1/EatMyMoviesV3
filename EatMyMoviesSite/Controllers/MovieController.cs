@@ -31,7 +31,7 @@ namespace EatMyMoviesSite.Controllers
         {
             try
             {
-                var movieDetail = await _movieService.BuildMovieDetail(title, tmdbId, includeListContext: true, cancellationToken);
+                var movieDetail = await _movieService.BuildMovieDetail(title, tmdbId, includeListContext: false, cancellationToken);
                 return View(movieDetail);
             }
             catch (Exception ex)

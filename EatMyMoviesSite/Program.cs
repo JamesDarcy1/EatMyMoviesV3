@@ -2,6 +2,7 @@ using EatMyMovies.DataAccess;
 using EatMyMovies.DataAccess.Repositories;
 using EatMyMoviesSite.Options;
 using EatMyMoviesSite.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -39,6 +40,7 @@ namespace EatMyMoviesSite
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -102,13 +104,40 @@ namespace EatMyMoviesSite
                 .ValidateDataAnnotations()
                 .ValidateOnStart();
 
+            services.AddOptions<AdminAuthOptions>()
+                .Bind(configuration.GetSection(AdminAuthOptions.SectionName))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = "EatMyMovies.Admin";
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+                    options.LoginPath = "/admin/login";
+                    options.AccessDeniedPath = "/admin/login";
+                    options.LogoutPath = "/admin/logout";
+                    options.SlidingExpiration = true;
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(AdminAuthorization.PolicyName, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim(AdminAuthorization.ClaimType, AdminAuthorization.ClaimValue);
+                });
+            });
+
             services.AddScoped<IRankingRepository, RankingRepository>();
             services.AddScoped<IListRepository, ListRepository>();
             services.AddScoped<IMovieRepository, MovieRepository>();
             services.AddScoped<ITmdbMovieClient, TmdbMovieClient>();
             services.AddScoped<IOmdbClient, OmdbClient>();
             services.AddScoped<IMovieService, MovieService>();
-            services.AddScoped<IStorageService, StorageService>();
+            services.AddScoped<IAdminContentService, AdminContentService>();
             services.AddMemoryCache();
             services.AddHttpClient(OmdbClient.HttpClientName, (serviceProvider, httpClient) =>
             {

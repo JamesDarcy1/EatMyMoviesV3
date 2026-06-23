@@ -143,4 +143,119 @@ public class RepositoryTests
         Assert.Equal(movie.MovieId, movies[0].MovieId);
         Assert.Equal("Alien", movies[0].Title);
     }
+
+    [Fact]
+    public async Task MovieRepository_SearchMoviesAsync_ReturnsPagedAdminSummariesWithListCounts()
+    {
+        using var context = TestHelpers.CreateContext();
+        var list = TestHelpers.CreateList("Top 100");
+        var alien = TestHelpers.CreateStoreMovie("Alien", 348);
+        var aliens = TestHelpers.CreateStoreMovie("Aliens", 679);
+        var heat = TestHelpers.CreateStoreMovie("Heat", 949);
+        context.Lists.Add(list);
+        context.Movies.AddRange(alien, aliens, heat);
+        context.ListRankings.Add(new ListRanking
+        {
+            ListId = list.ListId,
+            MovieId = alien.MovieId,
+            Ranking = 1
+        });
+        context.SaveChanges();
+        var repository = new MovieRepository(context);
+
+        var count = await repository.CountMoviesAsync("Alien");
+        var results = await repository.SearchMoviesAsync("Alien", page: 1, pageSize: 1);
+
+        Assert.Equal(2, count);
+        var result = Assert.Single(results);
+        Assert.Equal("Alien", result.Title);
+        Assert.Equal(1, result.ListCount);
+    }
+
+    [Fact]
+    public async Task ListRepository_GetListSummariesAndUpdateListAsync_ReturnsAdminListState()
+    {
+        using var context = TestHelpers.CreateContext();
+        var list = TestHelpers.CreateList("Comedies", "Funny things");
+        var movie = TestHelpers.CreateStoreMovie("Some Like It Hot");
+        context.Lists.Add(list);
+        context.Movies.Add(movie);
+        context.ListRankings.Add(new ListRanking
+        {
+            ListId = list.ListId,
+            MovieId = movie.MovieId,
+            Ranking = 1
+        });
+        context.SaveChanges();
+        var repository = new ListRepository(context);
+
+        await repository.UpdateListAsync(list.ListId, "Great Comedies", "Still funny");
+        var summaries = await repository.GetListSummariesAsync();
+        var foundById = await repository.GetListByIdAsync(list.ListId);
+
+        var summary = Assert.Single(summaries);
+        Assert.Equal("Great Comedies", summary.Name);
+        Assert.Equal("Still funny", summary.Description);
+        Assert.Equal(1, summary.MovieCount);
+        Assert.NotNull(foundById);
+        Assert.Equal("Great Comedies", foundById.Name);
+    }
+
+    [Fact]
+    public async Task RankingRepository_AdminRows_ReturnListRowsAndMovieMemberships()
+    {
+        using var context = TestHelpers.CreateContext();
+        var list = TestHelpers.CreateList("Horrors");
+        var movie = TestHelpers.CreateStoreMovie("Alien", 348);
+        context.Lists.Add(list);
+        context.Movies.Add(movie);
+        context.ListRankings.Add(new ListRanking
+        {
+            ListId = list.ListId,
+            MovieId = movie.MovieId,
+            Ranking = 2
+        });
+        context.SaveChanges();
+        var repository = new RankingRepository(context);
+
+        var listRows = await repository.GetListMovieRowsAsync(list.ListId);
+        var memberships = await repository.GetMovieMembershipsAsync(movie.MovieId);
+
+        var listRow = Assert.Single(listRows);
+        Assert.Equal("Alien", listRow.Title);
+        Assert.Equal(348, listRow.TmdbId);
+        Assert.Equal(2, listRow.Ranking);
+        var membership = Assert.Single(memberships);
+        Assert.Equal("Horrors", membership.ListName);
+        Assert.Equal(2, membership.Ranking);
+    }
+
+    [Fact]
+    public async Task RankingRepository_RemoveListRankingAndCloseGapAsync_RemovesMembershipAndCompactsRanks()
+    {
+        using var connection = new Microsoft.Data.Sqlite.SqliteConnection("DataSource=:memory:");
+        connection.Open();
+        await using var context = TestHelpers.CreateSqliteContext(connection);
+        var list = TestHelpers.CreateList("Top 100");
+        var firstMovie = TestHelpers.CreateStoreMovie("Movie 1", 1);
+        var secondMovie = TestHelpers.CreateStoreMovie("Movie 2", 2);
+        var thirdMovie = TestHelpers.CreateStoreMovie("Movie 3", 3);
+        context.Lists.Add(list);
+        context.Movies.AddRange(firstMovie, secondMovie, thirdMovie);
+        context.ListRankings.AddRange(
+            new ListRanking { ListId = list.ListId, MovieId = firstMovie.MovieId, Ranking = 1 },
+            new ListRanking { ListId = list.ListId, MovieId = secondMovie.MovieId, Ranking = 2 },
+            new ListRanking { ListId = list.ListId, MovieId = thirdMovie.MovieId, Ranking = 3 });
+        context.SaveChanges();
+        var repository = new RankingRepository(context);
+
+        await repository.RemoveListRankingAndCloseGapAsync(secondMovie.MovieId, list.ListId);
+
+        var rankings = context.ListRankings
+            .OrderBy(ranking => ranking.Ranking)
+            .Select(ranking => new { ranking.MovieId, ranking.Ranking })
+            .ToList();
+        Assert.Equal(new[] { firstMovie.MovieId, thirdMovie.MovieId }, rankings.Select(ranking => ranking.MovieId));
+        Assert.Equal(new[] { 1, 2 }, rankings.Select(ranking => ranking.Ranking));
+    }
 }
