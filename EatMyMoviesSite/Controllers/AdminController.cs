@@ -91,6 +91,36 @@ namespace EatMyMoviesSite.Controllers
             return View(model);
         }
 
+        [HttpGet("movie-of-the-week")]
+        public async Task<IActionResult> MovieOfTheWeek(string? tmdbQuery, CancellationToken cancellationToken)
+        {
+            var model = await _adminContentService.BuildMovieOfTheWeekAsync(tmdbQuery, cancellationToken);
+            return View(model);
+        }
+
+        [HttpPost("movie-of-the-week")]
+        public async Task<IActionResult> SetMovieOfTheWeek(
+            int tmdbId,
+            string? tmdbQuery,
+            CancellationToken cancellationToken)
+        {
+            await RunAdminActionAsync(
+                () => _adminContentService.SetMovieOfTheWeekAsync(tmdbId, cancellationToken),
+                "Movie of the Week updated.");
+
+            return RedirectToAction(nameof(MovieOfTheWeek), new { tmdbQuery });
+        }
+
+        [HttpPost("movie-of-the-week/clear")]
+        public async Task<IActionResult> ClearMovieOfTheWeek(CancellationToken cancellationToken)
+        {
+            await RunAdminActionAsync(
+                () => _adminContentService.ClearMovieOfTheWeekAsync(cancellationToken),
+                "Movie of the Week cleared.");
+
+            return RedirectToAction(nameof(MovieOfTheWeek));
+        }
+
         [HttpPost("lists")]
         public async Task<IActionResult> CreateList(string listName, string? description, CancellationToken cancellationToken)
         {

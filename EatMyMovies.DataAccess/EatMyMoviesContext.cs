@@ -14,6 +14,7 @@ namespace EatMyMovies.DataAccess
         public DbSet<ListRanking> ListRankings { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<MovieGenre> MovieGenres { get; set; }
+        public DbSet<MovieOfTheWeekSelection> MovieOfTheWeekSelections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

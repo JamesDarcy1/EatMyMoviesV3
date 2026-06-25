@@ -124,6 +124,53 @@ public class MovieServiceTests
         Assert.Equal(1, creditsCalls);
     }
 
+    [Fact]
+    public async Task BuildMovieOfTheWeekAsync_ReturnsNullWhenSelectionDoesNotExist()
+    {
+        var movieOfTheWeekRepository = new Mock<IMovieOfTheWeekRepository>();
+        movieOfTheWeekRepository.Setup(repository => repository.GetSelectionAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync((EatMyMovies.DataAccess.Models.MovieOfTheWeekSelection?)null);
+        var service = CreateService(movieOfTheWeekRepository: movieOfTheWeekRepository);
+
+        var movie = await service.BuildMovieOfTheWeekAsync();
+
+        Assert.Null(movie);
+    }
+
+    [Fact]
+    public async Task BuildMovieOfTheWeekAsync_MapsSelectedTmdbMovie()
+    {
+        var storedMovie = TestHelpers.CreateStoreMovie("Alien", 348);
+        var movieOfTheWeekRepository = new Mock<IMovieOfTheWeekRepository>();
+        movieOfTheWeekRepository.Setup(repository => repository.GetSelectionAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new EatMyMovies.DataAccess.Models.MovieOfTheWeekSelection
+            {
+                MovieId = storedMovie.MovieId,
+                Movie = storedMovie,
+                UpdatedUtc = DateTime.UtcNow
+            });
+        var service = CreateService(
+            movieOfTheWeekRepository: movieOfTheWeekRepository,
+            getMovieById: _ => Task.FromResult(TestHelpers.CreateTmdbMovie(id: 348, title: "Alien")),
+            getImdbRating: _ => Task.FromResult<decimal?>(8.5m),
+            getCredits: _ => Task.FromResult(new Credits
+            {
+                Crew = new List<Crew>
+                {
+                    new Crew { Id = 9, Name = "Ridley Scott", Job = "Director" }
+                },
+                Cast = new List<Cast>()
+            }));
+
+        var movie = await service.BuildMovieOfTheWeekAsync();
+
+        Assert.NotNull(movie);
+        Assert.Equal("Alien", movie.Title);
+        Assert.Equal(348, movie.TmdbId);
+        Assert.Equal(8.5m, movie.ImdbRating);
+        Assert.Equal("Ridley Scott", movie.Director);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("7.0")]
@@ -149,6 +196,7 @@ public class MovieServiceTests
         Mock<IRankingRepository>? rankingRepository = null,
         Mock<IListRepository>? listRepository = null,
         Mock<IMovieRepository>? movieRepository = null,
+        Mock<IMovieOfTheWeekRepository>? movieOfTheWeekRepository = null,
         Func<string, Task<SearchContainer<SearchMovie>>>? searchMovies = null,
         Func<string, Task<TmdbMovie>>? getMovieByTitle = null,
         Func<int, Task<TmdbMovie>>? getMovieById = null,
@@ -161,6 +209,7 @@ public class MovieServiceTests
             (rankingRepository ?? new Mock<IRankingRepository>()).Object,
             (listRepository ?? new Mock<IListRepository>()).Object,
             (movieRepository ?? new Mock<IMovieRepository>()).Object,
+            (movieOfTheWeekRepository ?? new Mock<IMovieOfTheWeekRepository>()).Object,
             new MemoryCache(new MemoryCacheOptions()),
             new FakeTmdbMovieClient(
                 searchMovies,

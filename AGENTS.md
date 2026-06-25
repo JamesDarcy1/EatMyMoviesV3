@@ -54,7 +54,7 @@ Development launch URLs are defined in `EatMyMoviesSite/Properties/launchSetting
 
 Keep controller actions thin where practical. Put application logic in services and persistence logic in repositories, matching the current project shape. Use `Mapper.cs` or nearby mapping helpers for DTO/view model mapping when that matches the existing pattern.
 
-Admin content management lives under `/admin` and is protected by the `AdminOnly` cookie-auth policy. Keep admin orchestration in `IAdminContentService`/`AdminContentService`; do not reintroduce public storage/write utility controllers for movie/list/ranking edits. Admin POST actions should remain anti-forgery protected and use post/redirect/get.
+Admin content management lives under `/admin` and is protected by the `AdminOnly` cookie-auth policy. Keep admin orchestration in `IAdminContentService`/`AdminContentService`; do not reintroduce public storage/write utility controllers for movie/list/ranking/movie-of-the-week edits. Admin POST actions should remain anti-forgery protected and use post/redirect/get.
 
 `Program.cs` currently:
 
@@ -66,9 +66,9 @@ Admin content management lives under `/admin` and is protected by the `AdminOnly
 - maps the default MVC route and falls back to `Home/Index`;
 - serves static files, including a long-lived cache header for static asset responses.
 
-`MovieService` owns movie caching, recommendation/list-building behavior, and movie detail composition. TMDb and OMDb transport logic belongs behind `ITmdbMovieClient` and `IOmdbClient`; keep external movie API orchestration in services rather than moving it into controllers.
+`MovieService` owns movie caching, recommendation/list-building behavior, movie-of-the-week homepage composition, and movie detail composition. TMDb and OMDb transport logic belongs behind `ITmdbMovieClient` and `IOmdbClient`; keep external movie API orchestration in services rather than moving it into controllers.
 
-`AdminContentService` owns content-management workflows such as creating/updating lists, searching stored movies, selecting TMDb movies by TMDb ID, adding movies to lists, moving rankings, and removing list memberships while closing rank gaps.
+`AdminContentService` owns content-management workflows such as creating/updating lists, searching stored movies, selecting TMDb movies by TMDb ID, adding movies to lists, moving rankings, removing list memberships while closing rank gaps, and setting or clearing the current Movie of the Week through `/admin/movie-of-the-week`.
 
 ## Configuration and Secrets
 
@@ -107,6 +107,8 @@ Repository reads should use async EF Core APIs, materialize bounded results insi
 `ListRanking` and `MovieGenre` expose explicit FK properties. Prefer FK/scalar filters for repository queries and reserve tracked entity queries for write paths that update or delete rows.
 
 Movie/list/genre/list-ranking invariants are enforced by database constraints and unique indexes, not only repository checks. Keep list names, movie titles, non-null TMDb IDs, genre names, list rank slots, list movie memberships, and movie/genre links unique. Rankings and TMDb IDs must be positive. Use the transactional ranking repository methods for inserting, moving, or removing movies in lists so temporary reordering does not violate unique rank slots and removals close rank gaps.
+
+`MovieOfTheWeekSelection` is a singleton table keyed by `MovieOfTheWeekSelectionId = 1` and points at a stored movie. Use `IMovieOfTheWeekRepository` to read, set, or clear the selection; do not reintroduce hardcoded homepage movie titles.
 
 Migrations are stored in `EatMyMovies.DataAccess/Migrations`. If adding or changing persisted models, add a migration from the repository root:
 
@@ -155,7 +157,7 @@ dotnet test EatMyMoviesV3.sln
 
 The current test suite covers repositories, `MovieService`, `AdminContentService`, mapper behavior, and list/admin controllers. Add or update focused tests when changing those areas.
 
-For UI or routing changes, also run the site with the Development launch profile and manually verify the relevant page(s). Use the Development URLs listed above. Admin verification requires `AdminAuth:Username` and `AdminAuth:PasswordHash` to be present in user secrets or environment variables.
+For UI or routing changes, also run the site with the Development launch profile and manually verify the relevant page(s). Use the Development URLs listed above. Admin verification requires `AdminAuth:Username` and `AdminAuth:PasswordHash` to be present in user secrets or environment variables. Movie-of-the-week changes should verify `/`, `/admin`, and `/admin/movie-of-the-week`.
 
 For frontend UX refreshes, manually verify the home page, recommender, movie list, movie detail, and search flows across desktop and mobile widths. Confirm refreshed supporting pages still feel consistent with the midnight marquee direction used by the home and recommender pages.
 

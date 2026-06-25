@@ -30,10 +30,15 @@
             <span class="admin-stat-value">@Model.RankingCount</span>
             <span class="admin-stat-label">List memberships</span>
         </span>
+        <a class="admin-stat" asp-controller="Admin" asp-action="MovieOfTheWeek">
+            <span class="admin-stat-value admin-stat-value-title">@(Model.MovieOfTheWeekTitle ?? "Not set")</span>
+            <span class="admin-stat-label">Movie of the Week</span>
+        </a>
     </div>
 
     <div class="admin-action-grid">
         <a class="button is-primary admin-action-button" asp-controller="Admin" asp-action="Lists">Manage Lists</a>
         <a class="button is-info admin-action-button" asp-controller="Admin" asp-action="Movies">Manage Movies</a>
+        <a class="button is-primary admin-action-button" asp-controller="Admin" asp-action="MovieOfTheWeek">Manage Movie of the Week</a>
     </div>
 </section>

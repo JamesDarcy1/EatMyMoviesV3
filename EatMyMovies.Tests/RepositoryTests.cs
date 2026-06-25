@@ -145,6 +145,49 @@ public class RepositoryTests
     }
 
     [Fact]
+    public async Task MovieOfTheWeekRepository_ReturnsNullWhenSelectionDoesNotExist()
+    {
+        using var context = TestHelpers.CreateContext();
+        var repository = new MovieOfTheWeekRepository(context);
+
+        var selection = await repository.GetSelectionAsync();
+
+        Assert.Null(selection);
+    }
+
+    [Fact]
+    public async Task MovieOfTheWeekRepository_SetsReplacesAndClearsSingletonSelection()
+    {
+        using var context = TestHelpers.CreateContext();
+        var firstMovie = TestHelpers.CreateStoreMovie("Alien", 348);
+        var secondMovie = TestHelpers.CreateStoreMovie("Heat", 949);
+        context.Movies.AddRange(firstMovie, secondMovie);
+        context.SaveChanges();
+        var repository = new MovieOfTheWeekRepository(context);
+
+        await repository.SetSelectionAsync(firstMovie.MovieId);
+        var firstSelection = await repository.GetSelectionAsync();
+
+        Assert.NotNull(firstSelection);
+        Assert.Equal(firstMovie.MovieId, firstSelection.MovieId);
+        Assert.Equal("Alien", firstSelection.Movie.Title);
+        Assert.Single(context.MovieOfTheWeekSelections);
+
+        await repository.SetSelectionAsync(secondMovie.MovieId);
+        var secondSelection = await repository.GetSelectionAsync();
+
+        Assert.NotNull(secondSelection);
+        Assert.Equal(secondMovie.MovieId, secondSelection.MovieId);
+        Assert.Equal("Heat", secondSelection.Movie.Title);
+        Assert.Single(context.MovieOfTheWeekSelections);
+
+        await repository.ClearSelectionAsync();
+
+        Assert.Null(await repository.GetSelectionAsync());
+        Assert.Empty(context.MovieOfTheWeekSelections);
+    }
+
+    [Fact]
     public async Task MovieRepository_SearchMoviesAsync_ReturnsPagedAdminSummariesWithListCounts()
     {
         using var context = TestHelpers.CreateContext();

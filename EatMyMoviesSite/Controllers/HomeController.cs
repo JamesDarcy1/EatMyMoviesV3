@@ -3,7 +3,6 @@ using EatMyMoviesSite.Models;
 using EatMyMoviesSite.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using TMDbLib.Objects.Movies;
 
 namespace EatMyMoviesSite.Controllers
 {
@@ -20,22 +19,12 @@ namespace EatMyMoviesSite.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var movieOfTheWeek = "Cinema Paradiso";
-            //int motwTmdbId = null;
-            Movie tmdbMovie;
-            //if(motwTmdbId != null)
-            //{
-            //    tmdbMovie = await _movieService.GetMovieById(motwTmdbId);
-            //} else
-            //{
-                tmdbMovie = await _movieService.GetMovieByTitle(movieOfTheWeek);
-            //}
-            Person director = await _movieService.GetDirector(tmdbMovie.Id);
-            var imdbRating = await _movieService.GetImdbRating(tmdbMovie.Title);
+            var model = new HomeIndexViewModel
+            {
+                MovieOfTheWeek = await _movieService.BuildMovieOfTheWeekAsync()
+            };
 
-            var summary = Mapper.MapToMovieSummary(tmdbMovie, imdbRating, director.Name);
-
-            return View(summary);
+            return View(model);
         }
 
 

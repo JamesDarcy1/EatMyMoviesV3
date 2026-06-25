@@ -29,4 +29,22 @@ public class AdminControllerTests
         Assert.Equal(2, loginActions.Count);
         Assert.All(loginActions, action => Assert.NotEmpty(action.GetCustomAttributes(typeof(AllowAnonymousAttribute), inherit: true)));
     }
+
+    [Fact]
+    public void MovieOfTheWeekActions_DoNotAllowAnonymousAccess()
+    {
+        var actions = new[]
+        {
+            nameof(AdminController.MovieOfTheWeek),
+            nameof(AdminController.SetMovieOfTheWeek),
+            nameof(AdminController.ClearMovieOfTheWeek)
+        };
+
+        foreach (var actionName in actions)
+        {
+            var action = Assert.Single(typeof(AdminController).GetMethods(), method => method.Name == actionName);
+
+            Assert.Empty(action.GetCustomAttributes(typeof(AllowAnonymousAttribute), inherit: true));
+        }
+    }
 }

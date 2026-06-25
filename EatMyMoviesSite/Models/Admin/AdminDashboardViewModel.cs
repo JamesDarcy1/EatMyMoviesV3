@@ -7,5 +7,9 @@ namespace EatMyMoviesSite.Models.Admin
         public int ListCount { get; set; }
 
         public int RankingCount { get; set; }
+
+        public string? MovieOfTheWeekTitle { get; set; }
+
+        public int? MovieOfTheWeekTmdbId { get; set; }
     }
 }

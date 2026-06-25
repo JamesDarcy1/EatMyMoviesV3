@@ -23,12 +23,14 @@ namespace EatMyMoviesSite.Services
         private readonly IRankingRepository _rankingRepository;
         private readonly IListRepository _listRepository;
         private readonly IMovieRepository _movieRepository;
+        private readonly IMovieOfTheWeekRepository _movieOfTheWeekRepository;
         private readonly int _moviesPerPage = 10;
         private readonly IMemoryCache _cache;
 
         public MovieService(IRankingRepository rankingRepository,
                             IListRepository listRepository,
                             IMovieRepository movieRepository,
+                            IMovieOfTheWeekRepository movieOfTheWeekRepository,
                             IMemoryCache memoryCache,
                             ITmdbMovieClient tmdbClient,
                             IOmdbClient omdbClient,
@@ -37,10 +39,26 @@ namespace EatMyMoviesSite.Services
             _rankingRepository = rankingRepository;
             _listRepository = listRepository;
             _movieRepository = movieRepository;
+            _movieOfTheWeekRepository = movieOfTheWeekRepository;
             _cache = memoryCache;
             _tmdbClient = tmdbClient;
             _omdbClient = omdbClient;
             _externalApiOptions = externalApiOptions.Value;
+        }
+
+        public async Task<ListMovie?> BuildMovieOfTheWeekAsync(CancellationToken cancellationToken = default)
+        {
+            var selection = await _movieOfTheWeekRepository.GetSelectionAsync(cancellationToken);
+            if (selection?.Movie.TmdbId is not int tmdbId)
+            {
+                return null;
+            }
+
+            var tmdbMovie = await GetMovieById(tmdbId);
+            var director = await GetDirector(tmdbMovie.Id);
+            var imdbRating = await GetImdbRating(tmdbMovie.Title);
+
+            return Mapper.MapToMovieSummary(tmdbMovie, imdbRating, director.Name);
         }
 
         public async Task<Movie> GetMovieByTitle(string title)

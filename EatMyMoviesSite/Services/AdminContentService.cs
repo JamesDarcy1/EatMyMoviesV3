@@ -11,28 +11,35 @@ namespace EatMyMoviesSite.Services
 
         private readonly IListRepository _listRepository;
         private readonly IMovieRepository _movieRepository;
+        private readonly IMovieOfTheWeekRepository _movieOfTheWeekRepository;
         private readonly IMovieService _movieService;
         private readonly IRankingRepository _rankingRepository;
 
         public AdminContentService(
             IListRepository listRepository,
             IMovieRepository movieRepository,
+            IMovieOfTheWeekRepository movieOfTheWeekRepository,
             IMovieService movieService,
             IRankingRepository rankingRepository)
         {
             _listRepository = listRepository;
             _movieRepository = movieRepository;
+            _movieOfTheWeekRepository = movieOfTheWeekRepository;
             _movieService = movieService;
             _rankingRepository = rankingRepository;
         }
 
         public async Task<AdminDashboardViewModel> BuildDashboardAsync(CancellationToken cancellationToken = default)
         {
+            var movieOfTheWeek = await _movieOfTheWeekRepository.GetSelectionAsync(cancellationToken);
+
             return new AdminDashboardViewModel
             {
                 MovieCount = await _movieRepository.CountMoviesAsync(cancellationToken: cancellationToken),
                 ListCount = await _listRepository.CountListsAsync(cancellationToken),
-                RankingCount = await _rankingRepository.CountRankingsAsync(cancellationToken)
+                RankingCount = await _rankingRepository.CountRankingsAsync(cancellationToken),
+                MovieOfTheWeekTitle = movieOfTheWeek?.Movie.Title,
+                MovieOfTheWeekTmdbId = movieOfTheWeek?.Movie.TmdbId
             };
         }
 
@@ -62,6 +69,25 @@ namespace EatMyMoviesSite.Services
                 Name = list.Name,
                 Description = list.Description,
                 Movies = await _rankingRepository.GetListMovieRowsAsync(listId, cancellationToken),
+                TmdbQuery = tmdbQuery,
+                TmdbSearchResults = tmdbResults
+            };
+        }
+
+        public async Task<AdminMovieOfTheWeekViewModel> BuildMovieOfTheWeekAsync(
+            string? tmdbQuery = null,
+            CancellationToken cancellationToken = default)
+        {
+            var currentSelection = await _movieOfTheWeekRepository.GetSelectionAsync(cancellationToken);
+            IReadOnlyList<MovieDropdown> tmdbResults = string.IsNullOrWhiteSpace(tmdbQuery)
+                ? Array.Empty<MovieDropdown>()
+                : await _movieService.SearchMoviesByTitle(tmdbQuery);
+
+            return new AdminMovieOfTheWeekViewModel
+            {
+                CurrentTitle = currentSelection?.Movie.Title,
+                CurrentTmdbId = currentSelection?.Movie.TmdbId,
+                UpdatedUtc = currentSelection?.UpdatedUtc,
                 TmdbQuery = tmdbQuery,
                 TmdbSearchResults = tmdbResults
             };
@@ -108,6 +134,17 @@ namespace EatMyMoviesSite.Services
         public Task UpdateListAsync(Guid listId, string listName, string description, CancellationToken cancellationToken = default)
         {
             return _listRepository.UpdateListAsync(listId, listName, description, cancellationToken);
+        }
+
+        public async Task SetMovieOfTheWeekAsync(int tmdbId, CancellationToken cancellationToken = default)
+        {
+            var movie = await EnsureStoredTmdbMovieAsync(tmdbId, cancellationToken);
+            await _movieOfTheWeekRepository.SetSelectionAsync(movie.MovieId, cancellationToken);
+        }
+
+        public Task ClearMovieOfTheWeekAsync(CancellationToken cancellationToken = default)
+        {
+            return _movieOfTheWeekRepository.ClearSelectionAsync(cancellationToken);
         }
 
         public async Task AddTmdbMovieToListAsync(

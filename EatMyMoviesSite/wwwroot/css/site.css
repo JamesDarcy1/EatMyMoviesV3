@@ -1117,7 +1117,7 @@ a:hover,
 }
 
 .admin-stat-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     margin-bottom: 1rem;
 }
 
@@ -1142,6 +1142,12 @@ a.admin-stat:focus {
     line-height: 1;
 }
 
+.admin-stat-value-title {
+    font-size: 1.55rem;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+}
+
 .admin-stat-label {
     font-size: 0.78rem;
     font-weight: 800;
@@ -1150,12 +1156,25 @@ a.admin-stat:focus {
 }
 
 .admin-action-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .admin-action-button.button,
 .admin-form-button.button {
     min-height: 2.75rem;
+}
+
+.admin-action-button.button {
+    background-color: var(--emm-red);
+    border-color: var(--emm-red);
+    color: #fff;
+}
+
+.admin-action-button.button:hover,
+.admin-action-button.button:focus {
+    background-color: var(--emm-red-dark);
+    border-color: var(--emm-red-dark);
+    color: #fff;
 }
 
 .admin-panel {
@@ -1216,6 +1235,30 @@ a.admin-stat:focus {
     flex: 0 0 auto;
 }
 
+.admin-current-feature {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.admin-current-feature strong {
+    color: var(--emm-ink);
+    display: block;
+    font-size: 1.2rem;
+}
+
+.admin-current-feature small {
+    color: var(--emm-muted);
+    font-weight: 700;
+    margin-top: 0.25rem;
+}
+
+.admin-empty-copy {
+    margin: 0;
+    padding: 0;
+}
+
 .admin-table {
     background-color: transparent;
 }
@@ -1271,6 +1314,7 @@ a.admin-stat:focus {
     }
 
     .admin-header,
+    .admin-current-feature,
     .admin-inline-form,
     .admin-row-form,
     .admin-rank-form,

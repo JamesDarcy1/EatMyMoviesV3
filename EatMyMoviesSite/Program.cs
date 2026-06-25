@@ -134,6 +134,7 @@ namespace EatMyMoviesSite
             services.AddScoped<IRankingRepository, RankingRepository>();
             services.AddScoped<IListRepository, ListRepository>();
             services.AddScoped<IMovieRepository, MovieRepository>();
+            services.AddScoped<IMovieOfTheWeekRepository, MovieOfTheWeekRepository>();
             services.AddScoped<ITmdbMovieClient, TmdbMovieClient>();
             services.AddScoped<IOmdbClient, OmdbClient>();
             services.AddScoped<IMovieService, MovieService>();

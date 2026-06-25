@@ -1,0 +1,73 @@
+@using EatMyMoviesSite.Models.Admin
+@model AdminMovieOfTheWeekViewModel
+
+<title>Movie of the Week Admin | Eat My Movies</title>
+
+<section class="admin-shell" aria-labelledby="admin-movie-of-week-title">
+    <div class="admin-header">
+        <div>
+            <span class="marquee-kicker">Feature editor</span>
+            <h1 id="admin-movie-of-week-title" class="admin-title">Movie of the Week</h1>
+        </div>
+        <a class="button is-light" asp-controller="Admin" asp-action="Index">Dashboard</a>
+    </div>
+
+    @await Html.PartialAsync("_AdminAlerts")
+
+    <div class="admin-panel">
+        <h2 class="admin-panel-title">Current Selection</h2>
+        @if (!string.IsNullOrWhiteSpace(Model.CurrentTitle))
+        {
+            <div class="admin-current-feature">
+                <div>
+                    <strong>@Model.CurrentTitle</strong>
+                    @if (Model.CurrentTmdbId.HasValue)
+                    {
+                        <a class="admin-subtle-link" href="/movie/detail?tmdbId=@Model.CurrentTmdbId">View public detail</a>
+                    }
+                    @if (Model.UpdatedUtc.HasValue)
+                    {
+                        <small>Updated @Model.UpdatedUtc.Value.ToString("yyyy-MM-dd HH:mm") UTC</small>
+                    }
+                </div>
+                <form method="post" asp-controller="Admin" asp-action="ClearMovieOfTheWeek">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="button is-danger">Clear</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <p class="admin-empty-copy">No Movie of the Week is selected.</p>
+        }
+    </div>
+
+    <div class="admin-panel">
+        <h2 class="admin-panel-title">Choose From TMDb</h2>
+        <form method="get" asp-controller="Admin" asp-action="MovieOfTheWeek" class="admin-inline-form admin-search-form">
+            <div class="field admin-field-grow">
+                <label class="label" for="tmdb-query">Movie title</label>
+                <input id="tmdb-query" class="input" name="tmdbQuery" value="@Model.TmdbQuery" autocomplete="off" />
+            </div>
+            <button type="submit" class="button is-primary admin-form-button">Search</button>
+        </form>
+
+        @if (Model.TmdbSearchResults.Count > 0)
+        {
+            <div class="admin-search-results">
+                @foreach (var movie in Model.TmdbSearchResults)
+                {
+                    var posterUrl = movie.PosterPath != null ? $"https://image.tmdb.org/t/p/w92{movie.PosterPath}" : "/icon_only.png";
+                    <form method="post" asp-controller="Admin" asp-action="SetMovieOfTheWeek" class="admin-search-result">
+                        @Html.AntiForgeryToken()
+                        <img src="@posterUrl" alt="@movie.Title poster" class="admin-search-poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
+                        <span class="admin-search-title">@movie.Title</span>
+                        <input type="hidden" name="tmdbId" value="@movie.Id" />
+                        <input type="hidden" name="tmdbQuery" value="@Model.TmdbQuery" />
+                        <button type="submit" class="button is-small is-primary">Select</button>
+                    </form>
+                }
+            </div>
+        }
+    </div>
+</section>

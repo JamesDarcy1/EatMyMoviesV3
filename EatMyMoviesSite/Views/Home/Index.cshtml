@@ -1,5 +1,7 @@
-@using EatMyMoviesSite.DTOs
-@model ListMovie;
+@model HomeIndexViewModel
+@{
+    var movieOfTheWeek = Model.MovieOfTheWeek;
+}
 
 <title>Eat My Movies</title>
 <meta name="description" content="Welcome to Eat My Movies - the place to discover your next cinematic obsession. By answering a few questions we aim to find you the perfect movie for your night's viewing. Please enjoy our recommendations and have fun exploring our carefully curated lists." />
@@ -68,32 +70,35 @@
         </ol>
     </section>
 
-    <section class="home-feature-section" aria-labelledby="movie-of-week-title">
-        <div class="home-section-heading home-section-heading-dark">
-            <span aria-hidden="true"></span>
-            <h2 id="movie-of-week-title">Movie of the Week</h2>
-            <span aria-hidden="true"></span>
-        </div>
+    @if (movieOfTheWeek != null)
+    {
+        <section class="home-feature-section" aria-labelledby="movie-of-week-title">
+            <div class="home-section-heading home-section-heading-dark">
+                <span aria-hidden="true"></span>
+                <h2 id="movie-of-week-title">Movie of the Week</h2>
+                <span aria-hidden="true"></span>
+            </div>
 
-        <article class="home-week-card">
-            <a class="home-week-link" asp-controller="Movie" asp-action="Detail" asp-route-tmdbId="@Model.TmdbId">
-                <div class="home-week-poster-wrap">
-                    <img class="poster home-week-poster" src="@Model.PosterPath" alt="@Model.Title poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
-                </div>
-                <div class="home-week-copy">
-                    <h3>@Model.Title</h3>
-                    <p class="home-week-meta">
-                        <span>@Model.ReleaseDate</span>
-                        <span>@Model.Genres</span>
-                        <span>IMDb @Model.ImdbRating/10</span>
-                        <span>@Model.Runtime min</span>
-                    </p>
-                    <p class="home-week-synopsis">@Model.Synopsis</p>
-                    <span class="button is-primary home-week-cta">Find out more</span>
-                </div>
-            </a>
-        </article>
-    </section>
+            <article class="home-week-card">
+                <a class="home-week-link" asp-controller="Movie" asp-action="Detail" asp-route-tmdbId="@movieOfTheWeek.TmdbId">
+                    <div class="home-week-poster-wrap">
+                        <img class="poster home-week-poster" src="@movieOfTheWeek.PosterPath" alt="@movieOfTheWeek.Title poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
+                    </div>
+                    <div class="home-week-copy">
+                        <h3>@movieOfTheWeek.Title</h3>
+                        <p class="home-week-meta">
+                            <span>@movieOfTheWeek.ReleaseDate</span>
+                            <span>@movieOfTheWeek.Genres</span>
+                            <span>IMDb @movieOfTheWeek.ImdbRating/10</span>
+                            <span>@movieOfTheWeek.Runtime min</span>
+                        </p>
+                        <p class="home-week-synopsis">@movieOfTheWeek.Synopsis</p>
+                        <span class="button is-primary home-week-cta">Find out more</span>
+                    </div>
+                </a>
+            </article>
+        </section>
+    }
 
     <section class="home-list-section" aria-labelledby="movie-lists-title">
         <div class="home-section-heading">

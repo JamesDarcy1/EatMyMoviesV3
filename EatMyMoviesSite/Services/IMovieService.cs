@@ -10,6 +10,7 @@ namespace EatMyMoviesSite.Services
 {
 	public interface IMovieService
 	{
+        Task<ListMovie?> BuildMovieOfTheWeekAsync(CancellationToken cancellationToken = default);
 		Task<MovieList> BuildMovieList(string listTitle, int page, CancellationToken cancellationToken = default);
         Task<MovieDetail> BuildMovieDetail(string? title, int? tmdbId, bool includeListContext, CancellationToken cancellationToken = default);
         Task<List<DataGenre>> GetAllGenresAsync(CancellationToken cancellationToken = default);
