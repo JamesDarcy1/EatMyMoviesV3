@@ -121,7 +121,7 @@ Only run `database update` against the intended database. Check the active conne
 
 ## Frontend Conventions
 
-The UI uses Razor views, Bulma CSS from `wwwroot/lib/bulma`, jQuery, Vue from `wwwroot/lib/vue`, and project-specific styles/scripts in `EatMyMoviesSite/wwwroot/css/site.css` and `EatMyMoviesSite/wwwroot/js/site.js`.
+The UI uses Razor views, Bulma CSS from `wwwroot/lib/bulma`, jQuery, Vue from `wwwroot/lib/vue`, canvas-confetti from `wwwroot/lib/canvas-confetti`, and project-specific styles/scripts in `EatMyMoviesSite/wwwroot/css/site.css` and `EatMyMoviesSite/wwwroot/js/site.js`.
 
 When changing the frontend:
 
@@ -133,6 +133,7 @@ When changing the frontend:
 - Preserve local vendored assets under `wwwroot/lib`; do not replace them with CDN-only dependencies unless the user explicitly wants that.
 - `EatMyMoviesSite/wwwroot/lib/README.md` documents frontend vendor versions, source URLs, licenses, and the manual update process. Update it whenever vendored frontend assets change.
 - Use readable vendor files in Development and minified vendor files outside Development where the layout or view has environment-specific includes.
+- The Spin the Wheel feature lives at `/movie/spin-the-wheel` in `Views/Movie/SpinTheWheel.cshtml`; it is client-side Vue state, reuses `/movie/SearchForMovie` for TMDb-backed selections, and should keep wheel animation local to CSS/JS rather than adding server-side persistence.
 
 ## Coding Conventions
 
@@ -159,7 +160,7 @@ The current test suite covers repositories, `MovieService`, `AdminContentService
 
 For UI or routing changes, also run the site with the Development launch profile and manually verify the relevant page(s). Use the Development URLs listed above. Admin verification requires `AdminAuth:Username` and `AdminAuth:PasswordHash` to be present in user secrets or environment variables. Movie-of-the-week changes should verify `/`, `/admin`, and `/admin/movie-of-the-week`.
 
-For frontend UX refreshes, manually verify the home page, recommender, movie list, movie detail, and search flows across desktop and mobile widths. Confirm refreshed supporting pages still feel consistent with the midnight marquee direction used by the home and recommender pages.
+For frontend UX refreshes, manually verify the home page, recommender, Spin the Wheel, movie list, movie detail, and search flows across desktop and mobile widths. Confirm refreshed supporting pages still feel consistent with the midnight marquee direction used by the home and recommender pages.
 
 ## Git Notes
 

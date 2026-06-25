@@ -11,6 +11,7 @@ This app intentionally vendors browser dependencies under `wwwroot/lib` and does
 | jQuery Validation | 1.21.0 | `jquery-validation/dist/` | https://github.com/jquery-validation/jquery-validation | MIT |
 | jQuery Validation Unobtrusive | 4.0.0 | `jquery-validation-unobtrusive/` | https://github.com/dotnet/aspnetcore | Apache-2.0 |
 | Vue | 3.5.21 | `vue/` | https://github.com/vuejs/core | MIT |
+| canvas-confetti | 1.9.4 | `canvas-confetti/` | https://github.com/catdad/canvas-confetti | ISC |
 
 ## Update Process
 

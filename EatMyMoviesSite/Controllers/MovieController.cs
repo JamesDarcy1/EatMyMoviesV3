@@ -62,6 +62,12 @@ namespace EatMyMoviesSite.Controllers
 			return View();
 		}
 
+        [Route("spin-the-wheel")]
+        public IActionResult SpinTheWheel()
+        {
+            return View("~/Views/Movie/SpinTheWheel.cshtml");
+        }
+
         [HttpGet("GetGenres")]
         public async Task<List<string>> GetGenres(CancellationToken cancellationToken = default)
         {

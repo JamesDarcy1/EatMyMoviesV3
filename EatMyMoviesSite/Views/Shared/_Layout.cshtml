@@ -7,6 +7,8 @@
 	var isAboutActive = string.Equals(currentController, "Home", StringComparison.OrdinalIgnoreCase)
 		&& string.Equals(currentAction, "About", StringComparison.OrdinalIgnoreCase);
 	var isListActive = string.Equals(currentController, "List", StringComparison.OrdinalIgnoreCase);
+	var isSpinTheWheelActive = string.Equals(currentController, "Movie", StringComparison.OrdinalIgnoreCase)
+		&& string.Equals(currentAction, "SpinTheWheel", StringComparison.OrdinalIgnoreCase);
 	var isAdminActive = string.Equals(currentController, "Admin", StringComparison.OrdinalIgnoreCase);
 	var isAdminSignedIn = User.Identity?.IsAuthenticated == true && User.HasClaim("Admin", "true");
 }
@@ -67,6 +69,7 @@
 			<div id="navbar-target" class="navbar-menu">
 				<div class="navbar-start">
 					<a class="navbar-item @(isHomeActive ? "is-active" : null)" asp-controller="Home" asp-action="Index" aria-current="@(isHomeActive ? "page" : null)">Home</a>
+					<a class="navbar-item @(isSpinTheWheelActive ? "is-active" : null)" asp-controller="Movie" asp-action="SpinTheWheel" aria-current="@(isSpinTheWheelActive ? "page" : null)">Spin the Wheel</a>
 					<div class="navbar-item has-dropdown is-hoverable nav-list-dropdown @(isListActive ? "is-active-route" : null)">
 						<a class="navbar-link nav-list-toggle" role="button" aria-expanded="false" tabindex="0" aria-current="@(isListActive ? "page" : null)">
 							Movie Lists

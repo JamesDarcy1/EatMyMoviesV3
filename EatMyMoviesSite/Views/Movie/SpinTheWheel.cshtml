@@ -1,0 +1,577 @@
+<title>Spin the Wheel | Eat My Movies</title>
+<meta name="description" content="Add your movie night contenders and let the wheel choose what you are watching." />
+
+<div id="spinWheelApp" class="spin-wheel-page" v-cloak>
+    <section class="spin-wheel-shell" aria-labelledby="spin-wheel-title">
+        <div class="spin-wheel-sign" aria-hidden="true">
+            <span>Movie Night Wheel</span>
+        </div>
+
+        <div class="spin-wheel-frame">
+            <div class="spin-wheel-frame-lines" aria-hidden="true"></div>
+
+            <header class="spin-wheel-hero">
+                <span class="spin-wheel-kicker">Tonight's tiebreaker</span>
+                <h1 id="spin-wheel-title">Spin the Wheel</h1>
+                <p>Add 2 to 4 films and let the wheel pick tonight's movie.</p>
+            </header>
+
+            <div class="spin-wheel-layout">
+                <section class="spin-wheel-picker" aria-labelledby="spin-wheel-picker-title">
+                    <div class="home-section-heading spin-wheel-section-heading">
+                        <span aria-hidden="true"></span>
+                        <h2 id="spin-wheel-picker-title">Add Movies</h2>
+                        <span aria-hidden="true"></span>
+                    </div>
+
+                    <div class="spin-wheel-search">
+                        <label class="label" for="spin-movie-search">Search movie</label>
+                        <div class="spin-wheel-search-field">
+                            <input id="spin-movie-search"
+                                   class="input spin-wheel-search-input"
+                                   placeholder="Type a movie title"
+                                   autocomplete="off"
+                                   v-model.trim="searchQuery"
+                                   v-on:keyup.enter="handleSearch"
+                                   v-on:keydown.down.prevent="moveSelection(1)"
+                                   v-on:keydown.up.prevent="moveSelection(-1)"
+                                   v-on:keydown.esc="clearResults"
+                                   :disabled="isSpinning || selectedMovies.length >= maxMovies"
+                                   role="combobox"
+                                   aria-autocomplete="list"
+                                   aria-haspopup="listbox"
+                                   aria-controls="spin-movie-results"
+                                   :aria-activedescendant="activeDescendant"
+                                   :aria-expanded="showDropdown.toString()" />
+
+                            <div :class="['dropdown spin-wheel-dropdown', { 'is-active': showDropdown }]">
+                                <div id="spin-movie-results" class="dropdown-menu has-text-left" role="listbox">
+                                    <div class="dropdown-content">
+                                        <div v-if="isLoading" class="dropdown-item spin-wheel-search-status">Searching...</div>
+                                        <div v-else-if="searchError" class="dropdown-item spin-wheel-search-status has-text-danger">{{ searchError }}</div>
+                                        <div v-else-if="showEmptyState" class="dropdown-item spin-wheel-search-status">No movies found</div>
+                                        <button v-for="(movie, index) in searchResults"
+                                                :key="movie.id"
+                                                :id="'spin-movie-option-' + index"
+                                                type="button"
+                                                :class="['dropdown-item spin-wheel-search-result', { 'is-active': highlightedIndex === index }]"
+                                                role="option"
+                                                :aria-selected="(highlightedIndex === index).toString()"
+                                                v-on:mouseenter="highlightedIndex = index"
+                                                v-on:click="selectMovie(movie)">
+                                            <img :src="posterUrl(movie.posterPath)" :alt="movie.title + ' poster'" loading="lazy" v-on:error="usePosterFallback" />
+                                            <span class="spin-wheel-search-copy">
+                                                <strong>{{ movie.title }}</strong>
+                                                <small>Movie result</small>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <small>{{ selectedMovies.length }} of {{ maxMovies }} selected</small>
+                    </div>
+
+                    <p v-if="selectionMessage" class="spin-wheel-message" role="status">{{ selectionMessage }}</p>
+
+                    <div class="spin-wheel-slots" aria-label="Selected movies">
+                        <article v-for="movie in selectedMovies" :key="movie.id" class="spin-wheel-movie-card">
+                            <img :src="posterUrl(movie.posterPath)" :alt="movie.title + ' poster'" loading="lazy" v-on:error="usePosterFallback" />
+                            <div>
+                                <strong>{{ movie.title }}</strong>
+                                <a :href="detailUrl(movie)">View details</a>
+                            </div>
+                            <button type="button" class="button spin-wheel-remove" :disabled="isSpinning" v-on:click="removeMovie(movie.id)" :aria-label="'Remove ' + movie.title">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </article>
+
+                        <div v-for="slot in emptySlots" :key="'empty-' + slot" class="spin-wheel-empty-slot">
+                            <span>Slot {{ slot }}</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="spin-wheel-stage-panel" aria-labelledby="spin-wheel-stage-title" ref="stagePanel">
+                    <div class="home-section-heading spin-wheel-section-heading">
+                        <span aria-hidden="true"></span>
+                        <h2 id="spin-wheel-stage-title">The Wheel</h2>
+                        <span aria-hidden="true"></span>
+                    </div>
+
+                    <div class="spin-wheel-stage" :class="{ 'has-result': winningMovie }">
+                        <div class="spin-wheel-pointer" aria-hidden="true"></div>
+                        <div class="spin-wheel"
+                             :class="{ 'is-spinning': isSpinning, 'is-empty': selectedMovies.length === 0 }"
+                             :style="wheelStyle"
+                             :aria-label="wheelLabel">
+                            <span v-for="(movie, index) in selectedMovies"
+                                  :key="'slice-' + movie.id"
+                                  class="spin-wheel-label"
+                                  :style="sliceLabelStyle(index)">
+                                <span>{{ shortTitle(movie.title) }}</span>
+                            </span>
+                        </div>
+                        <div class="spin-wheel-hub" aria-hidden="true"></div>
+                    </div>
+
+                    <div class="spin-wheel-actions">
+                        <button type="button" class="button is-primary spin-wheel-spin-button" :disabled="!canSpin" v-on:click="spinWheel">
+                            Spin
+                        </button>
+                        <button type="button" class="button spin-wheel-secondary-button" :disabled="isSpinning || selectedMovies.length === 0" v-on:click="startOver">
+                            Start over
+                        </button>
+                    </div>
+
+                    <section v-if="winningMovie"
+                             class="spin-wheel-result is-visible"
+                             aria-live="polite"
+                             aria-labelledby="spin-wheel-result-title"
+                             tabindex="-1"
+                             ref="resultPanel">
+                        <div class="home-section-heading spin-wheel-section-heading">
+                            <span aria-hidden="true"></span>
+                            <h2 id="spin-wheel-result-title">Tonight's Pick</h2>
+                            <span aria-hidden="true"></span>
+                        </div>
+                        <div class="spin-wheel-result-ticket">
+                        <img :src="posterUrl(winningMovie.posterPath)" :alt="winningMovie.title + ' poster'" loading="lazy" v-on:error="usePosterFallback" />
+                        <div>
+                            <span class="spin-wheel-winner-label">Tonight's pick</span>
+                            <h3>{{ winningMovie.title }}</h3>
+                            <div class="spin-wheel-result-actions">
+                                <a class="button is-primary" :href="detailUrl(winningMovie)">View details</a>
+                                <button type="button" class="button spin-wheel-secondary-button" :disabled="isSpinning" v-on:click="spinAgain">Spin again</button>
+                            </div>
+                        </div>
+                    </div>
+                    </section>
+                </section>
+            </div>
+
+            <div class="spin-wheel-frame-base" aria-hidden="true"></div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/lib/vue/vue.global.js"></script>
+        <script src="~/lib/canvas-confetti/dist/confetti.browser.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/vue/vue.global.prod.js"></script>
+        <script src="~/lib/canvas-confetti/dist/confetti.browser.min.js"></script>
+    </environment>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    minMovies: 2,
+                    maxMovies: 4,
+                    searchQuery: '',
+                    searchResults: [],
+                    highlightedIndex: -1,
+                    isLoading: false,
+                    searchError: '',
+                    hasSearched: false,
+                    debounceTimer: null,
+                    activeController: null,
+                    searchRequestId: 0,
+                    selectedMovies: [],
+                    selectionMessage: '',
+                    rotation: 0,
+                    spinDuration: 0,
+                    isSpinning: false,
+                    winningMovie: null,
+                    spinTimeout: null,
+                    prefersReducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+                    wheelStartOffset: -90,
+                    wheelColors: ['#e71837', '#ffae48', '#1e5960', '#201819']
+                };
+            },
+            computed: {
+                showDropdown() {
+                    return this.isLoading || this.searchError || this.searchResults.length > 0 || this.showEmptyState;
+                },
+                showEmptyState() {
+                    return this.hasSearched && !this.isLoading && !this.searchError && this.searchQuery.length >= 2 && this.searchResults.length === 0;
+                },
+                activeDescendant() {
+                    return this.highlightedIndex >= 0 ? `spin-movie-option-${this.highlightedIndex}` : null;
+                },
+                emptySlots() {
+                    return Array.from({ length: this.maxMovies - this.selectedMovies.length }, (_, index) => this.selectedMovies.length + index + 1);
+                },
+                canSpin() {
+                    return this.selectedMovies.length >= this.minMovies && !this.isSpinning;
+                },
+                wheelGradient() {
+                    if (!this.selectedMovies.length) {
+                        return 'radial-gradient(circle at center, rgba(253, 240, 213, 0.7) 0 18%, rgba(255, 174, 72, 0.28) 19% 42%, rgba(231, 24, 55, 0.2) 43% 72%, rgba(30, 89, 96, 0.26) 73% 100%)';
+                    }
+
+                    const slice = 360 / this.selectedMovies.length;
+                    const segments = this.selectedMovies.map((movie, index) => {
+                        const start = (index * slice).toFixed(2);
+                        const end = ((index + 1) * slice).toFixed(2);
+                        const color = this.wheelColors[index % this.wheelColors.length];
+                        return `${color} ${start}deg ${end}deg`;
+                    });
+
+                    return `conic-gradient(from -90deg, ${segments.join(', ')})`;
+                },
+                wheelDividers() {
+                    if (this.selectedMovies.length < 2) {
+                        return 'none';
+                    }
+
+                    const slice = 360 / this.selectedMovies.length;
+                    const dividerWidth = 1.2;
+                    return `repeating-conic-gradient(from -90deg, transparent 0deg ${(slice - dividerWidth).toFixed(2)}deg, rgba(20, 20, 22, 0.58) ${(slice - dividerWidth).toFixed(2)}deg ${slice.toFixed(2)}deg)`;
+                },
+                wheelStyle() {
+                    return {
+                        '--wheel-gradient': this.wheelGradient,
+                        '--wheel-dividers': this.wheelDividers,
+                        '--wheel-rotation': `${this.rotation}deg`,
+                        '--spin-duration': `${this.spinDuration}ms`
+                    };
+                },
+                wheelLabel() {
+                    if (!this.selectedMovies.length) {
+                        return 'Empty movie picker wheel';
+                    }
+
+                    return `Movie picker wheel with ${this.selectedMovies.map(movie => movie.title).join(', ')}`;
+                }
+            },
+            watch: {
+                searchQuery(newQuery) {
+                    window.clearTimeout(this.debounceTimer);
+                    this.searchError = '';
+                    this.highlightedIndex = -1;
+
+                    if (newQuery.length < 2 || this.selectedMovies.length >= this.maxMovies) {
+                        this.clearResults();
+                        return;
+                    }
+
+                    this.selectionMessage = '';
+                    this.debounceTimer = window.setTimeout(() => this.performSearch(), 250);
+                }
+            },
+            methods: {
+                performSearch() {
+                    if (this.selectedMovies.length >= this.maxMovies || this.searchQuery.length < 2) {
+                        return;
+                    }
+
+                    if (this.activeController) {
+                        this.activeController.abort();
+                    }
+
+                    const requestId = ++this.searchRequestId;
+                    this.activeController = new AbortController();
+                    this.isLoading = true;
+                    this.hasSearched = true;
+
+                    fetch(`/movie/SearchForMovie?titleSearch=${encodeURIComponent(this.searchQuery)}`, { signal: this.activeController.signal })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Search failed');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (requestId !== this.searchRequestId) {
+                                return;
+                            }
+
+                            const selectedIds = new Set(this.selectedMovies.map(movie => movie.id));
+                            const filteredResults = Array.isArray(data) ? data.filter(movie => !selectedIds.has(movie.id)) : [];
+                            this.searchResults = this.sortSearchResults(filteredResults);
+                            this.highlightedIndex = this.getExactMatchIndex(this.searchResults);
+                        })
+                        .catch(error => {
+                            if (error.name !== 'AbortError' && requestId === this.searchRequestId) {
+                                this.searchError = 'Search is unavailable. Please try again.';
+                                this.searchResults = [];
+                            }
+                        })
+                        .finally(() => {
+                            if (requestId === this.searchRequestId) {
+                                this.isLoading = false;
+                            }
+                        });
+                },
+                selectMovie(movie) {
+                    if (this.isSpinning) {
+                        return;
+                    }
+
+                    if (this.selectedMovies.length >= this.maxMovies) {
+                        this.selectionMessage = 'The wheel is full.';
+                        this.clearResults();
+                        return;
+                    }
+
+                    if (this.selectedMovies.some(selectedMovie => selectedMovie.id === movie.id)) {
+                        this.selectionMessage = 'That movie is already on the wheel.';
+                        this.clearResults();
+                        return;
+                    }
+
+                    this.selectedMovies.push(movie);
+                    this.searchQuery = '';
+                    this.selectionMessage = this.selectedMovies.length < this.minMovies ? 'Add one more movie to unlock the spin.' : '';
+                    this.winningMovie = null;
+                    this.clearResults();
+                    this.guideToWheelIfReady();
+                },
+                removeMovie(movieId) {
+                    if (this.isSpinning) {
+                        return;
+                    }
+
+                    this.selectedMovies = this.selectedMovies.filter(movie => movie.id !== movieId);
+                    this.winningMovie = null;
+                    this.selectionMessage = this.selectedMovies.length && this.selectedMovies.length < this.minMovies ? 'Add one more movie to unlock the spin.' : '';
+                },
+                handleSearch() {
+                    if (this.highlightedIndex >= 0 && this.searchResults[this.highlightedIndex]) {
+                        this.selectMovie(this.searchResults[this.highlightedIndex]);
+                        return;
+                    }
+
+                    if (this.searchQuery.length >= 2) {
+                        this.performSearch();
+                    }
+                },
+                moveSelection(direction) {
+                    if (!this.searchResults.length) {
+                        return;
+                    }
+
+                    const lastIndex = this.searchResults.length - 1;
+                    const nextIndex = this.highlightedIndex + direction;
+                    this.highlightedIndex = nextIndex < 0 ? lastIndex : nextIndex > lastIndex ? 0 : nextIndex;
+                },
+                clearResults() {
+                    if (this.activeController) {
+                        this.activeController.abort();
+                    }
+
+                    this.searchRequestId++;
+                    this.isLoading = false;
+                    this.searchResults = [];
+                    this.highlightedIndex = -1;
+                    this.hasSearched = false;
+                },
+                spinWheel() {
+                    if (!this.canSpin) {
+                        this.selectionMessage = this.selectedMovies.length < this.minMovies ? 'Add at least two movies first.' : '';
+                        return;
+                    }
+
+                    const winnerIndex = this.randomInt(this.selectedMovies.length);
+                    const slice = 360 / this.selectedMovies.length;
+                    const edgePadding = Math.min(slice * 0.22, 18);
+                    const landingAngle = (winnerIndex * slice) + this.randomBetween(edgePadding, slice - edgePadding);
+                    const targetOffset = this.normalizedDegrees(-(this.wheelStartOffset + landingAngle));
+                    const currentOffset = this.normalizedDegrees(this.rotation);
+                    const delta = (targetOffset - currentOffset + 360) % 360;
+                    const extraSpins = this.randomInt(3) + 5;
+                    const duration = this.prefersReducedMotion ? 0 : this.randomIntBetween(3500, 5500);
+
+                    window.clearTimeout(this.spinTimeout);
+                    this.selectionMessage = '';
+                    this.winningMovie = null;
+                    this.spinDuration = duration;
+                    this.isSpinning = duration > 0;
+                    this.rotation += (extraSpins * 360) + delta;
+
+                    if (duration === 0) {
+                        this.revealWinner(winnerIndex);
+                        return;
+                    }
+
+                    this.spinTimeout = window.setTimeout(() => this.revealWinner(winnerIndex), duration + 120);
+                },
+                revealWinner(winnerIndex) {
+                    this.isSpinning = false;
+                    this.winningMovie = this.selectedMovies[winnerIndex] || null;
+
+                    if (this.winningMovie) {
+                        this.launchConfetti();
+                        this.focusWinner();
+                    }
+                },
+                spinAgain() {
+                    if (!this.isSpinning) {
+                        this.spinWheel();
+                    }
+                },
+                startOver() {
+                    window.clearTimeout(this.spinTimeout);
+                    this.clearResults();
+                    this.searchQuery = '';
+                    this.selectedMovies = [];
+                    this.selectionMessage = '';
+                    this.rotation = 0;
+                    this.spinDuration = 0;
+                    this.isSpinning = false;
+                    this.winningMovie = null;
+                },
+                randomInt(max) {
+                    if (window.crypto && window.crypto.getRandomValues) {
+                        const values = new Uint32Array(1);
+                        window.crypto.getRandomValues(values);
+                        return Math.floor((values[0] / 4294967296) * max);
+                    }
+
+                    return Math.floor(Math.random() * max);
+                },
+                randomIntBetween(min, max) {
+                    return min + this.randomInt(max - min + 1);
+                },
+                randomBetween(min, max) {
+                    if (window.crypto && window.crypto.getRandomValues) {
+                        const values = new Uint32Array(1);
+                        window.crypto.getRandomValues(values);
+                        return min + ((values[0] / 4294967296) * (max - min));
+                    }
+
+                    return min + (Math.random() * (max - min));
+                },
+                normalizedDegrees(degrees) {
+                    return ((degrees % 360) + 360) % 360;
+                },
+                sortSearchResults(results) {
+                    const query = this.normalizedTitle(this.searchQuery);
+
+                    return [...results].sort((left, right) => {
+                        const leftTitle = this.normalizedTitle(left.title);
+                        const rightTitle = this.normalizedTitle(right.title);
+                        const leftExact = leftTitle === query ? 0 : 1;
+                        const rightExact = rightTitle === query ? 0 : 1;
+
+                        if (leftExact !== rightExact) {
+                            return leftExact - rightExact;
+                        }
+
+                        const leftStarts = leftTitle.startsWith(query) ? 0 : 1;
+                        const rightStarts = rightTitle.startsWith(query) ? 0 : 1;
+
+                        if (leftStarts !== rightStarts) {
+                            return leftStarts - rightStarts;
+                        }
+
+                        return 0;
+                    });
+                },
+                getExactMatchIndex(results) {
+                    const query = this.normalizedTitle(this.searchQuery);
+                    const exactIndex = results.findIndex(movie => this.normalizedTitle(movie.title) === query);
+                    return exactIndex >= 0 ? exactIndex : -1;
+                },
+                normalizedTitle(title) {
+                    return (title || '').trim().toLocaleLowerCase();
+                },
+                guideToWheelIfReady() {
+                    if (this.selectedMovies.length !== this.minMovies || window.innerWidth >= 720) {
+                        return;
+                    }
+
+                    this.$nextTick(() => {
+                        this.$refs.stagePanel?.scrollIntoView({
+                            block: 'start',
+                            behavior: this.prefersReducedMotion ? 'auto' : 'smooth'
+                        });
+                    });
+                },
+                focusWinner() {
+                    this.$nextTick(() => {
+                        this.$refs.resultPanel?.scrollIntoView({
+                            block: 'nearest',
+                            behavior: this.prefersReducedMotion ? 'auto' : 'smooth'
+                        });
+                        this.$refs.resultPanel?.focus({ preventScroll: true });
+                    });
+                },
+                launchConfetti() {
+                    if (!window.confetti) {
+                        return;
+                    }
+
+                    const sharedOptions = {
+                        colors: ['#e71837', '#ffae48', '#fdf0d5', '#1e5960'],
+                        disableForReducedMotion: true,
+                        zIndex: 40
+                    };
+
+                    window.confetti({
+                        ...sharedOptions,
+                        particleCount: 85,
+                        spread: 80,
+                        origin: { x: 0.5, y: 0.62 }
+                    });
+
+                    window.confetti({
+                        ...sharedOptions,
+                        particleCount: 45,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0, y: 0.7 }
+                    });
+
+                    window.confetti({
+                        ...sharedOptions,
+                        particleCount: 45,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1, y: 0.7 }
+                    });
+                },
+                sliceLabelStyle(index) {
+                    if (!this.selectedMovies.length) {
+                        return {};
+                    }
+
+                    const slice = 360 / this.selectedMovies.length;
+                    const midpoint = (index * slice) + (slice / 2);
+                    const labelAngle = this.wheelStartOffset + midpoint;
+                    const counterRotation = -this.rotation - labelAngle;
+                    return {
+                        transform: `rotate(${labelAngle}deg) translateY(calc(var(--spin-wheel-size) * -0.31)) rotate(${counterRotation}deg)`
+                    };
+                },
+                shortTitle(title) {
+                    return title.length > 28 ? `${title.slice(0, 25)}...` : title;
+                },
+                detailUrl(movie) {
+                    return `/movie/detail?title=${encodeURIComponent(movie.title)}&tmdbId=${movie.id}`;
+                },
+                posterUrl(posterPath) {
+                    return posterPath ? `https://image.tmdb.org/t/p/w185${posterPath}` : '/icon_only.png';
+                },
+                usePosterFallback(event) {
+                    if (!event.target.src.endsWith('/icon_only.png')) {
+                        event.target.src = '/icon_only.png';
+                        event.target.classList.add('poster-fallback');
+                    }
+                }
+            },
+            beforeUnmount() {
+                window.clearTimeout(this.spinTimeout);
+
+                if (this.activeController) {
+                    this.activeController.abort();
+                }
+            }
+        }).mount('#spinWheelApp');
+    </script>
+}
