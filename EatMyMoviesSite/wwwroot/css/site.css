@@ -4557,11 +4557,11 @@ main {
 
 .home-wheel-feature::before {
     background:
-        repeating-linear-gradient(90deg, rgba(255, 174, 72, 0.72) 0 0.42rem, transparent 0.42rem 1.1rem);
+        repeating-linear-gradient(90deg, rgba(196, 139, 58, 0.38) 0 0.38rem, transparent 0.38rem 1.35rem);
     content: "";
-    height: 0.28rem;
+    height: 0.18rem;
     left: 0;
-    opacity: 0.82;
+    opacity: 0.48;
     position: absolute;
     right: 0;
     top: 0;
@@ -4626,6 +4626,7 @@ main {
 
 .home-wheel-preview {
     --home-preview-wheel-size: min(13rem, 62vw);
+    --home-wheel-label-radius: calc(var(--home-preview-wheel-size) * -0.29);
     height: var(--home-preview-wheel-size);
     margin: 0 auto;
     position: relative;
@@ -4634,10 +4635,12 @@ main {
 
 .home-wheel-pointer,
 .spin-wheel-pointer {
-    border-left: 1rem solid transparent;
-    border-right: 1rem solid transparent;
-    border-top: 1.65rem solid #ffcf5a;
-    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.46));
+    border-left: 1.05rem solid transparent;
+    border-right: 1.05rem solid transparent;
+    border-top: 1.78rem solid #c28b3a;
+    filter:
+        drop-shadow(0 2px 0 rgba(255, 244, 207, 0.32))
+        drop-shadow(0 5px 5px rgba(0, 0, 0, 0.52));
     height: 0;
     left: 50%;
     position: absolute;
@@ -4650,14 +4653,19 @@ main {
 .home-wheel-reel {
     align-items: center;
     background:
-        conic-gradient(from -90deg, var(--emm-red) 0 90deg, #ffae48 90deg 180deg, #fdf0d5 180deg 270deg, #1e5960 270deg 360deg);
-    border: 0.55rem solid #141416;
+        radial-gradient(circle at 50% 50%, transparent 0 61.5%, rgba(196, 139, 58, 0.72) 62% 63.1%, transparent 63.8%),
+        radial-gradient(circle at 50% 50%, transparent 0 71%, rgba(255, 241, 203, 0.34) 71.5% 72.4%, transparent 73.2%),
+        linear-gradient(135deg, rgba(255, 250, 240, 0.18), transparent 35%, rgba(41, 31, 20, 0.2) 100%),
+        conic-gradient(from -90deg, #9f1826 0 90deg, #f2d69a 90deg 180deg, #9f1826 180deg 270deg, #f2d69a 270deg 360deg);
+    border: 0.72rem solid #171718;
     border-radius: 50%;
     box-shadow:
-        inset 0 0 0 2px rgba(255, 250, 240, 0.54),
-        inset 0 0 28px rgba(0, 0, 0, 0.34),
-        0 18px 28px rgba(0, 0, 0, 0.46),
-        0 0 0 4px rgba(255, 174, 72, 0.36);
+        inset 0 0 0 2px rgba(236, 182, 86, 0.82),
+        inset 0 0 0 0.5rem rgba(10, 10, 10, 0.82),
+        inset 0 0 32px rgba(0, 0, 0, 0.36),
+        0 18px 30px rgba(0, 0, 0, 0.48),
+        0 0 0 4px rgba(196, 139, 58, 0.55),
+        0 0 0 7px rgba(74, 52, 28, 0.52);
     display: flex;
     height: 100%;
     justify-content: center;
@@ -4666,49 +4674,82 @@ main {
     width: 100%;
 }
 
-.home-wheel-reel::after {
+.home-wheel-reel::before {
     background:
-        radial-gradient(circle, #fffaf0 0 1.45rem, #b9122b 1.5rem 2.25rem, #171719 2.3rem);
+        repeating-conic-gradient(from -90deg, #050505 0deg 3.4deg, #c28b3a 3.4deg 8.8deg);
     border-radius: 50%;
     content: "";
-    height: 4.7rem;
+    inset: 0;
+    -webkit-mask: radial-gradient(circle, transparent 0 70%, #000 71% 90%, transparent 91%);
+    mask: radial-gradient(circle, transparent 0 70%, #000 71% 90%, transparent 91%);
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+}
+
+.home-wheel-reel::after {
+    background:
+        radial-gradient(circle at 50% 50%, #030303 0 0.16rem, #161617 0.17rem 0.2rem, rgba(255, 239, 186, 0.36) 0.21rem 0.23rem, transparent 0.24rem),
+        radial-gradient(circle at 50% 20%, #030303 0 0.22rem, #151516 0.23rem 0.26rem, rgba(255, 239, 186, 0.32) 0.27rem 0.29rem, transparent 0.3rem),
+        radial-gradient(circle at 76% 35%, #030303 0 0.22rem, #151516 0.23rem 0.26rem, rgba(255, 239, 186, 0.32) 0.27rem 0.29rem, transparent 0.3rem),
+        radial-gradient(circle at 76% 65%, #030303 0 0.22rem, #151516 0.23rem 0.26rem, rgba(255, 239, 186, 0.32) 0.27rem 0.29rem, transparent 0.3rem),
+        radial-gradient(circle at 50% 80%, #030303 0 0.22rem, #151516 0.23rem 0.26rem, rgba(255, 239, 186, 0.32) 0.27rem 0.29rem, transparent 0.3rem),
+        radial-gradient(circle at 24% 65%, #030303 0 0.22rem, #151516 0.23rem 0.26rem, rgba(255, 239, 186, 0.32) 0.27rem 0.29rem, transparent 0.3rem),
+        radial-gradient(circle at 24% 35%, #030303 0 0.22rem, #151516 0.23rem 0.26rem, rgba(255, 239, 186, 0.32) 0.27rem 0.29rem, transparent 0.3rem),
+        radial-gradient(circle at 34% 24%, rgba(255, 239, 186, 0.54), transparent 0.76rem),
+        repeating-conic-gradient(from 12deg, rgba(255, 238, 183, 0.07) 0deg 6deg, rgba(74, 52, 28, 0.08) 6deg 12deg),
+        radial-gradient(circle, #f8d9a1 0 0.48rem, #c79042 0.54rem 0.96rem, #5a3b1b 1.01rem 1.12rem, #bd883e 1.18rem 1.5rem, #171719 1.56rem);
+    border-radius: 50%;
+    content: "";
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 250, 240, 0.36),
+        0 8px 15px rgba(0, 0, 0, 0.42);
+    height: 3.15rem;
     left: 50%;
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 4.7rem;
+    width: 3.15rem;
+    z-index: 2;
 }
 
 .home-wheel-reel span {
-    color: #fff;
+    color: #fffaf0;
     font-size: 0.78rem;
     font-weight: 1000;
     left: 50%;
     line-height: 1;
-    max-width: 4.8rem;
+    max-width: 4.35rem;
     overflow-wrap: anywhere;
     position: absolute;
     text-align: center;
     text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
     top: 50%;
+    z-index: 1;
 }
 
 .home-wheel-reel span:nth-child(1) {
-    transform: translate(-50%, -50%) rotate(45deg) translateY(calc(var(--home-preview-wheel-size) * -0.27)) rotate(-45deg);
+    transform: translate(-50%, -50%) rotate(45deg) translateY(var(--home-wheel-label-radius)) rotate(-45deg);
 }
 
 .home-wheel-reel span:nth-child(2) {
-    transform: translate(-50%, -50%) rotate(135deg) translateY(calc(var(--home-preview-wheel-size) * -0.27)) rotate(-135deg);
+    transform: translate(-50%, -50%) rotate(135deg) translateY(var(--home-wheel-label-radius)) rotate(-135deg);
 }
 
 .home-wheel-reel span:nth-child(3) {
     color: #201819;
     text-shadow: 0 1px 0 rgba(255, 250, 240, 0.65);
-    transform: translate(-50%, -50%) rotate(225deg) translateY(calc(var(--home-preview-wheel-size) * -0.27)) rotate(-225deg);
+    transform: translate(-50%, -50%) rotate(225deg) translateY(var(--home-wheel-label-radius)) rotate(-225deg);
+}
+
+.home-wheel-reel span:nth-child(2),
+.home-wheel-reel span:nth-child(4) {
+    color: #201819;
+    text-shadow: 0 1px 0 rgba(255, 250, 240, 0.72);
 }
 
 .home-wheel-reel span:nth-child(4) {
-    transform: translate(-50%, -50%) rotate(315deg) translateY(calc(var(--home-preview-wheel-size) * -0.27)) rotate(-315deg);
+    transform: translate(-50%, -50%) rotate(315deg) translateY(var(--home-wheel-label-radius)) rotate(-315deg);
 }
 
 .spin-wheel-page {
@@ -5018,8 +5059,18 @@ main {
 }
 
 .spin-wheel-search-status {
+    background-color: #fffaf0;
+    border: 0;
     color: #201819;
     font-weight: 850;
+    min-height: 4rem;
+    padding: 1rem 1.25rem;
+    white-space: normal;
+}
+
+.spin-wheel-search-status.has-text-danger {
+    background-color: #fff2e7;
+    color: #7e0d1f !important;
 }
 
 .spin-wheel-message {
@@ -5125,14 +5176,19 @@ main {
 }
 
 .spin-wheel {
-    background: var(--wheel-gradient);
-    border: 0.72rem solid #141416;
+    background:
+        radial-gradient(circle at 50% 50%, transparent 0 67.5%, rgba(255, 241, 203, 0.36) 68% 68.9%, transparent 69.7%),
+        linear-gradient(135deg, rgba(255, 250, 240, 0.16), transparent 32%, rgba(41, 31, 20, 0.2) 100%),
+        var(--wheel-gradient);
+    border: 0.86rem solid #171718;
     border-radius: 50%;
     box-shadow:
-        inset 0 0 0 2px rgba(255, 250, 240, 0.54),
-        inset 0 0 35px rgba(0, 0, 0, 0.34),
-        0 20px 34px rgba(0, 0, 0, 0.48),
-        0 0 0 5px rgba(255, 174, 72, 0.36);
+        inset 0 0 0 2px rgba(236, 182, 86, 0.82),
+        inset 0 0 0 0.66rem rgba(10, 10, 10, 0.84),
+        inset 0 0 40px rgba(0, 0, 0, 0.38),
+        0 22px 36px rgba(0, 0, 0, 0.5),
+        0 0 0 5px rgba(196, 139, 58, 0.58),
+        0 0 0 9px rgba(74, 52, 28, 0.5);
     height: 100%;
     overflow: hidden;
     position: absolute;
@@ -5140,19 +5196,44 @@ main {
     transition: transform var(--spin-duration) cubic-bezier(0.12, 0.72, 0.12, 1);
     width: 100%;
     will-change: transform;
+    z-index: 1;
 }
 
 .spin-wheel::before {
-    background: var(--wheel-dividers);
+    background:
+        var(--wheel-dividers),
+        radial-gradient(circle at 50% 50%, transparent 0 70%, rgba(196, 139, 58, 0.68) 70.4% 71.2%, transparent 72%);
     border-radius: 50%;
     content: "";
     inset: 0;
     pointer-events: none;
     position: absolute;
+    z-index: 2;
+}
+
+.spin-wheel::after {
+    background:
+        repeating-conic-gradient(from -90deg, #050505 0deg 3deg, #c28b3a 3deg 8.4deg);
+    border-radius: 50%;
+    content: "";
+    inset: 0;
+    -webkit-mask: radial-gradient(circle, transparent 0 70%, #000 71% 90%, transparent 91%);
+    mask: radial-gradient(circle, transparent 0 70%, #000 71% 90%, transparent 91%);
+    pointer-events: none;
+    position: absolute;
+    z-index: 3;
 }
 
 .spin-wheel.is-empty::before {
-    background: none;
+    background:
+        radial-gradient(circle at 50% 50%, transparent 0 70%, rgba(196, 139, 58, 0.68) 70.4% 71.2%, transparent 72%);
+}
+
+.spin-wheel.is-empty {
+    background:
+        radial-gradient(circle at 50% 50%, transparent 0 67.5%, rgba(255, 241, 203, 0.36) 68% 68.9%, transparent 69.7%),
+        linear-gradient(135deg, rgba(255, 250, 240, 0.16), transparent 32%, rgba(41, 31, 20, 0.2) 100%),
+        conic-gradient(from -90deg, #9f1826 0deg 90deg, #f2d69a 90deg 180deg, #9f1826 180deg 270deg, #f2d69a 270deg 360deg);
 }
 
 .spin-wheel-label {
@@ -5168,32 +5249,46 @@ main {
     text-align: center;
     top: 50%;
     width: 7.2rem;
+    z-index: 4;
+}
+
+.spin-wheel-label.is-single-movie {
+    margin-left: calc(var(--spin-wheel-size) * -0.23);
+    width: calc(var(--spin-wheel-size) * 0.46);
 }
 
 .spin-wheel-label span {
-    background-color: rgba(20, 20, 22, 0.78);
-    border: 1px solid rgba(255, 250, 240, 0.24);
-    border-radius: 999px;
-    color: #fffaf0;
+    color: var(--spin-wheel-label-color, #fffaf0);
     display: block;
-    font-size: 0.78rem;
+    font-size: 0.86rem;
     font-weight: 1000;
     line-height: 1.05;
     max-height: 2.2rem;
     overflow: hidden;
     overflow-wrap: anywhere;
-    padding: 0.26rem 0.48rem;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.92);
+    padding: 0;
+    text-shadow: var(--spin-wheel-label-shadow, 0 2px 5px rgba(0, 0, 0, 0.92));
 }
 
 .spin-wheel-hub {
     align-items: center;
     background:
-        radial-gradient(circle at 50% 38%, #fffaf0 0 1.45rem, #b9122b 1.5rem 2.4rem, #171719 2.46rem);
+        radial-gradient(circle at 50% 50%, #030303 0 0.37rem, #161617 0.38rem 0.43rem, rgba(255, 239, 186, 0.36) 0.44rem 0.5rem, transparent 0.51rem),
+        radial-gradient(circle at 50% 20%, #030303 0 0.45rem, #151516 0.46rem 0.52rem, rgba(255, 239, 186, 0.32) 0.53rem 0.6rem, transparent 0.61rem),
+        radial-gradient(circle at 76% 35%, #030303 0 0.45rem, #151516 0.46rem 0.52rem, rgba(255, 239, 186, 0.32) 0.53rem 0.6rem, transparent 0.61rem),
+        radial-gradient(circle at 76% 65%, #030303 0 0.45rem, #151516 0.46rem 0.52rem, rgba(255, 239, 186, 0.32) 0.53rem 0.6rem, transparent 0.61rem),
+        radial-gradient(circle at 50% 80%, #030303 0 0.45rem, #151516 0.46rem 0.52rem, rgba(255, 239, 186, 0.32) 0.53rem 0.6rem, transparent 0.61rem),
+        radial-gradient(circle at 24% 65%, #030303 0 0.45rem, #151516 0.46rem 0.52rem, rgba(255, 239, 186, 0.32) 0.53rem 0.6rem, transparent 0.61rem),
+        radial-gradient(circle at 24% 35%, #030303 0 0.45rem, #151516 0.46rem 0.52rem, rgba(255, 239, 186, 0.32) 0.53rem 0.6rem, transparent 0.61rem),
+        radial-gradient(circle at 34% 24%, rgba(255, 239, 186, 0.56), transparent 1.5rem),
+        repeating-conic-gradient(from 12deg, rgba(255, 238, 183, 0.07) 0deg 6deg, rgba(74, 52, 28, 0.08) 6deg 12deg),
+        radial-gradient(circle at 50% 50%, #f8d9a1 0 0.82rem, #c79042 0.93rem 1.72rem, #5a3b1b 1.82rem 2rem, #bd883e 2.1rem 2.58rem, #171719 2.68rem);
     border-radius: 50%;
     box-shadow:
-        inset 0 0 0 1px rgba(255, 250, 240, 0.46),
-        0 8px 18px rgba(0, 0, 0, 0.42);
+        inset 0 0 0 1px rgba(255, 250, 240, 0.42),
+        inset 0 0 10px rgba(255, 237, 186, 0.24),
+        inset 0 -10px 16px rgba(74, 52, 28, 0.5),
+        0 9px 20px rgba(0, 0, 0, 0.45);
     display: flex;
     flex-direction: column;
     height: 5.15rem;
