@@ -13,7 +13,6 @@
             <header class="spin-wheel-hero">
                 <span class="spin-wheel-kicker">Tonight's tiebreaker</span>
                 <h1 id="spin-wheel-title">Spin the Wheel</h1>
-                <p>Add 2 to 4 films and let the wheel pick tonight's movie.</p>
             </header>
 
             <div class="spin-wheel-layout">
@@ -24,10 +23,11 @@
                         <span aria-hidden="true"></span>
                     </div>
 
-                    <div class="spin-wheel-search">
+                    <div v-if="isAddingMovie && selectedMovies.length < maxMovies" class="spin-wheel-search">
                         <label class="label" for="spin-movie-search">Search movie</label>
                         <div class="spin-wheel-search-field">
                             <input id="spin-movie-search"
+                                   ref="searchInput"
                                    class="input spin-wheel-search-input"
                                    placeholder="Type a movie title"
                                    autocomplete="off"
@@ -69,12 +69,20 @@
                                 </div>
                             </div>
                         </div>
-                        <small>{{ selectedMovies.length }} of {{ maxMovies }} selected</small>
                     </div>
 
                     <p v-if="selectionMessage" class="spin-wheel-message" role="status">{{ selectionMessage }}</p>
 
-                    <div class="spin-wheel-slots" aria-label="Selected movies">
+                    <div v-if="selectedMovies.length > 0" class="spin-wheel-selected-header">
+                        <button type="button"
+                                class="button spin-wheel-secondary-button spin-wheel-start-over"
+                                :disabled="isSpinning"
+                                v-on:click="startOver">
+                            Start over
+                        </button>
+                    </div>
+
+                    <div v-if="selectedMovies.length > 0" class="spin-wheel-selected-movies" aria-label="Selected movies">
                         <article v-for="movie in selectedMovies" :key="movie.id" class="spin-wheel-movie-card">
                             <img :src="posterUrl(movie.posterPath)" :alt="movie.title + ' poster'" loading="lazy" v-on:error="usePosterFallback" />
                             <div>
@@ -85,10 +93,18 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </article>
+                    </div>
 
-                        <div v-for="slot in emptySlots" :key="'empty-' + slot" class="spin-wheel-empty-slot">
-                            <span>Slot {{ slot }}</span>
-                        </div>
+                    <div class="spin-wheel-add-row">
+                        <button v-if="selectedMovies.length < maxMovies && !isAddingMovie"
+                                type="button"
+                                class="button spin-wheel-add-button"
+                                :disabled="isSpinning"
+                                v-on:click="openAddMovie"
+                                aria-label="Add another movie">
+                            <span aria-hidden="true">+</span>
+                        </button>
+                        <span v-else-if="selectedMovies.length >= maxMovies" class="spin-wheel-full-message">The wheel is full.</span>
                     </div>
                 </section>
 
@@ -112,15 +128,13 @@
                                 <span>{{ shortTitle(movie.title) }}</span>
                             </span>
                         </div>
-                        <div class="spin-wheel-hub" aria-hidden="true"></div>
-                    </div>
-
-                    <div class="spin-wheel-actions">
-                        <button type="button" class="button is-primary spin-wheel-spin-button" :disabled="!canSpin" v-on:click="spinWheel">
-                            Spin
-                        </button>
-                        <button type="button" class="button spin-wheel-secondary-button" :disabled="isSpinning || selectedMovies.length === 0" v-on:click="startOver">
-                            Start over
+                        <button type="button"
+                                class="spin-wheel-hub"
+                                :disabled="!canSpin"
+                                v-on:click="spinWheel"
+                                :aria-label="hubSpinLabel"
+                                :title="hubSpinLabel">
+                            <span>Spin</span>
                         </button>
                     </div>
 
@@ -142,7 +156,6 @@
                             <h3>{{ winningMovie.title }}</h3>
                             <div class="spin-wheel-result-actions">
                                 <a class="button is-primary" :href="detailUrl(winningMovie)">View details</a>
-                                <button type="button" class="button spin-wheel-secondary-button" :disabled="isSpinning" v-on:click="spinAgain">Spin again</button>
                             </div>
                         </div>
                     </div>
@@ -170,8 +183,8 @@
         createApp({
             data() {
                 return {
-                    minMovies: 2,
-                    maxMovies: 4,
+                    maxMovies: 8,
+                    isAddingMovie: true,
                     searchQuery: '',
                     searchResults: [],
                     highlightedIndex: -1,
@@ -203,11 +216,8 @@
                 activeDescendant() {
                     return this.highlightedIndex >= 0 ? `spin-movie-option-${this.highlightedIndex}` : null;
                 },
-                emptySlots() {
-                    return Array.from({ length: this.maxMovies - this.selectedMovies.length }, (_, index) => this.selectedMovies.length + index + 1);
-                },
                 canSpin() {
-                    return this.selectedMovies.length >= this.minMovies && !this.isSpinning;
+                    return this.selectedMovies.length > 0 && !this.isSpinning;
                 },
                 wheelGradient() {
                     if (!this.selectedMovies.length) {
@@ -247,6 +257,17 @@
                     }
 
                     return `Movie picker wheel with ${this.selectedMovies.map(movie => movie.title).join(', ')}`;
+                },
+                hubSpinLabel() {
+                    if (this.isSpinning) {
+                        return 'Wheel is spinning';
+                    }
+
+                    if (!this.selectedMovies.length) {
+                        return 'Add a movie before spinning';
+                    }
+
+                    return 'Spin the wheel';
                 }
             },
             watch: {
@@ -327,10 +348,10 @@
 
                     this.selectedMovies.push(movie);
                     this.searchQuery = '';
-                    this.selectionMessage = this.selectedMovies.length < this.minMovies ? 'Add one more movie to unlock the spin.' : '';
+                    this.isAddingMovie = false;
+                    this.selectionMessage = '';
                     this.winningMovie = null;
                     this.clearResults();
-                    this.guideToWheelIfReady();
                 },
                 removeMovie(movieId) {
                     if (this.isSpinning) {
@@ -339,7 +360,21 @@
 
                     this.selectedMovies = this.selectedMovies.filter(movie => movie.id !== movieId);
                     this.winningMovie = null;
-                    this.selectionMessage = this.selectedMovies.length && this.selectedMovies.length < this.minMovies ? 'Add one more movie to unlock the spin.' : '';
+                    this.selectionMessage = '';
+
+                    if (!this.selectedMovies.length) {
+                        this.isAddingMovie = true;
+                        this.focusSearchInput();
+                    }
+                },
+                openAddMovie() {
+                    if (this.isSpinning || this.selectedMovies.length >= this.maxMovies) {
+                        return;
+                    }
+
+                    this.isAddingMovie = true;
+                    this.selectionMessage = '';
+                    this.focusSearchInput();
                 },
                 handleSearch() {
                     if (this.highlightedIndex >= 0 && this.searchResults[this.highlightedIndex]) {
@@ -373,7 +408,7 @@
                 },
                 spinWheel() {
                     if (!this.canSpin) {
-                        this.selectionMessage = this.selectedMovies.length < this.minMovies ? 'Add at least two movies first.' : '';
+                        this.selectionMessage = 'Add a movie first.';
                         return;
                     }
 
@@ -410,21 +445,18 @@
                         this.focusWinner();
                     }
                 },
-                spinAgain() {
-                    if (!this.isSpinning) {
-                        this.spinWheel();
-                    }
-                },
                 startOver() {
                     window.clearTimeout(this.spinTimeout);
                     this.clearResults();
                     this.searchQuery = '';
+                    this.isAddingMovie = true;
                     this.selectedMovies = [];
                     this.selectionMessage = '';
                     this.rotation = 0;
                     this.spinDuration = 0;
                     this.isSpinning = false;
                     this.winningMovie = null;
+                    this.focusSearchInput();
                 },
                 randomInt(max) {
                     if (window.crypto && window.crypto.getRandomValues) {
@@ -481,18 +513,6 @@
                 normalizedTitle(title) {
                     return (title || '').trim().toLocaleLowerCase();
                 },
-                guideToWheelIfReady() {
-                    if (this.selectedMovies.length !== this.minMovies || window.innerWidth >= 720) {
-                        return;
-                    }
-
-                    this.$nextTick(() => {
-                        this.$refs.stagePanel?.scrollIntoView({
-                            block: 'start',
-                            behavior: this.prefersReducedMotion ? 'auto' : 'smooth'
-                        });
-                    });
-                },
                 focusWinner() {
                     this.$nextTick(() => {
                         this.$refs.resultPanel?.scrollIntoView({
@@ -500,6 +520,11 @@
                             behavior: this.prefersReducedMotion ? 'auto' : 'smooth'
                         });
                         this.$refs.resultPanel?.focus({ preventScroll: true });
+                    });
+                },
+                focusSearchInput() {
+                    this.$nextTick(() => {
+                        this.$refs.searchInput?.focus();
                     });
                 },
                 launchConfetti() {
@@ -595,6 +620,9 @@
                         event.target.classList.add('poster-fallback');
                     }
                 }
+            },
+            mounted() {
+                this.focusSearchInput();
             },
             beforeUnmount() {
                 window.clearTimeout(this.spinTimeout);

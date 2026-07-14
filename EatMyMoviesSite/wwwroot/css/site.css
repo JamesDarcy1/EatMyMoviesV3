@@ -4876,15 +4876,6 @@ main {
         2px 4px 0 #070707;
 }
 
-.spin-wheel-hero p {
-    color: rgba(253, 240, 213, 0.86);
-    font-size: 0.92rem;
-    font-weight: 850;
-    line-height: 1.32;
-    margin: 0;
-    padding: 0;
-}
-
 .spin-wheel-layout {
     display: grid;
     gap: 0.75rem;
@@ -4903,9 +4894,18 @@ main {
         inset 0 0 0 9px rgba(255, 250, 240, 0.56),
         0 18px 30px rgba(0, 0, 0, 0.36);
     min-width: 0;
-    overflow: hidden;
     padding: 1rem;
     position: relative;
+}
+
+.spin-wheel-picker {
+    overflow: visible;
+    z-index: 6;
+}
+
+.spin-wheel-stage-panel {
+    overflow: hidden;
+    z-index: 1;
 }
 
 .spin-wheel-picker::before,
@@ -4949,7 +4949,7 @@ main {
 
 .spin-wheel-search {
     position: relative;
-    z-index: 2;
+    z-index: 10;
 }
 
 .spin-wheel-search .label {
@@ -4974,6 +4974,7 @@ main {
 
 .spin-wheel-search small {
     color: rgba(31, 31, 36, 0.72);
+    display: block;
     font-size: 0.82rem;
     font-weight: 800;
     line-height: 1.25;
@@ -4990,6 +4991,7 @@ main {
     min-width: 100%;
     padding-top: 0.25rem;
     width: 100%;
+    z-index: 30;
 }
 
 .spin-wheel-dropdown .dropdown-content {
@@ -5086,36 +5088,60 @@ main {
     text-align: center;
 }
 
-.spin-wheel-slots {
+.spin-wheel-selected-header {
+    align-items: center;
+    display: flex;
+    gap: 0.7rem;
+    justify-content: center;
+    margin-top: 0.82rem;
+}
+
+.spin-wheel-full-message {
+    color: rgba(31, 31, 36, 0.72);
+    font-size: 0.82rem;
+    font-weight: 1000;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.spin-wheel-start-over.button {
+    flex: 0 0 auto;
+    font-size: 0.78rem;
+    min-height: 2.15rem;
+    padding: 0.45rem 0.72rem;
+    width: auto;
+}
+
+.spin-wheel-selected-movies {
     display: grid;
-    gap: 0.58rem;
-    margin-top: 0.85rem;
+    gap: 0.48rem;
+    margin-top: 0.58rem;
 }
 
 .spin-wheel-movie-card {
     align-items: center;
     background: rgba(255, 255, 255, 0.72);
     border: 1px solid rgba(185, 18, 43, 0.22);
-    border-radius: 8px;
+    border-radius: 6px;
     display: grid;
-    gap: 0.65rem;
-    grid-template-columns: 3.1rem minmax(0, 1fr) 2.75rem;
-    min-height: 4.65rem;
-    padding: 0.45rem;
+    gap: 0.55rem;
+    grid-template-columns: 2.55rem minmax(0, 1fr) 2.35rem;
+    min-height: 3.76rem;
+    padding: 0.36rem;
 }
 
 .spin-wheel-movie-card img {
     aspect-ratio: 2 / 3;
     background-color: #201819;
-    border-radius: 5px;
+    border-radius: 4px;
     object-fit: cover;
-    width: 3.1rem;
+    width: 2.55rem;
 }
 
 .spin-wheel-movie-card strong {
     color: #201819;
     display: block;
-    font-size: 0.94rem;
+    font-size: 0.88rem;
     font-weight: 1000;
     line-height: 1.12;
     overflow-wrap: anywhere;
@@ -5124,9 +5150,9 @@ main {
 .spin-wheel-movie-card a {
     color: var(--emm-red-dark);
     display: inline-block;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 900;
-    margin-top: 0.22rem;
+    margin-top: 0.16rem;
 }
 
 .spin-wheel-remove.button {
@@ -5136,11 +5162,11 @@ main {
     border-color: rgba(31, 31, 36, 0.16);
     color: #7e0d1f;
     display: inline-flex;
-    font-size: 1.35rem;
+    font-size: 1.18rem;
     font-weight: 900;
     justify-content: center;
-    min-height: 2.75rem;
-    min-width: 2.75rem;
+    min-height: 2.35rem;
+    min-width: 2.35rem;
     padding: 0;
 }
 
@@ -5151,17 +5177,79 @@ main {
     color: #fff;
 }
 
-.spin-wheel-empty-slot {
+.spin-wheel-add-row {
     align-items: center;
-    border: 1px dashed rgba(185, 18, 43, 0.32);
-    border-radius: 8px;
-    color: rgba(31, 31, 36, 0.55);
     display: flex;
-    font-size: 0.85rem;
-    font-weight: 900;
+    gap: 0.6rem;
     justify-content: center;
-    min-height: 3.1rem;
-    text-transform: uppercase;
+    margin-top: 0.8rem;
+    min-height: 3.2rem;
+}
+
+.spin-wheel-add-button.button {
+    align-items: center;
+    background:
+        radial-gradient(circle at 34% 24%, rgba(255, 250, 240, 0.6), transparent 1.05rem),
+        linear-gradient(180deg, #f8d9a1, #ffae48);
+    border: 2px solid #201819;
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 4px rgba(185, 18, 43, 0.55),
+        0 9px 18px rgba(31, 31, 36, 0.22);
+    color: #201819;
+    display: inline-flex;
+    height: 3.15rem;
+    justify-content: center;
+    min-height: 3.15rem;
+    min-width: 3.15rem;
+    padding: 0;
+    position: relative;
+    width: 3.15rem;
+}
+
+.spin-wheel-add-button.button span {
+    color: inherit;
+    font-size: 0;
+    height: 1.35rem;
+    line-height: 0;
+    position: relative;
+    width: 1.35rem;
+}
+
+.spin-wheel-add-button.button span::before,
+.spin-wheel-add-button.button span::after {
+    background-color: currentColor;
+    border-radius: 999px;
+    content: "";
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.spin-wheel-add-button.button span::before {
+    height: 0.28rem;
+    width: 100%;
+}
+
+.spin-wheel-add-button.button span::after {
+    height: 100%;
+    width: 0.28rem;
+}
+
+.spin-wheel-add-button.button:hover,
+.spin-wheel-add-button.button:focus {
+    background:
+        radial-gradient(circle at 34% 24%, rgba(255, 250, 240, 0.72), transparent 1.05rem),
+        linear-gradient(180deg, #ffcf5a, #e71837);
+    color: #fffaf0;
+}
+
+.spin-wheel-full-message {
+    background-color: rgba(255, 174, 72, 0.22);
+    border: 1px solid rgba(185, 18, 43, 0.24);
+    border-radius: 999px;
+    padding: 0.52rem 0.8rem;
 }
 
 .spin-wheel-stage {
@@ -5273,31 +5361,81 @@ main {
 .spin-wheel-hub {
     align-items: center;
     background:
-        radial-gradient(circle at 50% 50%, #030303 0 0.37rem, #161617 0.38rem 0.43rem, rgba(255, 239, 186, 0.36) 0.44rem 0.5rem, transparent 0.51rem),
-        radial-gradient(circle at 50% 20%, #030303 0 0.45rem, #151516 0.46rem 0.52rem, rgba(255, 239, 186, 0.32) 0.53rem 0.6rem, transparent 0.61rem),
-        radial-gradient(circle at 76% 35%, #030303 0 0.45rem, #151516 0.46rem 0.52rem, rgba(255, 239, 186, 0.32) 0.53rem 0.6rem, transparent 0.61rem),
-        radial-gradient(circle at 76% 65%, #030303 0 0.45rem, #151516 0.46rem 0.52rem, rgba(255, 239, 186, 0.32) 0.53rem 0.6rem, transparent 0.61rem),
-        radial-gradient(circle at 50% 80%, #030303 0 0.45rem, #151516 0.46rem 0.52rem, rgba(255, 239, 186, 0.32) 0.53rem 0.6rem, transparent 0.61rem),
-        radial-gradient(circle at 24% 65%, #030303 0 0.45rem, #151516 0.46rem 0.52rem, rgba(255, 239, 186, 0.32) 0.53rem 0.6rem, transparent 0.61rem),
-        radial-gradient(circle at 24% 35%, #030303 0 0.45rem, #151516 0.46rem 0.52rem, rgba(255, 239, 186, 0.32) 0.53rem 0.6rem, transparent 0.61rem),
-        radial-gradient(circle at 34% 24%, rgba(255, 239, 186, 0.56), transparent 1.5rem),
-        repeating-conic-gradient(from 12deg, rgba(255, 238, 183, 0.07) 0deg 6deg, rgba(74, 52, 28, 0.08) 6deg 12deg),
-        radial-gradient(circle at 50% 50%, #f8d9a1 0 0.82rem, #c79042 0.93rem 1.72rem, #5a3b1b 1.82rem 2rem, #bd883e 2.1rem 2.58rem, #171719 2.68rem);
+        radial-gradient(circle at 34% 24%, rgba(255, 250, 240, 0.92), transparent 1.28rem),
+        radial-gradient(circle at 50% 50%, #fff3bd 0 1.68rem, #d99d40 1.74rem 2.12rem, #704a1f 2.22rem 2.4rem, #171719 2.54rem);
+    border: 0;
     border-radius: 50%;
     box-shadow:
-        inset 0 0 0 1px rgba(255, 250, 240, 0.42),
-        inset 0 0 10px rgba(255, 237, 186, 0.24),
-        inset 0 -10px 16px rgba(74, 52, 28, 0.5),
+        inset 0 0 0 1px rgba(255, 250, 240, 0.62),
+        inset 0 0 10px rgba(255, 237, 186, 0.36),
+        inset 0 -8px 14px rgba(74, 52, 28, 0.4),
         0 9px 20px rgba(0, 0, 0, 0.45);
     display: flex;
     flex-direction: column;
+    font-family: 'Bangers', cursive;
+    font-size: 1.55rem;
+    font-weight: 600;
     height: 5.15rem;
     justify-content: center;
-    pointer-events: none;
+    line-height: 0.92;
+    overflow: hidden;
+    padding: 0;
+    pointer-events: auto;
     position: relative;
     text-align: center;
+    text-transform: uppercase;
     width: 5.15rem;
-    z-index: 3;
+    z-index: 5;
+}
+
+.spin-wheel-hub span {
+    color: #171719;
+    display: block;
+    font-size: 1.72rem;
+    line-height: 0.9;
+    position: relative;
+    text-shadow:
+        0 1px 0 rgba(255, 250, 240, 0.92),
+        0 3px 0 rgba(126, 13, 31, 0.22);
+    z-index: 2;
+}
+
+.spin-wheel-hub:not(:disabled) {
+    color: #201819;
+    cursor: pointer;
+}
+
+.spin-wheel-hub:not(:disabled):hover,
+.spin-wheel-hub:not(:disabled):focus {
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 250, 240, 0.62),
+        inset 0 0 14px rgba(255, 237, 186, 0.4),
+        inset 0 -10px 16px rgba(74, 52, 28, 0.5),
+        0 9px 20px rgba(0, 0, 0, 0.45),
+        0 0 0 4px rgba(231, 24, 55, 0.72);
+    color: #7e0d1f;
+    outline: none;
+}
+
+.spin-wheel-hub:focus-visible {
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 250, 240, 0.62),
+        inset 0 0 14px rgba(255, 237, 186, 0.4),
+        inset 0 -10px 16px rgba(74, 52, 28, 0.5),
+        0 9px 20px rgba(0, 0, 0, 0.45),
+        var(--emm-focus);
+    outline: none;
+}
+
+.spin-wheel-hub:disabled {
+    color: rgba(32, 24, 25, 0.5);
+    cursor: not-allowed;
+    filter: saturate(0.72);
+    opacity: 0.82;
+}
+
+.spin-wheel-hub:disabled span {
+    color: rgba(23, 23, 25, 0.48);
 }
 
 .spin-wheel-hub strong {
@@ -5318,28 +5456,15 @@ main {
     text-transform: uppercase;
 }
 
-.spin-wheel-actions,
 .spin-wheel-result-actions {
     display: grid;
     gap: 0.55rem;
 }
 
-.spin-wheel-spin-button.button,
 .spin-wheel-secondary-button.button,
 .spin-wheel-result-actions .button {
     min-height: 2.9rem;
     width: 100%;
-}
-
-.spin-wheel-spin-button.button {
-    border: 2px solid #ffae48;
-    box-shadow:
-        0 0 0 4px rgba(185, 18, 43, 0.7),
-        0 10px 18px rgba(0, 0, 0, 0.22);
-    font-family: 'Bangers', cursive;
-    font-size: 1.62rem;
-    font-weight: 600;
-    text-transform: uppercase;
 }
 
 .spin-wheel-secondary-button.button {
@@ -5429,9 +5554,8 @@ main {
         text-align: center;
     }
 
-    .spin-wheel-actions,
     .spin-wheel-result-actions {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
