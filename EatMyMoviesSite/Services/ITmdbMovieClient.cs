@@ -17,6 +17,10 @@ namespace EatMyMoviesSite.Services
 
         Task<Credits> GetMovieCreditsAsync(int movieId);
 
+        Task<SingleResultContainer<Dictionary<string, WatchProviders>>> GetMovieWatchProvidersAsync(
+            int movieId,
+            CancellationToken cancellationToken = default);
+
         Task<TmdbPerson?> GetPersonAsync(int personId);
     }
 }

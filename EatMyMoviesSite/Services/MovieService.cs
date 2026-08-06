@@ -26,6 +26,7 @@ namespace EatMyMoviesSite.Services
         private readonly IMovieOfTheWeekRepository _movieOfTheWeekRepository;
         private readonly int _moviesPerPage = 10;
         private readonly IMemoryCache _cache;
+        private readonly ILogger<MovieService> _logger;
 
         public MovieService(IRankingRepository rankingRepository,
                             IListRepository listRepository,
@@ -34,7 +35,8 @@ namespace EatMyMoviesSite.Services
                             IMemoryCache memoryCache,
                             ITmdbMovieClient tmdbClient,
                             IOmdbClient omdbClient,
-                            IOptions<MovieExternalApiOptions> externalApiOptions)
+                            IOptions<MovieExternalApiOptions> externalApiOptions,
+                            ILogger<MovieService> logger)
         {
             _rankingRepository = rankingRepository;
             _listRepository = listRepository;
@@ -44,6 +46,7 @@ namespace EatMyMoviesSite.Services
             _tmdbClient = tmdbClient;
             _omdbClient = omdbClient;
             _externalApiOptions = externalApiOptions.Value;
+            _logger = logger;
         }
 
         public async Task<ListMovie?> BuildMovieOfTheWeekAsync(CancellationToken cancellationToken = default)
@@ -147,6 +150,7 @@ namespace EatMyMoviesSite.Services
             var trailerTask = GetTrailer(movie.Id);
             var ratingTask = GetImdbRating(movie.Title);
             var creditsTask = GetCreditsSafely(movie.Id);
+            var watchAvailabilityTask = GetWatchAvailabilitySafelyAsync(movie.Id, cancellationToken);
 
             var credits = await creditsTask;
             var directorTask = BuildDirectorAsync(credits);
@@ -155,8 +159,10 @@ namespace EatMyMoviesSite.Services
             var trailer = await trailerTask;
             var rating = await ratingTask;
             var director = await directorTask;
+            var watchAvailability = await watchAvailabilityTask;
 
             var movieDetail = Mapper.MapToMovieDetail(movie, trailer, rating, director, actors);
+            movieDetail.WatchAvailability = watchAvailability;
 
             if (includeListContext)
             {
@@ -521,6 +527,106 @@ namespace EatMyMoviesSite.Services
             }
 
             return credits;
+        }
+
+        private async Task<WatchAvailability> GetWatchAvailabilitySafelyAsync(
+            int movieId,
+            CancellationToken cancellationToken)
+        {
+            var regionCode = _externalApiOptions.WatchProviderRegion.ToUpperInvariant();
+            var cacheKey = $"tmdb:watch-providers:{regionCode}:{movieId}";
+
+            if (_cache.TryGetValue(cacheKey, out WatchAvailability? cachedAvailability))
+            {
+                return cachedAvailability!;
+            }
+
+            WatchAvailability availability;
+            TimeSpan cacheDuration;
+
+            try
+            {
+                var response = await _tmdbClient.GetMovieWatchProvidersAsync(movieId, cancellationToken);
+                availability = MapWatchAvailability(response.Results, regionCode);
+                cacheDuration = availability.Providers.Count > 0
+                    ? _externalApiOptions.WatchProviderCacheDuration
+                    : _externalApiOptions.UnknownWatchProviderCacheDuration;
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "Unable to load watch providers for TMDb movie {MovieId} in region {RegionCode}.",
+                    movieId,
+                    regionCode);
+
+                availability = new WatchAvailability();
+                cacheDuration = _externalApiOptions.WatchProviderFailureCacheDuration;
+            }
+
+            _cache.Set(cacheKey, availability, cacheDuration);
+            return availability;
+        }
+
+        private static WatchAvailability MapWatchAvailability(
+            IReadOnlyDictionary<string, WatchProviders>? results,
+            string regionCode)
+        {
+            if (results == null || !results.TryGetValue(regionCode, out var regionalProviders))
+            {
+                return new WatchAvailability();
+            }
+
+            if (string.IsNullOrWhiteSpace(regionalProviders.Link))
+            {
+                return new WatchAvailability();
+            }
+
+            var providers = MapWatchProviderOptions(
+                (regionalProviders.FlatRate?.AsEnumerable() ?? Enumerable.Empty<WatchProviderItem>())
+                    .Concat(regionalProviders.Free?.AsEnumerable() ?? Enumerable.Empty<WatchProviderItem>())
+                    .Concat(regionalProviders.Ads?.AsEnumerable() ?? Enumerable.Empty<WatchProviderItem>()));
+
+            return new WatchAvailability
+            {
+                Link = regionalProviders.Link,
+                Providers = providers
+            };
+        }
+
+        private static List<WatchProviderOption> MapWatchProviderOptions(IEnumerable<WatchProviderItem> providers)
+        {
+            return providers
+                .Where(provider =>
+                    !string.IsNullOrWhiteSpace(provider.ProviderName) &&
+                    !string.IsNullOrWhiteSpace(provider.LogoPath))
+                .Select(provider => new
+                {
+                    ProviderId = provider.ProviderId,
+                    Name = provider.ProviderName!.Trim(),
+                    LogoUrl = $"https://image.tmdb.org/t/p/w92{provider.LogoPath!.Trim()}",
+                    DisplayPriority = provider.DisplayPriority ?? int.MaxValue
+                })
+                .GroupBy(provider => provider.ProviderId.HasValue
+                    ? $"id:{provider.ProviderId.Value}"
+                    : $"name:{provider.Name.ToUpperInvariant()}")
+                .Select(group => group
+                    .OrderBy(provider => provider.DisplayPriority)
+                    .ThenBy(provider => provider.Name, StringComparer.OrdinalIgnoreCase)
+                    .First())
+                .OrderBy(provider => provider.DisplayPriority)
+                .ThenBy(provider => provider.Name, StringComparer.OrdinalIgnoreCase)
+                .Take(3)
+                .Select(provider => new WatchProviderOption
+                {
+                    Name = provider.Name,
+                    LogoUrl = provider.LogoUrl
+                })
+                .ToList();
         }
 
         private async Task<TmdbPerson?> GetPersonSafely(int personId)

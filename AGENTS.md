@@ -66,7 +66,7 @@ Admin content management lives under `/admin` and is protected by the `AdminOnly
 - maps the default MVC route and falls back to `Home/Index`;
 - serves static files, including a long-lived cache header for static asset responses.
 
-`MovieService` owns movie caching, recommendation/list-building behavior, movie-of-the-week homepage composition, and movie detail composition. TMDb and OMDb transport logic belongs behind `ITmdbMovieClient` and `IOmdbClient`; keep external movie API orchestration in services rather than moving it into controllers.
+`MovieService` owns movie caching, recommendation/list-building behavior, movie-of-the-week homepage composition, and movie detail composition. This includes the compact United Kingdom streaming availability displayed on movie details: combine TMDb's JustWatch-powered subscription, free, and ad-supported offers, exclude rent/buy and providers without logos, deduplicate them, and expose at most the three highest-priority providers. Keep failures non-blocking and preserve the shorter no-data/failure cache durations. TMDb and OMDb transport logic belongs behind `ITmdbMovieClient` and `IOmdbClient`; keep external movie API orchestration in services rather than moving it into controllers.
 
 `AdminContentService` owns content-management workflows such as creating/updating lists, searching stored movies, selecting TMDb movies by TMDb ID, adding movies to lists, moving rankings, removing list memberships while closing rank gaps, and setting or clearing the current Movie of the Week through `/admin/movie-of-the-week`.
 
@@ -92,7 +92,7 @@ The app expects:
 - `AdminAuth:Username`
 - `AdminAuth:PasswordHash`
 
-`TmdbOptions`, `OmdbOptions`, `AdminAuthOptions`, and `MovieExternalApiOptions` bind optional retry, timeout, cache, concurrency, and query-limit settings while preserving defaults when the optional keys are absent. Startup validates required API keys/admin credentials through options validation and validates the database connection string explicitly.
+`TmdbOptions`, `OmdbOptions`, `AdminAuthOptions`, and `MovieExternalApiOptions` bind optional retry, timeout, cache, concurrency, query-limit, and watch-provider region settings while preserving defaults when the optional keys are absent. Watch-provider defaults select `GB`, cache successful data for six hours, no-data results for 30 minutes, and failures for 15 minutes. Startup validates required API keys/admin credentials through options validation and validates the database connection string explicitly.
 
 Use `EatMyMoviesSite/Config/README.md` as the source of truth for local user-secrets setup and Azure App Service environment variable names.
 
@@ -134,6 +134,7 @@ When changing the frontend:
 - `EatMyMoviesSite/wwwroot/lib/README.md` documents frontend vendor versions, source URLs, licenses, and the manual update process. Update it whenever vendored frontend assets change.
 - Use readable vendor files in Development and minified vendor files outside Development where the layout or view has environment-specific includes.
 - The Spin the Wheel feature lives at `/movie/spin-the-wheel` in `Views/Movie/SpinTheWheel.cshtml`; it is client-side Vue state, reuses `/movie/SearchForMovie` for TMDb-backed selections, and should keep wheel animation local to CSS/JS rather than adding server-side persistence.
+- The public movie-detail page conditionally shows a `Streaming` metadata card with up to three logo-only UK providers. Each logo links to TMDb's supplied regional watch-options URL in a new tab. Keep the visible compact-header `via JustWatch` attribution whenever this data is rendered; do not restore the former standalone provider panel or rent/buy offers.
 
 ## Coding Conventions
 
@@ -158,7 +159,7 @@ dotnet test EatMyMoviesV3.sln
 
 The current test suite covers repositories, `MovieService`, `AdminContentService`, mapper behavior, and list/admin controllers. Add or update focused tests when changing those areas.
 
-For UI or routing changes, also run the site with the Development launch profile and manually verify the relevant page(s). Use the Development URLs listed above. Admin verification requires `AdminAuth:Username` and `AdminAuth:PasswordHash` to be present in user secrets or environment variables. Movie-of-the-week changes should verify `/`, `/admin`, and `/admin/movie-of-the-week`.
+For UI or routing changes, also run the site with the Development launch profile and manually verify the relevant page(s). Use the Development URLs listed above. For watch-provider changes, verify the conditional card at desktop and mobile widths, including the three-column desktop/two-column mobile metadata grids, the three-provider cap, logo accessibility, TMDb links, JustWatch attribution, and clean hiding for no-data or failure responses. Admin verification requires `AdminAuth:Username` and `AdminAuth:PasswordHash` to be present in user secrets or environment variables. Movie-of-the-week changes should verify `/`, `/admin`, and `/admin/movie-of-the-week`.
 
 For frontend UX refreshes, manually verify the home page, recommender, Spin the Wheel, movie list, movie detail, and search flows across desktop and mobile widths. Confirm refreshed supporting pages still feel consistent with the midnight marquee direction used by the home and recommender pages.
 

@@ -12,6 +12,8 @@ namespace EatMyMoviesSite.Options
         [Range(1, 20)]
         public int SearchDropdownLimit { get; set; } = 5;
 
+        public string WatchProviderRegion { get; set; } = "GB";
+
         public TimeSpan MovieCacheDuration { get; set; } = TimeSpan.FromHours(6);
 
         public TimeSpan TrailerCacheDuration { get; set; } = TimeSpan.FromHours(6);
@@ -26,8 +28,23 @@ namespace EatMyMoviesSite.Options
 
         public TimeSpan UnknownImdbRatingCacheDuration { get; set; } = TimeSpan.FromMinutes(30);
 
+        public TimeSpan WatchProviderCacheDuration { get; set; } = TimeSpan.FromHours(6);
+
+        public TimeSpan UnknownWatchProviderCacheDuration { get; set; } = TimeSpan.FromMinutes(30);
+
+        public TimeSpan WatchProviderFailureCacheDuration { get; set; } = TimeSpan.FromMinutes(15);
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            if (string.IsNullOrWhiteSpace(WatchProviderRegion) ||
+                WatchProviderRegion.Length != 2 ||
+                WatchProviderRegion.Any(character => !char.IsAsciiLetter(character)))
+            {
+                yield return new ValidationResult(
+                    "WatchProviderRegion must be a two-letter ISO 3166-1 country code.",
+                    new[] { nameof(WatchProviderRegion) });
+            }
+
             foreach (var (value, name) in GetDurations())
             {
                 if (value <= TimeSpan.Zero)
@@ -48,6 +65,9 @@ namespace EatMyMoviesSite.Options
             yield return (CreditsFailureCacheDuration, nameof(CreditsFailureCacheDuration));
             yield return (ImdbRatingCacheDuration, nameof(ImdbRatingCacheDuration));
             yield return (UnknownImdbRatingCacheDuration, nameof(UnknownImdbRatingCacheDuration));
+            yield return (WatchProviderCacheDuration, nameof(WatchProviderCacheDuration));
+            yield return (UnknownWatchProviderCacheDuration, nameof(UnknownWatchProviderCacheDuration));
+            yield return (WatchProviderFailureCacheDuration, nameof(WatchProviderFailureCacheDuration));
         }
     }
 }

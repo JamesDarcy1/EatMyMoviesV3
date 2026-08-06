@@ -18,6 +18,12 @@ TMDb, OMDb, and admin authentication settings are bound through typed options an
 - `Omdb:Timeout` defaults to `00:00:30`
 - `MovieExternalApis:ExternalApiConcurrency` defaults to `4`
 - `MovieExternalApis:SearchDropdownLimit` defaults to `5`
+- `MovieExternalApis:WatchProviderRegion` defaults to `GB`
+- `MovieExternalApis:WatchProviderCacheDuration` defaults to `06:00:00`
+- `MovieExternalApis:UnknownWatchProviderCacheDuration` defaults to `00:30:00`
+- `MovieExternalApis:WatchProviderFailureCacheDuration` defaults to `00:15:00`
+
+Movie detail pages use TMDb's JustWatch-powered watch-provider data for the configured region. The current product scope is United Kingdom only and displays at most three combined subscription, free, or ad-supported providers; rent and buy offers are not shown. JustWatch attribution must remain visible wherever this availability data is displayed.
 
 ## Local development
 

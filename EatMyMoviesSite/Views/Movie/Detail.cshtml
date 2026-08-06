@@ -1,5 +1,4 @@
 ﻿@using EatMyMoviesSite.DTOs;
-@using System.Diagnostics;
 @model MovieDetail;
 
 @if (Model != null)
@@ -55,6 +54,29 @@
                         <span class="marquee-meta-label">Genres</span>
                         <span class="marquee-meta-value">@Model.Genres</span>
                     </div>
+                    @if (Model.WatchAvailability.Providers.Count > 0 &&
+                        !string.IsNullOrWhiteSpace(Model.WatchAvailability.Link))
+                    {
+                        <div class="marquee-meta-item detail-meta-item">
+                            <span class="detail-streaming-heading">
+                                <span class="marquee-meta-label">Streaming</span>
+                                <span class="detail-streaming-attribution">via JustWatch</span>
+                            </span>
+                            <span class="detail-streaming-logos">
+                                @foreach (var provider in Model.WatchAvailability.Providers)
+                                {
+                                    <a class="detail-streaming-logo-link"
+                                       href="@Model.WatchAvailability.Link"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       aria-label="View @provider.Name watch options on TMDb"
+                                       title="@provider.Name">
+                                        <img src="@provider.LogoUrl" alt="" loading="lazy" />
+                                    </a>
+                                }
+                            </span>
+                        </div>
+                    }
                 </div>
             </div>
         </section>

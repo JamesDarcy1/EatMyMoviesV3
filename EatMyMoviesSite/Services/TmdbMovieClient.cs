@@ -17,10 +17,11 @@ namespace EatMyMoviesSite.Services
         private readonly Func<int, Task<Movie>> _getMovieById;
         private readonly Func<int, Task<ResultContainer<Video>>> _getMovieVideos;
         private readonly Func<int, Task<Credits>> _getMovieCredits;
+        private readonly Func<int, CancellationToken, Task<SingleResultContainer<Dictionary<string, WatchProviders>>>> _getMovieWatchProviders;
         private readonly Func<int, Task<TmdbPerson?>> _getPerson;
 
         public TmdbMovieClient(IOptions<TmdbOptions> options)
-            : this(options.Value, null, null, null, null, null, null)
+            : this(options.Value, null, null, null, null, null, null, null)
         {
         }
 
@@ -31,6 +32,7 @@ namespace EatMyMoviesSite.Services
             Func<int, Task<Movie>>? getMovieById,
             Func<int, Task<ResultContainer<Video>>>? getMovieVideos,
             Func<int, Task<Credits>>? getMovieCredits,
+            Func<int, CancellationToken, Task<SingleResultContainer<Dictionary<string, WatchProviders>>>>? getMovieWatchProviders,
             Func<int, Task<TmdbPerson?>>? getPerson)
         {
             _maxRetryAttempts = options.MaxRetryAttempts;
@@ -45,6 +47,7 @@ namespace EatMyMoviesSite.Services
             _getMovieById = getMovieById ?? GetMovieByIdWithClientAsync;
             _getMovieVideos = getMovieVideos ?? GetMovieVideosWithClientAsync;
             _getMovieCredits = getMovieCredits ?? GetMovieCreditsWithClientAsync;
+            _getMovieWatchProviders = getMovieWatchProviders ?? GetMovieWatchProvidersWithClientAsync;
             _getPerson = getPerson ?? (personId => _tmdbClient.GetPersonAsync(personId));
         }
 
@@ -81,6 +84,15 @@ namespace EatMyMoviesSite.Services
             return ExecuteTmdbRequestAsync(
                 () => _getMovieCredits(movieId),
                 $"getting credits for movie {movieId}");
+        }
+
+        public Task<SingleResultContainer<Dictionary<string, WatchProviders>>> GetMovieWatchProvidersAsync(
+            int movieId,
+            CancellationToken cancellationToken = default)
+        {
+            return ExecuteTmdbRequestAsync(
+                () => _getMovieWatchProviders(movieId, cancellationToken),
+                $"getting watch providers for movie {movieId}");
         }
 
         public Task<TmdbPerson?> GetPersonAsync(int personId)
@@ -146,6 +158,14 @@ namespace EatMyMoviesSite.Services
         {
             return await _tmdbClient.GetMovieCreditsAsync(movieId)
                 ?? throw new InvalidOperationException($"TMDb returned an empty credits response for movie {movieId}.");
+        }
+
+        private async Task<SingleResultContainer<Dictionary<string, WatchProviders>>> GetMovieWatchProvidersWithClientAsync(
+            int movieId,
+            CancellationToken cancellationToken)
+        {
+            return await _tmdbClient.GetMovieWatchProvidersAsync(movieId, cancellationToken)
+                ?? throw new InvalidOperationException($"TMDb returned an empty watch provider response for movie {movieId}.");
         }
     }
 }

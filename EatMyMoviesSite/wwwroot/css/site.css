@@ -994,7 +994,60 @@ a:hover,
 }
 
 .detail-meta-rail {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.detail-streaming-heading {
+    align-items: baseline;
+    display: flex;
+    gap: 0.35rem;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+}
+
+.detail-streaming-heading .marquee-meta-label {
+    margin-bottom: 0;
+}
+
+.detail-streaming-logos {
+    align-items: center;
+    display: flex;
+    gap: 0.4rem;
+    min-height: 2.45rem;
+}
+
+.detail-streaming-logo-link {
+    border: 2px solid rgba(31, 31, 36, 0.22);
+    border-radius: 9px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    overflow: hidden;
+    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.detail-streaming-logo-link:hover {
+    border-color: var(--emm-red);
+    transform: translateY(-1px);
+}
+
+.detail-streaming-logo-link:focus-visible {
+    border-color: var(--emm-red);
+    box-shadow: var(--emm-focus);
+    outline: none;
+}
+
+.detail-streaming-logo-link img {
+    height: 2.25rem;
+    object-fit: cover;
+    width: 2.25rem;
+}
+
+.detail-streaming-attribution {
+    color: var(--emm-muted);
+    font-size: 0.55rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
 }
 
 .detail-synopsis-section {
