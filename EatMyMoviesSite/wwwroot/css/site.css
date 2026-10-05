@@ -40,8 +40,7 @@ main {
     padding-top: 1.25rem;
 }
 
-h1,
-.logo-text {
+h1 {
     color: var(--emm-red);
     font-family: 'Bangers', cursive;
     font-weight: 600;
@@ -83,13 +82,11 @@ small {
     line-height: 1.55;
 }
 
-a,
-.find-out-more {
+a {
     color: var(--emm-red);
 }
 
-a:hover,
-.find-out-more:hover {
+a:hover {
     color: var(--emm-red-dark);
 }
 
@@ -100,25 +97,21 @@ a:hover,
 }
 
 .input,
-.textarea,
 .select select {
     background-color: #fff;
     border-color: rgba(31, 31, 36, 0.18);
     color: var(--emm-ink);
 }
 
-.input::placeholder,
-.textarea::placeholder {
+.input::placeholder {
     color: rgba(31, 31, 36, 0.5);
 }
 
 .button:focus-visible,
 .input:focus,
-.textarea:focus,
 .select select:focus,
 .navbar-burger:focus-visible,
-.clickable-card:focus-visible,
-.tooltip-icon:focus-visible {
+.clickable-card:focus-visible {
     border-color: var(--emm-red);
     box-shadow: var(--emm-focus);
     outline: none;
@@ -216,7 +209,7 @@ a:hover,
     background-color: var(--emm-red-dark);
 }
 
-.navbar-link:not(.is-arrowless)::after {
+.navbar-link::after {
     border-color: var(--emm-red);
 }
 
@@ -228,8 +221,8 @@ a:hover,
     color: var(--emm-red);
 }
 
-.navbar-link:hover:not(.is-arrowless)::after,
-.navbar-link:focus:not(.is-arrowless)::after {
+.navbar-link:hover::after,
+.navbar-link:focus::after {
     border-color: var(--emm-red-dark);
 }
 
@@ -284,10 +277,6 @@ a:hover,
     margin-right: auto;
 }
 
-.home-hero {
-    padding-bottom: 1.5rem;
-}
-
 .box,
 .movie-block {
     background-color: var(--emm-card);
@@ -340,76 +329,8 @@ a:hover,
     max-height: 360px;
 }
 
-.movie-detail-hero {
-    padding: 1.75rem;
-}
-
 .movie-detail-copy h1 {
     margin-top: 0;
-}
-
-.movie-detail-poster {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-}
-
-.movie-detail-poster .poster-on-detail {
-    max-height: 420px;
-    width: min(100%, 300px);
-}
-
-.movie-meta-list {
-    background-color: var(--emm-surface);
-    border: 1px solid rgba(31, 31, 36, 0.14);
-    border-left: 4px solid var(--emm-red);
-    border-radius: var(--emm-radius);
-    display: grid;
-    gap: 0;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: 1.35rem;
-    overflow: hidden;
-    text-align: left;
-}
-
-.movie-meta-item {
-    border-bottom: 1px solid rgba(31, 31, 36, 0.1);
-    min-width: 0;
-    padding: 0.58rem 0.8rem;
-}
-
-.movie-meta-item:nth-last-child(-n + 2) {
-    border-bottom: 0;
-}
-
-.movie-meta-item:last-child {
-    grid-column: 1 / -1;
-}
-
-.movie-meta-label,
-.movie-meta-value {
-    display: inline;
-}
-
-.movie-meta-label {
-    color: var(--emm-red-dark);
-    font-size: 0.78rem;
-    font-weight: 800;
-    letter-spacing: 0;
-    line-height: 1.25;
-    text-transform: uppercase;
-}
-
-.movie-meta-label::after {
-    content: ": ";
-}
-
-.movie-meta-value {
-    color: var(--emm-ink);
-    font-size: 0.98rem;
-    font-weight: 800;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
 }
 
 .movie-detail-overview {
@@ -794,19 +715,6 @@ a:hover,
     display: block;
 }
 
-.home-marquee-hero {
-    padding-bottom: 1rem;
-}
-
-.home-hero-card {
-    max-width: 100%;
-}
-
-.home-lobby-marquee {
-    grid-template-columns: 1fr;
-    min-height: 23rem;
-}
-
 .home-hero-copy {
     max-width: 48rem;
 }
@@ -815,66 +723,18 @@ a:hover,
     min-height: 3.1rem;
     min-width: 12rem;
 }
-
-.home-section-band,
 .home-feature-section,
 .home-list-section {
     margin: 1.25rem auto;
 }
-
-.home-section-band {
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 250, 240, 0.88)),
-        repeating-linear-gradient(90deg, rgba(185, 18, 43, 0.08) 0, rgba(185, 18, 43, 0.08) 1px, transparent 1px, transparent 18px),
-        var(--emm-surface);
-    border: 1px solid rgba(185, 18, 43, 0.18);
-    border-left: 5px solid var(--emm-red);
-    border-radius: var(--emm-radius);
-    box-shadow: var(--emm-shadow);
-    padding: 1.4rem 1.75rem;
-}
-
-.home-section-band h1,
-.home-section-title {
-    margin-top: 0.35rem;
-}
-
-.home-feature-card {
-    max-width: 920px;
-}
-
-.home-feature-link {
-    cursor: pointer;
-}
-
-.home-feature-marquee {
-    grid-template-columns: minmax(160px, 0.5fr) minmax(0, 1.5fr);
-    min-height: 21rem;
-}
-
-.home-feature-poster-frame {
-    --marquee-poster-width: min(100%, 14rem);
-}
-
-.home-feature-copy .marquee-title {
-    font-size: clamp(2.5rem, 6vw, 4.7rem);
-}
-
-.home-feature-meta,
 .ranked-movie-meta {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-
-.home-feature-action,
 .ranked-marquee-cta {
     color: #fff;
     font-weight: 900;
     margin-top: 1rem;
     text-transform: uppercase;
-}
-
-.home-feature-synopsis {
-    padding-bottom: 1.5rem;
 }
 
 .home-list-board {
@@ -976,8 +836,7 @@ a:hover,
     padding: 1.25rem;
 }
 
-.detail-marquee-detail,
-.detail-list-management {
+.detail-marquee-detail {
     max-width: 100%;
 }
 
@@ -1078,19 +937,6 @@ a:hover,
     font-size: 2rem;
     letter-spacing: 0;
     text-transform: uppercase;
-}
-
-.detail-list-management {
-    margin-top: 1.5rem;
-    padding: 1.5rem;
-}
-
-.detail-management-row,
-.detail-management-add {
-    background-color: rgba(255, 255, 255, 0.68);
-    border: 1px solid rgba(31, 31, 36, 0.08);
-    border-radius: 6px;
-    padding: 0.35rem 0.55rem;
 }
 
 .admin-shell,
@@ -1596,60 +1442,6 @@ a.admin-stat:focus {
     color: #fff;
 }
 
-.tooltip-icon {
-    cursor: help;
-    display: inline-flex;
-    margin-left: 0.35rem;
-    position: relative;
-    vertical-align: middle;
-}
-
-.updated-badge > span:first-child {
-    align-items: center;
-    background-color: var(--emm-red);
-    border-radius: 999px;
-    color: #fff;
-    display: inline-flex;
-    font-family: Arial, sans-serif;
-    font-size: 0.75rem;
-    font-weight: 800;
-    height: 1.8rem;
-    justify-content: center;
-    letter-spacing: 0;
-    min-width: 2.35rem;
-    text-shadow: none;
-    text-transform: none;
-}
-
-.tooltip-text {
-    background-color: var(--emm-ink);
-    border-radius: 4px;
-    bottom: 100%;
-    color: #fff;
-    font-family: Arial, sans-serif;
-    font-size: 0.75rem;
-    font-weight: 600;
-    left: 50%;
-    line-height: 1.2;
-    opacity: 0;
-    padding: 0.4rem 0.55rem;
-    position: absolute;
-    text-align: center;
-    text-shadow: none;
-    text-transform: none;
-    transform: translateX(-50%) translateY(-0.25rem);
-    transition: opacity 0.18s ease;
-    visibility: hidden;
-    white-space: nowrap;
-    z-index: 5;
-}
-
-.tooltip-icon:hover .tooltip-text,
-.tooltip-icon:focus-visible .tooltip-text {
-    opacity: 1;
-    visibility: visible;
-}
-
 .progress-indicator {
     display: flex;
     gap: 0.5rem;
@@ -1704,10 +1496,6 @@ a.admin-stat:focus {
     display: flex;
     justify-content: center;
     margin-top: 1rem;
-}
-
-.recommender-next {
-    min-width: 9rem;
 }
 
 .loading-spinner {
@@ -1929,24 +1717,8 @@ a.admin-stat:focus {
         max-height: 70vw;
     }
 
-    .movie-detail-hero {
-        padding: 1.25rem;
-    }
-
     .movie-detail-copy h1 {
         font-size: 2.1rem;
-    }
-
-    .movie-meta-list {
-        margin-top: 1rem;
-    }
-
-    .movie-meta-label {
-        font-size: 0.72rem;
-    }
-
-    .movie-meta-value {
-        font-size: 0.94rem;
     }
 
     .movie-title {
@@ -1997,9 +1769,6 @@ a.admin-stat:focus {
     .question-card {
         padding: 1rem;
     }
-
-    .home-lobby-marquee,
-    .home-feature-marquee,
     .movie-list-marquee-masthead,
     .detail-marquee-hero {
         gap: 1rem;
@@ -2014,34 +1783,20 @@ a.admin-stat:focus {
     .detail-hero-copy {
         text-align: left;
     }
-
-    .home-section-band {
-        padding: 1rem;
-    }
-
-    .home-feature-poster-frame,
     .ranked-marquee-poster-frame,
     .detail-poster-frame {
         --marquee-poster-width: min(58vw, 13.5rem);
         justify-self: start;
         justify-content: flex-start;
     }
-
-    .home-feature-copy .marquee-title,
     .movie-list-marquee-copy .marquee-title,
     .detail-title {
         font-size: 3.2rem;
     }
-
-    .home-feature-meta,
     .ranked-movie-meta,
     .detail-meta-rail {
         gap: 0.45rem;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .home-feature-synopsis {
-        display: none;
     }
 
     .home-list-button {
@@ -2079,10 +1834,6 @@ a.admin-stat:focus {
         padding: 1rem;
     }
 
-    .detail-list-management {
-        padding: 1rem;
-    }
-
     .movie-not-found {
         min-height: 22rem;
         padding: 1rem;
@@ -2090,10 +1841,6 @@ a.admin-stat:focus {
 
     .movie-not-found-ticket {
         padding: 1.45rem 1rem;
-    }
-
-    .detail-management-headings {
-        display: none;
     }
 
     .marquee-question-hero {
@@ -2142,11 +1889,6 @@ a.admin-stat:focus {
     .marquee-ticket-actions {
         margin-left: -1rem;
         margin-right: -1rem;
-    }
-
-    .recommender-next {
-        min-height: 2.85rem;
-        width: min(100%, 22rem);
     }
 
     .recommendation-button {
@@ -2305,7 +2047,7 @@ a.admin-stat:focus {
         color: var(--emm-red-dark);
     }
 
-    .navbar-menu .nav-list-dropdown.is-active > .navbar-link:not(.is-arrowless)::after {
+    .navbar-menu .nav-list-dropdown.is-active > .navbar-link::after {
         border-color: var(--emm-red-dark);
         transform: rotate(135deg);
         transform-origin: center;
@@ -2313,18 +2055,6 @@ a.admin-stat:focus {
 }
 
 @media (max-width: 420px) {
-    .movie-meta-list {
-        grid-template-columns: 1fr;
-    }
-
-    .movie-meta-item,
-    .movie-meta-item:nth-last-child(-n + 2) {
-        border-bottom: 1px solid rgba(31, 31, 36, 0.1);
-    }
-
-    .movie-meta-item:last-child {
-        border-bottom: 0;
-    }
 
     .container {
         padding-left: 0.75rem;
@@ -2469,7 +2199,7 @@ a.admin-stat:focus {
     display: none;
 }
 
-.navbar-link:not(.is-arrowless)::after {
+.navbar-link::after {
     border-color: var(--emm-cream);
     right: 0.7rem;
 }
@@ -4072,17 +3802,6 @@ main {
 
 .pagination-step-link {
     min-width: 5.4rem;
-}
-
-.detail-management-panel .input,
-.detail-management-panel .select select {
-    font-weight: 800;
-}
-
-.detail-management-row:focus-within,
-.detail-management-add:focus-within {
-    border-color: rgba(231, 24, 55, 0.38);
-    box-shadow: 0 0 0 3px rgba(231, 24, 55, 0.12);
 }
 
 .movie-not-found-ticket {

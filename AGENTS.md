@@ -121,13 +121,13 @@ Only run `database update` against the intended database. Check the active conne
 
 ## Frontend Conventions
 
-The UI uses Razor views, Bulma CSS from `wwwroot/lib/bulma`, jQuery, Vue from `wwwroot/lib/vue`, canvas-confetti from `wwwroot/lib/canvas-confetti`, and project-specific styles/scripts in `EatMyMoviesSite/wwwroot/css/site.css` and `EatMyMoviesSite/wwwroot/js/site.js`.
+The UI uses Razor views, project-owned CSS in `EatMyMoviesSite/wwwroot/css/base.css` and `EatMyMoviesSite/wwwroot/css/site.css`, jQuery, Vue from `wwwroot/lib/vue`, canvas-confetti from `wwwroot/lib/canvas-confetti`, and project-specific scripts in `EatMyMoviesSite/wwwroot/js/site.js`. `base.css` provides only the layout, control, and utility classes used by the views; keep it small when adding UI.
 
 When changing the frontend:
 
 - Keep styles consistent with the existing red/cream movie-themed visual language.
 - Treat the home page and recommender flow as the strongest current design reference. Preserve the midnight marquee/ticket-booth direction and extend it to supporting pages instead of redesigning those pages away from it.
-- Reuse Bulma classes and existing CSS utilities before introducing new patterns.
+- Reuse the existing classes and CSS utilities before introducing new patterns. Add a base primitive only when a view needs it.
 - Check both desktop and mobile breakpoints; `site.css` has explicit rules around `768px`.
 - Keep static assets under `wwwroot`.
 - Preserve local vendored assets under `wwwroot/lib`; do not replace them with CDN-only dependencies unless the user explicitly wants that.

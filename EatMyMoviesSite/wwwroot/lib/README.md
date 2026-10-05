@@ -6,7 +6,6 @@ This app intentionally vendors browser dependencies under `wwwroot/lib` and does
 
 | Asset | Version | Local path | Source | License |
 | --- | --- | --- | --- | --- |
-| Bulma | 1.0.4 | `bulma/css/` | https://github.com/jgthms/bulma | MIT |
 | jQuery | 3.7.1 | `jquery/dist/` | https://github.com/jquery/jquery | MIT |
 | jQuery Validation | 1.21.0 | `jquery-validation/dist/` | https://github.com/jquery-validation/jquery-validation | MIT |
 | jQuery Validation Unobtrusive | 4.0.0 | `jquery-validation-unobtrusive/` | https://github.com/dotnet/aspnetcore | Apache-2.0 |
@@ -27,3 +26,4 @@ This app intentionally vendors browser dependencies under `wwwroot/lib` and does
 - Use readable assets in Development when the layout or page provides an environment-specific include.
 - Use minified assets outside Development when a matching minified file exists.
 - Keep the local `wwwroot/lib` model unless the project explicitly adopts a frontend package pipeline later.
+- Site layout and controls use the project-owned `wwwroot/css/base.css` and `wwwroot/css/site.css`; no CSS framework is vendored.
