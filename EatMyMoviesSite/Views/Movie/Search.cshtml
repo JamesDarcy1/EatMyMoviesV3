@@ -34,7 +34,7 @@
                            v-on:mouseenter="highlightedIndex = index"
                            v-on:click="selectMovie(movie)">
                             <img :src="posterUrl(movie.posterPath)" :alt="movie.title + ' poster'" class="dropdown-poster" loading="lazy" v-on:error="usePosterFallback" />
-                            <span class="dropdown-title">{{ movie.title }}</span>
+                            <span class="dropdown-title">{{ movie.title }} <small class="search-release-year">({{ movie.releaseYear || 'Year unavailable' }})</small></span>
                         </a>
                     </div>
                 </div>

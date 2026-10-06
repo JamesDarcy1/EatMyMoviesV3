@@ -4,6 +4,8 @@
 	var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
 	var isHomeActive = string.Equals(currentController, "Home", StringComparison.OrdinalIgnoreCase)
 		&& string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase);
+	var isRecommenderActive = string.Equals(currentController, "Movie", StringComparison.OrdinalIgnoreCase)
+		&& string.Equals(currentAction, "Recommender", StringComparison.OrdinalIgnoreCase);
 	var isAboutActive = string.Equals(currentController, "Home", StringComparison.OrdinalIgnoreCase)
 		&& string.Equals(currentAction, "About", StringComparison.OrdinalIgnoreCase);
 	var isListActive = string.Equals(currentController, "List", StringComparison.OrdinalIgnoreCase);
@@ -63,6 +65,7 @@
 			<div id="navbar-target" class="navbar-menu">
 				<div class="navbar-start">
 					<a class="navbar-item @(isHomeActive ? "is-active" : null)" asp-controller="Home" asp-action="Index" aria-current="@(isHomeActive ? "page" : null)">Home</a>
+					<a class="navbar-item @(isRecommenderActive ? "is-active" : null)" asp-controller="Movie" asp-action="Recommender" aria-current="@(isRecommenderActive ? "page" : null)">Find a movie</a>
 					<a class="navbar-item @(isSpinTheWheelActive ? "is-active" : null)" asp-controller="Movie" asp-action="SpinTheWheel" aria-current="@(isSpinTheWheelActive ? "page" : null)">Spin the Wheel</a>
 					<div class="navbar-item has-dropdown is-hoverable nav-list-dropdown @(isListActive ? "is-active-route" : null)">
 						<a class="navbar-link nav-list-toggle" role="button" aria-expanded="false" tabindex="0" aria-current="@(isListActive ? "page" : null)">

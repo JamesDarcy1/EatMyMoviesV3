@@ -5458,3 +5458,7 @@ main {
     .recommender-booth .marquee-progress-bulb.progress-step { min-height: 44px; min-width: 44px; }
     .recommender-booth .marquee-ticket-option { font-size: 0.8rem; }
 }
+
+/* Preserve the release-year distinction after adding a wheel contender. */
+.spin-wheel-release-year { display: block; margin: 0.15rem 0 0.35rem; font-size: 0.85rem; }
+.search-release-year { font-size: 0.85em; font-weight: 400; }

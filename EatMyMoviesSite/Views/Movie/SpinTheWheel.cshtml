@@ -62,7 +62,7 @@
                                             <img :src="posterUrl(movie.posterPath)" :alt="movie.title + ' poster'" loading="lazy" v-on:error="usePosterFallback" />
                                             <span class="spin-wheel-search-copy">
                                                 <strong>{{ movie.title }}</strong>
-                                                <small>Movie result</small>
+                                                <small>{{ movie.releaseYear || 'Year unavailable' }}</small>
                                             </span>
                                         </button>
                                     </div>
@@ -87,6 +87,7 @@
                             <img :src="posterUrl(movie.posterPath)" :alt="movie.title + ' poster'" loading="lazy" v-on:error="usePosterFallback" />
                             <div>
                                 <strong>{{ movie.title }}</strong>
+                                <small class="spin-wheel-release-year">{{ movie.releaseYear || 'Year unavailable' }}</small>
                                 <a :href="detailUrl(movie)">View details</a>
                             </div>
                             <button type="button" class="button spin-wheel-remove" :disabled="isSpinning" v-on:click="removeMovie(movie.id)" :aria-label="'Remove ' + movie.title">
@@ -154,6 +155,7 @@
                         <div>
                             <span class="spin-wheel-winner-label">Tonight's pick</span>
                             <h3>{{ winningMovie.title }}</h3>
+                            <p class="spin-wheel-release-year">{{ winningMovie.releaseYear || 'Year unavailable' }}</p>
                             <div class="spin-wheel-result-actions">
                                 <a class="button is-primary" :href="detailUrl(winningMovie)">View details</a>
                             </div>

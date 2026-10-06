@@ -87,6 +87,7 @@ namespace EatMyMoviesSite.Services
                                                         {
                                                             Id = x.Id,
                                                             Title = x.Title,
+                                                            ReleaseYear = x.ReleaseDate?.Year,
                                                             PosterPath = x.PosterPath
                                                         }).Take(_externalApiOptions.SearchDropdownLimit).ToList();
             return reducedList;

@@ -19,6 +19,42 @@ namespace EatMyMovies.Tests;
 public class MovieServiceTests
 {
     [Fact]
+    public async Task SearchMoviesByTitle_PreservesIdentityAndMapsOptionalReleaseYearWithoutDetailRequests()
+    {
+        var searches = 0;
+        var detailRequests = 0;
+        var service = CreateService(
+            searchMovies: title =>
+            {
+                Assert.Equal("Dune", title);
+                searches++;
+                return Task.FromResult(new SearchContainer<SearchMovie>
+                {
+                    Results = new List<SearchMovie>
+                    {
+                        new() { Id = 438631, Title = "Dune", PosterPath = "/new.jpg", ReleaseDate = new DateTime(2021, 9, 15) },
+                        new() { Id = 841, Title = "Dune", PosterPath = "/old.jpg", ReleaseDate = new DateTime(1984, 12, 14) },
+                        new() { Id = 999, Title = "Undated Film", PosterPath = "/unknown.jpg", ReleaseDate = null }
+                    }
+                });
+            },
+            getMovieById: id =>
+            {
+                detailRequests++;
+                return Task.FromResult(TestHelpers.CreateTmdbMovie(id: id));
+            });
+
+        var results = await service.SearchMoviesByTitle("Dune");
+
+        Assert.Equal(new[] { 438631, 841, 999 }, results.Select(movie => movie.Id));
+        Assert.Equal(new int?[] { 2021, 1984, null }, results.Select(movie => movie.ReleaseYear));
+        Assert.Equal(new[] { "Dune", "Dune", "Undated Film" }, results.Select(movie => movie.Title));
+        Assert.Equal(new[] { "/new.jpg", "/old.jpg", "/unknown.jpg" }, results.Select(movie => movie.PosterPath));
+        Assert.Equal(1, searches);
+        Assert.Equal(0, detailRequests);
+    }
+
+    [Fact]
     public async Task BuildMovieList_PreservesRankingOrderAndReusesCachedApiResults()
     {
         var firstMovie = TestHelpers.CreateStoreMovie("First Movie", 101);
