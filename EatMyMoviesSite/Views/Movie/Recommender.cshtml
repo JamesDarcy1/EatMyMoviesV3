@@ -96,7 +96,8 @@
         </symbol>
     </svg>
 
-    <transition name="fade">
+    <p class="is-sr-only" role="status" aria-live="polite" aria-atomic="true">{{ statusMessage }}</p>
+    <transition name="fade" mode="out-in" v-on:after-enter="focusCurrentView">
         <section v-if="!showRecommendationBox" class="marquee-question-shell recommender-booth has-text-centered" aria-labelledby="recommender-question-title">
             <div class="recommender-booth-sign" aria-hidden="true">
                 <span>Find Your Movie</span>
@@ -115,10 +116,10 @@
                         <button v-for="(question, index) in prompts"
                                 :key="index"
                                 type="button"
-                                :class="['progress-step', 'marquee-progress-bulb', { 'is-current': currentQuestionIndex === index, 'is-complete': index < currentQuestionIndex, 'is-clickable': index <= currentQuestionIndex }]"
+                                :class="['progress-step', 'marquee-progress-bulb', { 'is-current': currentQuestionIndex === index, 'is-complete': index < currentQuestionIndex, 'is-clickable': index <= furthestQuestionIndex }]"
                                 :aria-label="'Question ' + (index + 1)"
                                 :aria-current="currentQuestionIndex === index ? 'step' : null"
-                                :disabled="index > currentQuestionIndex || isLoading"
+                                :disabled="index > furthestQuestionIndex || isLoading"
                                 v-on:click="goToQuestion(index)">
                             {{ index + 1 }}
                         </button>
@@ -141,7 +142,7 @@
                                 <use href="#reco-icon-ticket-x"></use>
                             </svg>
                             <span class="marquee-ticket-step-label">Ticket jam</span>
-                            <p class="question-prompt marquee-ticket-prompt">{{ loadError }}</p>
+                            <h2 ref="errorHeading" tabindex="-1" class="question-prompt marquee-ticket-prompt recommender-focus-heading">{{ loadError }}</h2>
                             <small>Please try again.</small>
                             <div class="recommender-actions marquee-ticket-actions">
                                 <button type="button" class="button recommender-nav-button marquee-ticket-next" v-on:click="retryAfterError">
@@ -157,24 +158,25 @@
                                     <h2>Build your bill</h2>
                                     <span aria-hidden="true"></span>
                                 </div>
-                                <span v-if="!allQuestionsAnswered" class="marquee-ticket-step-label">Question {{ currentQuestionIndex + 1 }} of {{ maxQuestions }}</span>
-                                <p v-if="!allQuestionsAnswered" class="question-prompt marquee-ticket-prompt">{{ prompts[currentQuestionIndex] }}</p>
+                                <span id="question-step" v-if="!allQuestionsAnswered" class="marquee-ticket-step-label">Question {{ currentQuestionIndex + 1 }} of {{ maxQuestions }}</span>
+                                <h3 id="question-prompt" ref="questionHeading" tabindex="-1" aria-describedby="question-step" v-if="!allQuestionsAnswered" class="question-prompt marquee-ticket-prompt recommender-focus-heading">{{ prompts[currentQuestionIndex] }}</h3>
                                 <small v-if="currentQuestionIndex === 0">Select as many as you'd like.</small>
                                 <small v-else-if="currentQuestionIndex === 3">Choose one.</small>
                                 <small v-else>Choose one.</small>
                             </div>
 
                             <div v-if="currentQuestionIndex === 0" class="marquee-ticket-panel marquee-ticket-panel-feelings">
-                                <div class="recommender-option-grid feeling-grid marquee-option-grid">
+                                <div class="recommender-option-grid feeling-grid marquee-option-grid" role="group" aria-labelledby="question-prompt">
                                     <button v-for="feeling in feelings"
                                             type="button"
                                             :key="feeling"
                                             :class="['button recommender-option genre-button marquee-ticket-option', { 'is-primary': selectedFeelings.includes(feeling) }]"
-                                            v-on:click="toggleFeeling(feeling)">
+                                            :aria-pressed="(selectedFeelings.includes(feeling)).toString()" v-on:click="toggleFeeling(feeling)">
                                         <svg class="recommender-option-icon" aria-hidden="true" focusable="false">
                                             <use :href="'#' + iconForFeeling(feeling)"></use>
                                         </svg>
                                         <span>{{ formatFeeling(feeling) }}</span>
+                                        <span class="recommender-selected-mark" aria-hidden="true" v-if="selectedFeelings.includes(feeling)">&#10003;</span>
                                     </button>
                                 </div>
                                 <div class="recommender-actions marquee-ticket-actions marquee-sticky-cta">
@@ -186,16 +188,17 @@
                             </div>
 
                             <div v-if="currentQuestionIndex === 1" class="marquee-ticket-panel">
-                                <div class="buttons is-centered marquee-ticket-button-group">
+                                <div class="buttons is-centered marquee-ticket-button-group" role="group" aria-labelledby="question-prompt">
                                     <button v-for="(duration, index) in durations"
                                             type="button"
                                             :key="index"
                                             :class="['button recommender-option wide-button marquee-ticket-option marquee-ticket-stub', { 'is-primary': durationPreference === duration }]"
-                                            v-on:click="selectDuration(index)">
+                                            :aria-pressed="(durationPreference === duration).toString()" v-on:click="selectDuration(index)">
                                         <svg class="recommender-option-icon" aria-hidden="true" focusable="false">
                                             <use href="#reco-icon-clock"></use>
                                         </svg>
                                         <span>{{ duration }}</span>
+                                        <span class="recommender-selected-mark" aria-hidden="true" v-if="durationPreference === duration">&#10003;</span>
                                     </button>
                                 </div>
                                 <div class="recommender-actions marquee-ticket-actions marquee-sticky-cta">
@@ -211,24 +214,26 @@
                             </div>
 
                             <div v-if="currentQuestionIndex === 2" class="marquee-ticket-panel">
-                                <div class="buttons is-centered marquee-ticket-button-group">
+                                <div class="buttons is-centered marquee-ticket-button-group" role="group" aria-labelledby="question-prompt">
                                     <button type="button"
                                             class="button recommender-option marquee-ticket-option marquee-ticket-stub"
                                             :class="{ 'is-selected is-primary': openToForeignFilm === true }"
-                                            v-on:click="selectForeignFilm(true)">
+                                            :aria-pressed="(openToForeignFilm === true).toString()" v-on:click="selectForeignFilm(true)">
                                         <svg class="recommender-option-icon" aria-hidden="true" focusable="false">
                                             <use href="#reco-icon-globe"></use>
                                         </svg>
                                         <span>Yes</span>
+                                        <span class="recommender-selected-mark" aria-hidden="true" v-if="openToForeignFilm === true">&#10003;</span>
                                     </button>
                                     <button type="button"
                                             class="button recommender-option marquee-ticket-option marquee-ticket-stub"
                                             :class="{ 'is-selected is-primary': openToForeignFilm === false }"
-                                            v-on:click="selectForeignFilm(false)">
+                                            :aria-pressed="(openToForeignFilm === false).toString()" v-on:click="selectForeignFilm(false)">
                                         <svg class="recommender-option-icon" aria-hidden="true" focusable="false">
                                             <use href="#reco-icon-globe"></use>
                                         </svg>
                                         <span>No</span>
+                                        <span class="recommender-selected-mark" aria-hidden="true" v-if="openToForeignFilm === false">&#10003;</span>
                                     </button>
                                 </div>
                                 <div class="recommender-actions marquee-ticket-actions marquee-sticky-cta">
@@ -244,16 +249,17 @@
                             </div>
 
                             <div v-if="currentQuestionIndex === 3 && !allQuestionsAnswered" class="marquee-ticket-panel">
-                                <div class="buttons is-centered marquee-ticket-button-group">
+                                <div class="buttons is-centered marquee-ticket-button-group" role="group" aria-labelledby="question-prompt">
                                     <button v-for="(yearRange, index) in yearRanges"
                                             type="button"
                                             :key="index"
                                             :class="['button recommender-option marquee-ticket-option marquee-ticket-stub', { 'is-primary': releaseYearRange === yearRange }]"
-                                            v-on:click="selectYearRange(index)">
+                                            :aria-pressed="(releaseYearRange === yearRange).toString()" v-on:click="selectYearRange(index)">
                                         <svg class="recommender-option-icon" aria-hidden="true" focusable="false">
                                             <use href="#reco-icon-calendar"></use>
                                         </svg>
                                         <span>{{ yearRange }}</span>
+                                        <span class="recommender-selected-mark" aria-hidden="true" v-if="releaseYearRange === yearRange">&#10003;</span>
                                     </button>
                                 </div>
                                 <div class="recommender-actions marquee-ticket-actions marquee-sticky-cta">
@@ -274,53 +280,39 @@
                 <div class="recommender-booth-base" aria-hidden="true"></div>
             </div>
         </section>
-    </transition>
 
-    <div class="has-text-centered empty-recommendation marquee-empty-ticket" v-show="showRecommendationBox && !isLoading && !recommendedMovie">
+    <div v-else-if="!recommendedMovie" class="has-text-centered empty-recommendation marquee-empty-ticket">
         <svg class="marquee-state-icon" aria-hidden="true" focusable="false">
             <use href="#reco-icon-ticket-x"></use>
         </svg>
-        <p>No movie found matching your criteria</p>
+        <h2 ref="emptyHeading" tabindex="-1" class="recommender-focus-heading">No movie found matching your criteria</h2>
         <small>Try changing one answer and we will print a fresh ticket.</small>
-        <button type="button" class="button recommendation-button" v-on:click="startOver">Start over</button>
+        <button type="button" class="button recommendation-button" v-on:click="editAnswers">Edit answers</button>
     </div>
 
-    <transition name="slide">
-        <div v-if="showRecommendationBox && recommendedMovie" class="recommendation-result">
+        <div v-else class="recommendation-result">
             <article class="marquee-result" :style="{ '--poster-backdrop': 'url(' + posterUrl(recommendedMovie.posterPath) + ')' }">
                 <section class="marquee-hero" aria-labelledby="recommendation-title">
                     <div class="marquee-hero-glow" aria-hidden="true"></div>
                     <div class="marquee-poster-frame">
                         <img class="poster marquee-poster" :src="posterUrl(recommendedMovie.posterPath)" :alt="recommendedMovie.title + ' poster'" v-on:error="usePosterFallback" />
-                        <div class="recommendation-action-stack" aria-label="Recommendation actions">
-                            <button type="button" class="button recommendation-icon-button" :disabled="!hasNextRecommendation" v-on:click="loadNextRecommendation" aria-label="Next recommendation" title="Next recommendation">
-                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                    <path d="M5 5v14l9-7-9-7z"></path>
-                                    <path d="M17 5v14"></path>
-                                </svg>
-                            </button>
-                            <button type="button" class="button recommendation-icon-button" v-on:click="startOver" aria-label="Start over" title="Start over">
-                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                    <path d="M4 12a8 8 0 1 0 2.35-5.65"></path>
-                                    <path d="M4 4v6h6"></path>
-                                </svg>
-                            </button>
-                            <button type="button" class="button recommendation-icon-button" v-on:click="shareOnWhatsApp" aria-label="Share on WhatsApp" title="Share on WhatsApp">
-                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                    <circle cx="18" cy="5" r="3"></circle>
-                                    <circle cx="6" cy="12" r="3"></circle>
-                                    <circle cx="18" cy="19" r="3"></circle>
-                                    <path d="m8.6 10.6 6.8-4.2"></path>
-                                    <path d="m8.6 13.4 6.8 4.2"></path>
-                                </svg>
-                            </button>
-                        </div>
+
                     </div>
 
                     <div class="marquee-hero-copy">
                         <span class="marquee-kicker">Tonight's pick</span>
-                        <h1 id="recommendation-title" class="marquee-title">{{ recommendedMovie.title }}</h1>
+                        <h1 id="recommendation-title" ref="resultHeading" tabindex="-1" class="marquee-title recommender-focus-heading">{{ recommendedMovie.title }}</h1>
                         <p class="marquee-genres">{{ recommendedMovie.genres }}</p>
+                        <div class="recommendation-controls" role="group" aria-label="Recommendation actions">
+                            <button type="button" class="button recommendation-control" :aria-disabled="(!hasPreviousRecommendation).toString()" v-on:click="loadPreviousRecommendation">
+                                <svg aria-hidden="true" focusable="false"><use href="#reco-icon-arrow-left"></use></svg>Previous
+                            </button>
+                            <button type="button" class="button recommendation-control recommendation-control-primary" :aria-disabled="(!hasNextRecommendation).toString()" v-on:click="loadNextRecommendation">
+                                Next pick<svg aria-hidden="true" focusable="false"><use href="#reco-icon-arrow-right"></use></svg>
+                            </button>
+                            <button type="button" class="button recommendation-control recommendation-control-quiet" v-on:click="editAnswers">Edit answers</button>
+                            <button type="button" class="button recommendation-control recommendation-control-quiet" v-on:click="shareOnWhatsApp">WhatsApp</button>
+                        </div>
                         <div class="marquee-meta-rail" aria-label="Movie details">
                             <div class="marquee-meta-item">
                                 <span class="marquee-meta-label">Year</span>
@@ -386,6 +378,9 @@
                     feelings: [],
                     selectedFeelings: [],
                     currentQuestionIndex: 0,
+                    furthestQuestionIndex: 0,
+                    pendingFocus: false,
+                    resultAnnouncement: '',
                     maxQuestions: 4,
                     recommendedMovie: null,
                     recommendationCollection: [],
@@ -408,11 +403,36 @@
                 };
             },
             computed: {
+                hasPreviousRecommendation() {
+                    return this.currentRecommendationIndex > 0;
+                },
+                statusMessage() {
+                    if (this.isLoading) {
+                        return this.allQuestionsAnswered ? 'Finding your movie recommendations.' : 'Loading movie questions.';
+                    }
+                    return this.resultAnnouncement;
+                },
                 hasNextRecommendation() {
                     return this.currentRecommendationIndex < this.recommendationCollection.length - 1;
                 }
             },
             methods: {
+                requestViewFocus() {
+                    this.pendingFocus = true;
+                    this.$nextTick(() => this.focusCurrentView());
+                },
+                focusCurrentView() {
+                    if (!this.pendingFocus || this.isLoading) return;
+                    const heading = this.loadError ? this.$refs.errorHeading
+                        : this.showRecommendationBox ? (this.recommendedMovie ? this.$refs.resultHeading : this.$refs.emptyHeading)
+                        : this.$refs.questionHeading;
+                    // During an out-in transition the destination isn't mounted yet.
+                    // after-enter retries once the new heading has its final position.
+                    if (!heading) return;
+                    this.pendingFocus = false;
+                    heading.focus({ preventScroll: true });
+                    heading.scrollIntoView({ block: 'start', behavior: 'instant' });
+                },
                 toggleFeeling(feeling) {
                     const index = this.selectedFeelings.indexOf(feeling);
                     if (index > -1) {
@@ -444,11 +464,14 @@
                 nextQuestion() {
                     if (this.currentQuestionIndex < this.maxQuestions - 1) {
                         this.currentQuestionIndex++;
+                        this.furthestQuestionIndex = Math.max(this.furthestQuestionIndex, this.currentQuestionIndex);
+                        this.requestViewFocus();
                     }
                 },
                 previousQuestion() {
                     if (this.currentQuestionIndex > 0) {
                         this.currentQuestionIndex--;
+                        this.requestViewFocus();
                     }
                 },
                 selectDuration(index) {
@@ -461,14 +484,22 @@
                     this.releaseYearRange = this.yearRanges[index];
                 },
                 fetchRecommendedMovie() {
+                    const answers = [this.selectedFeelings.length > 0, !!this.durationPreference, this.openToForeignFilm !== null, !!this.releaseYearRange];
+                    const unanswered = answers.indexOf(false);
+                    if (unanswered >= 0) {
+                        this.currentQuestionIndex = unanswered;
+                        this.requestViewFocus();
+                        return;
+                    }
                     this.allQuestionsAnswered = true;
+                    this.resultAnnouncement = '';
                     this.isLoading = true;
                     this.loadError = '';
 
                     const feelingsParam = this.selectedFeelings.join(',');
                     const url = `/Movie/GetRecommendations?feelings=${encodeURIComponent(feelingsParam)}&duration=${encodeURIComponent(this.durationPreference)}&openToForeignFilm=${this.openToForeignFilm}&yearRange=${encodeURIComponent(this.releaseYearRange)}`;
 
-                    fetch(url)
+                    return fetch(url)
                         .then(response => {
                             if (!response.ok) {
                                 throw new Error('Recommendation failed');
@@ -489,6 +520,7 @@
                         })
                         .finally(() => {
                             this.isLoading = false;
+                            this.requestViewFocus();
                         });
                 },
                 retryAfterError() {
@@ -500,23 +532,23 @@
                     window.location.reload();
                 },
                 loadNextRecommendation() {
-                    if (this.hasNextRecommendation) {
-                        this.currentRecommendationIndex++;
-                        this.recommendedMovie = this.recommendationCollection[this.currentRecommendationIndex];
-                    }
+                    if (this.hasNextRecommendation) this.showResult(this.currentRecommendationIndex + 1);
                 },
-                startOver() {
+                loadPreviousRecommendation() {
+                    if (this.hasPreviousRecommendation) this.showResult(this.currentRecommendationIndex - 1);
+                },
+                showResult(index) {
+                    this.currentRecommendationIndex = index;
+                    this.recommendedMovie = this.recommendationCollection[index];
+                    this.resultAnnouncement = this.recommendedMovie.title + ', recommendation ' + (index + 1) + ' of ' + this.recommendationCollection.length + '.';
+                },
+                editAnswers() {
                     this.showRecommendationBox = false;
                     this.currentQuestionIndex = 0;
-                    this.selectedFeelings = [];
-                    this.durationPreference = null;
-                    this.openToForeignFilm = null;
-                    this.releaseYearRange = null;
                     this.allQuestionsAnswered = false;
-                    this.recommendedMovie = null;
-                    this.recommendationCollection = [];
-                    this.currentRecommendationIndex = 0;
                     this.loadError = '';
+                    this.resultAnnouncement = '';
+                    this.requestViewFocus();
                 },
                 shareOnWhatsApp() {
                     const releaseYear = this.recommendedMovie.releaseDate.slice(-4);
@@ -526,8 +558,9 @@
                     window.open(url, '_blank', 'noopener');
                 },
                 goToQuestion(index) {
-                    if (index <= this.currentQuestionIndex) {
+                    if (index >= 0 && index <= this.furthestQuestionIndex && !this.isLoading) {
                         this.currentQuestionIndex = index;
+                        this.requestViewFocus();
                     }
                 },
                 releaseYear(releaseDate) {

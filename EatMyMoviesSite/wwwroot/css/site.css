@@ -5409,3 +5409,52 @@ main {
         transition: none !important;
     }
 }
+
+/* Recommendation flow: labelled controls and compact, accessible questions. */
+.recommendation-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin: 1rem 0 1.25rem;
+}
+.recommendation-control.button {
+    background: transparent;
+    border: 1px solid rgba(255, 250, 240, 0.6);
+    border-radius: 7px;
+    color: var(--emm-cream, #fffaf0);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    min-height: 44px;
+    margin: 0;
+    padding: 0.55rem 0.75rem;
+    text-transform: none;
+}
+.recommendation-control-primary.button { background: var(--emm-red); border-color: var(--emm-red); }
+.recommendation-control-quiet.button { border-color: transparent; }
+.recommendation-control.button:hover { background: rgba(255, 250, 240, 0.12); color: #fffaf0; }
+.recommendation-control-primary.button:hover { background: var(--emm-red-dark); }
+.recommendation-control.button[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; transform: none; }
+.recommendation-control svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; }
+.recommender-focus-heading { scroll-margin-top: 1rem; }
+.recommender-focus-heading:focus-visible { outline: 2px solid var(--emm-red); outline-offset: 4px; }
+.recommender-booth .marquee-ticket-option,
+.recommender-booth .recommender-nav-button.button { min-height: 44px; }
+.recommender-booth .marquee-ticket-option { position: relative; padding-right: 1.5rem; white-space: normal; }
+.recommender-selected-mark { position: absolute; right: 0.35rem; top: 0.3rem; font-size: 0.75rem; }
+.recommender-booth .question-prompt { font-family: inherit; text-transform: none; line-height: 1.35; }
+@media (max-width: 768px) {
+    .recommendation-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .recommendation-control.button { width: 100%; padding-inline: 0.45rem; }
+    .recommendation-control-quiet.button { font-size: 0.82rem; }
+    .recommender-booth .marquee-question-stage { min-height: 0; }
+    .recommender-booth-frame { padding-top: 1.5rem; }
+    .recommender-booth-frame::before { top: 1rem; }
+    .recommender-booth .marquee-ticket-actions { margin-top: 0.75rem; padding-top: 1rem; }
+    .recommender-booth .marquee-progress-bulb.progress-step { min-height: 44px; min-width: 44px; }
+    .recommender-booth .marquee-ticket-option { font-size: 0.8rem; }
+}

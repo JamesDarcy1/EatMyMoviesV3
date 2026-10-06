@@ -133,6 +133,7 @@ When changing the frontend:
 - Preserve local vendored assets under `wwwroot/lib`; do not replace them with CDN-only dependencies unless the user explicitly wants that.
 - `EatMyMoviesSite/wwwroot/lib/README.md` documents frontend vendor versions, source URLs, licenses, and the manual update process. Update it whenever vendored frontend assets change.
 - Use readable vendor files in Development and minified vendor files outside Development where the layout or view has environment-specific includes.
+- The recommender keeps answers when editing, traverses its loaded results with labelled Previous/Next controls, and focuses question/result headings after Vue rendering and transitions. Keep its answer groups, pressed states, live announcements and 44px touch targets accessible. Result navigation uses guarded aria-disabled controls so keyboard focus stays stable at the ends of the collection.
 - The Spin the Wheel feature lives at `/movie/spin-the-wheel` in `Views/Movie/SpinTheWheel.cshtml`; it is client-side Vue state, reuses `/movie/SearchForMovie` for TMDb-backed selections, and should keep wheel animation local to CSS/JS rather than adding server-side persistence.
 - The public movie-detail page conditionally shows a `Streaming` metadata card with up to three logo-only UK providers. Each logo links to TMDb's supplied regional watch-options URL in a new tab. Keep the visible compact-header `via JustWatch` attribution whenever this data is rendered; do not restore the former standalone provider panel or rent/buy offers.
 
@@ -155,6 +156,7 @@ Before handing off changes, run at least:
 ```powershell
 dotnet build EatMyMoviesV3.sln
 dotnet test EatMyMoviesV3.sln
+node --test EatMyMovies.Tests/Frontend/*.test.cjs
 ```
 
 The current test suite covers repositories, `MovieService`, `AdminContentService`, mapper behavior, and list/admin controllers. Add or update focused tests when changing those areas.
