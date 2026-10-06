@@ -1,5 +1,11 @@
-/* Bangers is intentionally kept as the marquee display face; see wwwroot/lib/README.md for the dependency strategy. */
-@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+/* Load the marquee face locally so it is available before the first text paint. */
+@font-face {
+    font-family: 'Bangers';
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url('../lib/bangers/Bangers-Regular.ttf') format('truetype');
+}
 
 :root {
     --emm-red: #e71837;
@@ -3203,7 +3209,7 @@ main {
     align-items: stretch;
     display: grid;
     gap: 0.8rem;
-    grid-template-columns: repeat(3, minmax(0, 13rem));
+    grid-template-columns: repeat(auto-fit, minmax(0, 13rem));
     justify-content: center;
     margin-bottom: 0;
 }

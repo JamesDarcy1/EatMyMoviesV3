@@ -11,6 +11,7 @@ This app intentionally vendors browser dependencies under `wwwroot/lib` and does
 | jQuery Validation Unobtrusive | 4.0.0 | `jquery-validation-unobtrusive/` | https://github.com/dotnet/aspnetcore | Apache-2.0 |
 | Vue | 3.5.21 | `vue/` | https://github.com/vuejs/core | MIT |
 | canvas-confetti | 1.9.4 | `canvas-confetti/` | https://github.com/catdad/canvas-confetti | ISC |
+| Bangers | 2.100 | `bangers/Bangers-Regular.ttf` | https://github.com/google/fonts/tree/main/ofl/bangers | SIL OFL 1.1 (`bangers/OFL.txt`) |
 
 ## Update Process
 
@@ -27,3 +28,4 @@ This app intentionally vendors browser dependencies under `wwwroot/lib` and does
 - Use minified assets outside Development when a matching minified file exists.
 - Keep the local `wwwroot/lib` model unless the project explicitly adopts a frontend package pipeline later.
 - Site layout and controls use the project-owned `wwwroot/css/base.css` and `wwwroot/css/site.css`; no CSS framework is vendored.
+- The shared layout preloads the local Bangers font; `site.css` declares it with `font-display: block` to avoid a fallback-font flash.

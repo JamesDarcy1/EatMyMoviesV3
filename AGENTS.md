@@ -130,7 +130,7 @@ When changing the frontend:
 - Reuse the existing classes and CSS utilities before introducing new patterns. Add a base primitive only when a view needs it.
 - Check both desktop and mobile breakpoints; `site.css` has explicit rules around `768px`.
 - Keep static assets under `wwwroot`.
-- Preserve local vendored assets under `wwwroot/lib`; do not replace them with CDN-only dependencies unless the user explicitly wants that.
+- Preserve local vendored assets under `wwwroot/lib`; do not replace them with CDN-only dependencies unless the user explicitly wants that. The Bangers display font is preloaded from the shared layout and served locally with its OFL license; keep it local to avoid a fallback-font flash.
 - `EatMyMoviesSite/wwwroot/lib/README.md` documents frontend vendor versions, source URLs, licenses, and the manual update process. Update it whenever vendored frontend assets change.
 - Use readable vendor files in Development and minified vendor files outside Development where the layout or view has environment-specific includes.
 - The recommender keeps answers when editing, traverses its loaded results with labelled Previous/Next controls, and focuses question/result headings after Vue rendering and transitions. Keep its answer groups, pressed states, live announcements and 44px touch targets accessible. Result navigation uses guarded aria-disabled controls so keyboard focus stays stable at the ends of the collection.
