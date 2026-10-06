@@ -5462,3 +5462,88 @@ main {
 /* Preserve the release-year distinction after adding a wheel contender. */
 .spin-wheel-release-year { display: block; margin: 0.15rem 0 0.35rem; font-size: 0.85rem; }
 .search-release-year { font-size: 0.85em; font-weight: 400; }
+
+/* Compact desktop lists retain complete titles, metadata and synopses. */
+@media (min-width: 1024px) {
+    .ranked-marquee-list { max-width: 1140px; }
+    .ranked-marquee-list .movie-list-marquee-masthead {
+        grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 2fr);
+        min-height: 0;
+        padding: 1rem 1.25rem;
+    }
+    .ranked-marquee-list .movie-list-marquee-copy .marquee-title { font-size: 3.5rem; }
+    .ranked-marquee-card .ranked-marquee-layout {
+        display: grid;
+        grid-template-columns: 8.5rem minmax(0, 1fr) auto;
+        grid-template-rows: auto auto 1fr;
+        grid-template-areas: "poster title action" "poster metadata metadata" "poster synopsis synopsis";
+        gap: 0.6rem 1rem;
+        min-height: 0;
+        padding-right: 1rem;
+    }
+    .ranked-marquee-poster-column.column { grid-area: poster; width: auto; padding: 0; }
+    .ranked-marquee-poster-frame { --marquee-poster-width: 7rem; padding: 0.65rem; }
+    .ranked-marquee-poster { max-height: none; }
+    .ranked-marquee-rank { min-width: 2.4rem; height: 2.4rem; font-size: 1.2rem; }
+    .ranked-marquee-details.column { display: contents !important; }
+    .ranked-marquee-details .movie-title {
+        grid-area: title;
+        display: block;
+        -webkit-line-clamp: unset;
+        max-height: none;
+        overflow: visible;
+        font-size: 1.55rem;
+        margin: 1rem 0 0;
+        align-self: center;
+    }
+    .ranked-movie-meta.marquee-meta-rail {
+        grid-area: metadata;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.25rem;
+        margin: 0;
+    }
+    .ranked-movie-meta .marquee-meta-item {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        padding: 0;
+        min-width: 0;
+    }
+    .ranked-movie-meta .marquee-meta-label { font-size: 0.65rem; }
+    .ranked-movie-meta .marquee-meta-value { font-size: 0.9rem; line-height: 1.35; }
+    .ranked-marquee-cta {
+        grid-area: action;
+        align-self: start;
+        justify-self: end;
+        margin: 0.8rem 0 0;
+        font-size: 0.8rem;
+    }
+    .ranked-marquee-synopsis.column {
+        grid-area: synopsis;
+        display: block !important;
+        width: auto;
+        padding: 0 0 1rem;
+        background: transparent;
+        border: 0;
+    }
+    .ranked-marquee-synopsis .card-synopsis {
+        display: block;
+        -webkit-line-clamp: unset;
+        max-height: none;
+        overflow: visible;
+        font-size: 0.95rem;
+        line-height: 1.45;
+        margin: 0;
+    }
+}
+
+.biography-toggle {
+    min-height: 44px;
+    margin-top: 0.5rem;
+    background: transparent;
+    color: var(--emm-red-dark);
+    border: 1px solid currentColor;
+    font-weight: 700;
+}
+.biography-toggle[hidden] { display: none; }

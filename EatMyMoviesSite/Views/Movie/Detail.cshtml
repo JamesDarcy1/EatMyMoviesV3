@@ -50,10 +50,6 @@
                         <span class="marquee-meta-label">Audio</span>
                         <span class="marquee-meta-value">@Model.Language</span>
                     </div>
-                    <div class="marquee-meta-item detail-meta-item">
-                        <span class="marquee-meta-label">Genres</span>
-                        <span class="marquee-meta-value">@Model.Genres</span>
-                    </div>
                     @if (Model.WatchAvailability.Providers.Count > 0 &&
                         !string.IsNullOrWhiteSpace(Model.WatchAvailability.Link))
                     {
@@ -112,8 +108,10 @@
                     </div>
                     <div class="column detail-director-copy">
                         <p class="person-name">@Model.Director.Name</p>
-                        <div class="director-section">
-                            <p>@Model.Director.Biography</p>
+                        <div class="director-section" data-director-biography>
+                            <p id="director-biography-text">@Model.Director.Biography</p>
+                            <button type="button" class="button biography-toggle" hidden
+                                    aria-expanded="false" aria-controls="director-biography-text">Read more</button>
                         </div>
                     </div>
                 </div>

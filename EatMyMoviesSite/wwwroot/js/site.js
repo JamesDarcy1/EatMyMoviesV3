@@ -74,3 +74,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// Progressive enhancement leaves the complete biography readable without JavaScript.
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-director-biography]').forEach((section) => {
+        const paragraph = section.querySelector('p');
+        const toggle = section.querySelector('.biography-toggle');
+        const fullText = paragraph?.textContent.trim();
+        if (!fullText || fullText.length <= 300 || !toggle) return;
+
+        const prefix = fullText.slice(0, 300);
+        const lastBoundary = prefix.search(/\s+\S*$/);
+        // A single very long word should remain intact rather than be split.
+        const firstBoundary = fullText.search(/\s/);
+        const boundary = lastBoundary > 0 ? lastBoundary : firstBoundary;
+        if (boundary <= 0 || boundary >= fullText.length) return;
+        const excerpt = fullText.slice(0, boundary).trimEnd() + '…';
+        paragraph.textContent = excerpt;
+        toggle.hidden = false;
+        toggle.addEventListener('click', () => {
+            const expanded = toggle.getAttribute('aria-expanded') !== 'true';
+            paragraph.textContent = expanded ? fullText : excerpt;
+            toggle.setAttribute('aria-expanded', String(expanded));
+            toggle.textContent = expanded ? 'Show less' : 'Read more';
+            if (!expanded && toggle.getBoundingClientRect().top < 0) {
+                toggle.scrollIntoView({ behavior: 'instant', block: 'nearest' });
+            }
+        });
+    });
+});
