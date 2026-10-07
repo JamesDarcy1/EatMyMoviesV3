@@ -17,6 +17,7 @@ namespace EatMyMoviesSite.Controllers
             _movieService = movieService;
         }
 
+        [HttpGet("/")]
         public async Task<IActionResult> Index()
         {
             var model = new HomeIndexViewModel
@@ -41,10 +42,17 @@ namespace EatMyMoviesSite.Controllers
             return View();
         }
 
+        [Route("error/{statusCode:int}")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Error(int statusCode = 500)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            statusCode = statusCode is >= 400 and <= 599 ? statusCode : 404;
+            Response.StatusCode = statusCode;
+            return View(new ErrorViewModel
+            {
+                StatusCode = statusCode,
+                RequestId = statusCode == 500 ? Activity.Current?.Id ?? HttpContext.TraceIdentifier : null
+            });
         }
     }
 }

@@ -1,5 +1,3 @@
-<title>Spin the Wheel | Eat My Movies</title>
-<meta name="description" content="Add your movie night contenders and let the wheel choose what you are watching." />
 
 <div id="spinWheelApp" class="spin-wheel-page" v-cloak>
     <section class="spin-wheel-shell" aria-labelledby="spin-wheel-title">
@@ -611,7 +609,7 @@
                     return title.length > 28 ? `${title.slice(0, 25)}...` : title;
                 },
                 detailUrl(movie) {
-                    return `/movie/detail?title=${encodeURIComponent(movie.title)}&tmdbId=${movie.id}`;
+                    return `/movie/detail?tmdbId=${movie.id}`;
                 },
                 posterUrl(posterPath) {
                     return posterPath ? `https://image.tmdb.org/t/p/w185${posterPath}` : '/icon_only.png';

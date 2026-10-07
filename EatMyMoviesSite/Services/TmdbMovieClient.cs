@@ -4,6 +4,8 @@ using TMDbLib.Client;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
 using TMDbLib.Objects.Search;
+using TMDbLib.Objects.Exceptions;
+using System.Net;
 using TmdbPerson = TMDbLib.Objects.People.Person;
 
 namespace EatMyMoviesSite.Services
@@ -38,6 +40,8 @@ namespace EatMyMoviesSite.Services
             _maxRetryAttempts = options.MaxRetryAttempts;
             _tmdbClient = new TMDbClient(options.ApiKey)
             {
+                // Preserve HTTP error identity; otherwise TMDbLib returns null for API errors.
+                ThrowApiExceptions = true,
                 MaxRetryCount = options.MaxRetryAttempts,
                 Timeout = options.Timeout
             };
@@ -65,11 +69,18 @@ namespace EatMyMoviesSite.Services
                 $"searching for movie title '{title}'");
         }
 
-        public Task<Movie> GetMovieByIdAsync(int id)
+        public async Task<Movie> GetMovieByIdAsync(int id)
         {
-            return ExecuteTmdbRequestAsync(
-                () => _getMovieById(id),
-                $"getting movie {id}");
+            try
+            {
+                return await ExecuteTmdbRequestAsync(() => _getMovieById(id), $"getting movie {id}");
+            }
+            catch (Exception ex) when (ex is NotFoundException ||
+                ex is GeneralHttpException { HttpStatusCode: HttpStatusCode.NotFound } ||
+                ex is HttpRequestException { StatusCode: HttpStatusCode.NotFound })
+            {
+                throw new MovieNotFoundException($"Movie {id} was not found.", ex);
+            }
         }
 
         public Task<ResultContainer<Video>> GetMovieVideosAsync(int movieId)
@@ -116,7 +127,7 @@ namespace EatMyMoviesSite.Services
                 }
                 catch (Exception ex) when (IsTransientTmdbException(ex))
                 {
-                    throw new HttpRequestException(
+                    throw new MovieDataUnavailableException(
                         $"TMDb request failed while {operation} after {_maxRetryAttempts} attempts.",
                         ex);
                 }
@@ -125,7 +136,12 @@ namespace EatMyMoviesSite.Services
 
         private static bool IsTransientTmdbException(Exception exception)
         {
-            return exception is HttpRequestException ||
+            return exception is HttpRequestException { StatusCode: null or HttpStatusCode.RequestTimeout or HttpStatusCode.TooManyRequests } ||
+                   exception is HttpRequestException http && (int?)http.StatusCode >= 500 ||
+                   exception is GeneralHttpException tmdb && ((int)tmdb.HttpStatusCode >= 500 || tmdb.HttpStatusCode is HttpStatusCode.TooManyRequests or HttpStatusCode.RequestTimeout) ||
+                   exception is RequestLimitExceededException ||
+                   exception is TimeoutException ||
+                   exception is TaskCanceledException { InnerException: TimeoutException } ||
                    exception is IOException ||
                    exception.InnerException != null && IsTransientTmdbException(exception.InnerException);
         }
@@ -133,19 +149,19 @@ namespace EatMyMoviesSite.Services
         private async Task<SearchContainer<SearchMovie>> SearchMoviesWithClientAsync(string title)
         {
             return await _tmdbClient.SearchMovieAsync(title)
-                ?? throw new InvalidOperationException("TMDb returned an empty movie search response.");
+                ?? throw new MovieDataUnavailableException("TMDb returned an empty movie search response.");
         }
 
         private async Task<SearchContainer<SearchMovie>> SearchMoviesWithClientAsync(string title, int page)
         {
             return await _tmdbClient.SearchMovieAsync(title, page)
-                ?? throw new InvalidOperationException("TMDb returned an empty movie search response.");
+                ?? throw new MovieDataUnavailableException("TMDb returned an empty movie search response.");
         }
 
         private async Task<Movie> GetMovieByIdWithClientAsync(int id)
         {
             return await _tmdbClient.GetMovieAsync(id)
-                ?? throw new InvalidOperationException($"TMDb returned an empty movie response for {id}.");
+                ?? throw new MovieDataUnavailableException($"TMDb returned an empty movie response for {id}.");
         }
 
         private async Task<ResultContainer<Video>> GetMovieVideosWithClientAsync(int movieId)

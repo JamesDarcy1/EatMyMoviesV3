@@ -15,22 +15,22 @@ namespace EatMyMoviesSite
             var builder = WebApplication.CreateBuilder(args);
 
             ConfigureAppConfiguration(builder, args);
-            ValidateDbConnectionString(builder.Configuration);
+			builder.Services.AddDbContext<EatMyMoviesContext>((serviceProvider, options) =>
+				options.UseSqlServer(serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString("DbConnection")));
 
-            var connectionString = builder.Configuration.GetConnectionString("DbConnection");
-
-			builder.Services.AddDbContext<EatMyMoviesContext>(options =>
-						options.UseSqlServer(connectionString));
-
-			builder.Services.AddControllersWithViews();
+			builder.Services.AddControllersWithViews(options => options.Filters.Add<PublicPageExceptionFilter>());
             ConfigureServices(builder.Services, builder.Configuration);
 
             var app = builder.Build();
+            ValidateDbConnectionString(app.Configuration);
+
+            app.UseExceptionHandler("/error/500");
+            app.UseStatusCodePagesWithReExecute("/error/{0}");
+            app.UseMiddleware<PublicUrlMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -51,14 +51,7 @@ namespace EatMyMoviesSite
                 }
             });
 
-            app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapControllerRoute(
-					name: "default",
-					pattern: "{controller=Home}/{action=Index}/{id?}");
-
-                endpoints.MapFallbackToController("Index", "Home");
-			});
+            app.MapControllers();
 
 			app.Run();
         }
@@ -89,6 +82,11 @@ namespace EatMyMoviesSite
 
 		private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 		{
+            services.AddOptions<SeoOptions>()
+                .Bind(configuration.GetSection(SeoOptions.SectionName))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+            services.AddSingleton<SeoMetadataService>();
             services.AddOptions<TmdbOptions>()
                 .Bind(configuration.GetSection(TmdbOptions.SectionName))
                 .ValidateDataAnnotations()

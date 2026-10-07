@@ -18,6 +18,51 @@ namespace EatMyMovies.Tests;
 
 public class MovieServiceTests
 {
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(2)]
+    public async Task BuildMovieList_InvalidPage_DoesNotLoadRowsOrExternalDetails(int page)
+    {
+        var rankings = new Mock<IRankingRepository>(MockBehavior.Strict);
+        rankings.Setup(x => x.GetListCountAsync("Top 100", It.IsAny<CancellationToken>())).ReturnsAsync(0);
+        var lists = new Mock<IListRepository>();
+        lists.Setup(x => x.GetListByNameAsync("Top 100", It.IsAny<CancellationToken>())).ReturnsAsync(TestHelpers.CreateList("Top 100"));
+        var service = CreateService(rankingRepository: rankings, listRepository: lists,
+            getMovieById: _ => throw new InvalidOperationException("Must not load movie data."));
+        await Assert.ThrowsAsync<InvalidListPageException>(() => service.BuildMovieList("Top 100", page));
+        rankings.Verify(x => x.GetListCountAsync("Top 100", It.IsAny<CancellationToken>()), Times.Once);
+        rankings.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task BuildMovieList_EmptyList_HasValidFirstPage()
+    {
+        var rankings = new Mock<IRankingRepository>();
+        rankings.Setup(x => x.GetMoviesForListByPageAsync("Top 100", 1, 10, It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        var lists = new Mock<IListRepository>();
+        lists.Setup(x => x.GetListByNameAsync("Top 100", It.IsAny<CancellationToken>())).ReturnsAsync(TestHelpers.CreateList("Top 100"));
+        var service = CreateService(rankingRepository: rankings, listRepository: lists);
+        var result = await service.BuildMovieList("Top 100", 1);
+        Assert.Equal(1, result.TotalPages);
+        Assert.Equal(1, result.CurrentPage);
+        Assert.Empty(result.Movies);
+    }
+
+    [Fact]
+    public async Task GetMovieByTitle_EmptySearch_IsMissing_AndFailureIsNotCached()
+    {
+        var attempts = 0;
+        var service = CreateService(searchMovies: _ =>
+        {
+            attempts++;
+            return Task.FromResult(new SearchContainer<SearchMovie> { Results = [] });
+        });
+        await Assert.ThrowsAsync<MovieNotFoundException>(() => service.GetMovieByTitle("Missing"));
+        await Assert.ThrowsAsync<MovieNotFoundException>(() => service.GetMovieByTitle("Missing"));
+        Assert.Equal(2, attempts);
+    }
+
     [Fact]
     public async Task SearchMoviesByTitle_PreservesIdentityAndMapsOptionalReleaseYearWithoutDetailRequests()
     {

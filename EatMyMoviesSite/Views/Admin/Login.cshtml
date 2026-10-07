@@ -1,7 +1,7 @@
 @using EatMyMoviesSite.Models.Admin
 @model AdminLoginViewModel
 
-<title>Admin Login | Eat My Movies</title>
+@{ ViewData["Title"] = "Admin Login | Eat My Movies"; }
 
 <section class="admin-login-shell" aria-labelledby="admin-login-title">
     <form method="post" asp-controller="Admin" asp-action="Login" class="admin-login-panel">

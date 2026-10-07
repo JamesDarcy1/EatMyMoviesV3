@@ -5,7 +5,7 @@
     var availableLists = Model.Lists.Where(list => !membershipListIds.Contains(list.ListId)).ToList();
 }
 
-<title>@Model.Title Admin | Eat My Movies</title>
+@{ ViewData["Title"] = $"{Model.Title} Admin | Eat My Movies"; }
 
 <section class="admin-shell" aria-labelledby="admin-movie-detail-title">
     <div class="admin-header">

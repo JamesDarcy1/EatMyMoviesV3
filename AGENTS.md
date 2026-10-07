@@ -63,7 +63,8 @@ Admin content management lives under `/admin` and is protected by the `AdminOnly
 - binds typed options for TMDb, OMDb, admin auth, and movie external API defaults;
 - configures cookie authentication and the `AdminOnly` authorization policy;
 - registers repositories, TMDb/OMDb external clients, `IMovieService`, `IAdminContentService`, memory cache, and the named OMDb `HttpClient`;
-- maps the default MVC route and falls back to `Home/Index`;
+- maps explicit MVC routes; unknown URLs return a branded 404 rather than the homepage;
+- renders typed SEO metadata in the shared layout and normalises public page URLs;
 - serves static files, including a long-lived cache header for static asset responses.
 
 `MovieService` owns movie caching, recommendation/list-building behavior, movie-of-the-week homepage composition, and movie detail composition. This includes the compact United Kingdom streaming availability displayed on movie details: combine TMDb's JustWatch-powered subscription, free, and ad-supported offers, exclude rent/buy and providers without logos, deduplicate them, and expose at most the three highest-priority providers. Keep failures non-blocking and preserve the shorter no-data/failure cache durations. TMDb and OMDb transport logic belongs behind `ITmdbMovieClient` and `IOmdbClient`; keep external movie API orchestration in services rather than moving it into controllers.
@@ -95,6 +96,16 @@ The app expects:
 `TmdbOptions`, `OmdbOptions`, `AdminAuthOptions`, and `MovieExternalApiOptions` bind optional retry, timeout, cache, concurrency, query-limit, and watch-provider region settings while preserving defaults when the optional keys are absent. Watch-provider defaults select `GB`, cache successful data for six hours, no-data results for 30 minutes, and failures for 15 minutes. Startup validates required API keys/admin credentials through options validation and validates the database connection string explicitly.
 
 Use `EatMyMoviesSite/Config/README.md` as the source of truth for local user-secrets setup and Azure App Service environment variable names.
+
+## SEO and Public URLs
+
+`Seo:PublicOrigin` defaults to `https://eatmymovies.com` and must be a bare HTTPS origin. `SeoMetadataService` builds typed `PageMetadata`; `_PageMetadata.cshtml` renders it inside the shared layout's `<head>`. Do not put title, description or canonical tags in page bodies. Admin views may set `ViewData["Title"]`; they remain `noindex` without canonical/Open Graph metadata. Error pages have accurate HTTP statuses and no canonical; only 404 errors receive `noindex`. The homepage emits `WebSite` JSON-LD using the configured origin.
+
+Use lowercase public HTML routes and `/movie/detail?tmdbId=<positive ID>` for movie links. Production redirects the known `www.eatmymovies.com` alias with HTTP 308; local/staging hosts stay local. Do not add blanket forwarding-header trust or redirect all hosts to production. Existing IIS/Azure trusted proxy integration supplies the request scheme for HTTPS redirection.
+
+List metadata and pagination use action/route identity rather than editable list names. Page one uses the bare list URL; later pages have their own canonical with `?page=N`. Invalid/out-of-range pages return 404 before external detail fetches. Title-only movie links resolve then redirect temporarily; ID-plus-title links redirect permanently to ID-only links. Missing movies and invalid list pages use typed exceptions; essential upstream failures become 503, unexpected errors remain 500, and request cancellation must propagate. Preserve optional movie-data fallbacks.
+
+SEO integration tests use `Microsoft.AspNetCore.Mvc.Testing`, stubbed services and non-secret configuration; they do not access the database or external movie APIs. Startup validates the connection string after building the host so the final host configuration is used, and EF resolves that same configuration when creating a context. Keep TMDbLib's `ThrowApiExceptions` enabled so missing movies can be distinguished from upstream outages instead of both appearing as null responses.
 
 ## Database and EF Core
 
@@ -163,6 +174,8 @@ node --test EatMyMovies.Tests/Frontend/*.test.cjs
 ```
 
 The current test suite covers repositories, `MovieService`, `AdminContentService`, mapper behavior, and list/admin controllers. Add or update focused tests when changing those areas.
+
+The test project explicitly references `SQLitePCLRaw.lib.e_sqlite3` 3.53.3 to override EF Core SQLite's vulnerable transitive 2.1.11 native library (CVE-2025-6965). Keep this override until the upstream dependency resolves a patched native version. After SQLite dependency updates, run the relational tests and `dotnet list EatMyMoviesV3.sln package --include-transitive --vulnerable`.
 
 For UI or routing changes, also run the site with the Development launch profile and manually verify the relevant page(s). Use the Development URLs listed above. For watch-provider changes, verify the conditional card at desktop and mobile widths, including the three-column desktop/two-column mobile metadata grids, the three-provider cap, logo accessibility, TMDb links, JustWatch attribution, and clean hiding for no-data or failure responses. Admin verification requires `AdminAuth:Username` and `AdminAuth:PasswordHash` to be present in user secrets or environment variables. Movie-of-the-week changes should verify `/`, `/admin`, and `/admin/movie-of-the-week`.
 

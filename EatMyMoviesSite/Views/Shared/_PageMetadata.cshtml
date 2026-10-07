@@ -1,0 +1,32 @@
+@model PageMetadata
+<title>@Model.Title</title>
+@if (Model.Description != null)
+{
+    <meta name="description" content="@Model.Description" />
+}
+@if (Model.NoIndex)
+{
+    <meta name="robots" content="noindex" />
+}
+@if (Model.CanonicalUrl != null)
+{
+    <link rel="canonical" href="@Model.CanonicalUrl" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Eat My Movies" />
+    <meta property="og:title" content="@Model.Title" />
+    <meta property="og:description" content="@Model.Description" />
+    <meta property="og:url" content="@Model.CanonicalUrl" />
+    <meta property="og:image" content="@Model.ImageUrl" />
+    <meta property="og:image:alt" content="@Model.ImageAlt" />
+}
+@if (Model.IsHome)
+{
+    var website = new Dictionary<string, string>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "WebSite",
+        ["name"] = "Eat My Movies",
+        ["url"] = Model.CanonicalUrl!
+    };
+    <script type="application/ld+json">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(website))</script>
+}

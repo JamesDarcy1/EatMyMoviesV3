@@ -20,25 +20,36 @@ namespace EatMyMoviesSite.Controllers
             _logger = logger;
         }
 
+        [HttpGet("")]
         public IActionResult Index()
         {
-            return View();
+            return NotFound();
         }
 
 
         [Route("detail")]
-        public async Task<IActionResult> Detail(string title, int? tmdbId = null, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Detail(string? title, int? tmdbId = null, CancellationToken cancellationToken = default)
         {
-            try
+            cancellationToken.ThrowIfCancellationRequested();
+            var hasId = Request.Query.ContainsKey("tmdbId");
+            if (!ModelState.IsValid || (hasId && (!tmdbId.HasValue || tmdbId <= 0)) ||
+                (!hasId && string.IsNullOrWhiteSpace(title)))
             {
-                var movieDetail = await _movieService.BuildMovieDetail(title, tmdbId, includeListContext: false, cancellationToken);
-                return View(movieDetail);
+                return NotFound();
             }
-            catch (Exception ex)
+            if (hasId && Request.Query.ContainsKey("title"))
             {
-                _logger.LogWarning(ex, "Unable to load movie detail for title '{Title}' and TMDb id '{TmdbId}'.", title, tmdbId);
-                return View();
+                return RedirectPermanent(SeoMetadataService.MoviePath(tmdbId!.Value));
             }
+            if (!hasId)
+            {
+                var movie = await _movieService.GetMovieByTitle(title!);
+                cancellationToken.ThrowIfCancellationRequested();
+                return Redirect(SeoMetadataService.MoviePath(movie.Id));
+            }
+            var movieDetail = await _movieService.BuildMovieDetail(null, tmdbId, includeListContext: false, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            return View(movieDetail);
         }
 
 

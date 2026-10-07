@@ -1,7 +1,7 @@
 @using EatMyMoviesSite.Models.Admin
 @model AdminListDetailViewModel
 
-<title>@Model.Name Admin | Eat My Movies</title>
+@{ ViewData["Title"] = $"{Model.Name} Admin | Eat My Movies"; }
 
 <section class="admin-shell" aria-labelledby="admin-list-detail-title">
     <div class="admin-header">

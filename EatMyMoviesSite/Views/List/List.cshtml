@@ -1,9 +1,5 @@
-﻿@using EatMyMoviesSite.DTOs;
+@using EatMyMoviesSite.DTOs;
 @model MovieList
-
-<title>@Model.Name | Eat My Movies</title>
-<meta name="description" content="@Model.Description" />
-<link rel="canonical" href="https://eatmymovies.com/list/@Model.Name.ToSlug()">
 
 <div class="ranked-marquee-list">
     <header class="marquee-result movie-list-marquee-header">
@@ -77,5 +73,5 @@
 {
     CurrentPage = Model.CurrentPage,
     TotalPages = Model.TotalPages,
-    ActionName = Model.Name.Replace(" ", "")
+    ActionName = ViewContext.RouteData.Values["action"]!.ToString()!
 })

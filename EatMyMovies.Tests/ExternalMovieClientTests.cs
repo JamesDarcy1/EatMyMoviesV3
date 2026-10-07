@@ -8,6 +8,49 @@ namespace EatMyMovies.Tests;
 
 public class ExternalMovieClientTests
 {
+    [Fact]
+    public async Task TmdbMovieClient_ConfirmedMissingMovie_IsNotRetried()
+    {
+        var attempts = 0;
+        var client = MovieFailureClient(() =>
+        {
+            attempts++;
+            return new TMDbLib.Objects.Exceptions.NotFoundException(new TMDbLib.Objects.Exceptions.TMDbStatusMessage());
+        });
+        await Assert.ThrowsAsync<MovieNotFoundException>(() => client.GetMovieByIdAsync(404));
+        Assert.Equal(1, attempts);
+    }
+
+    [Theory]
+    [InlineData("rate-limit")]
+    [InlineData("http-503")]
+    [InlineData("timeout")]
+    public async Task TmdbMovieClient_UnavailableData_IsTypedFor503(string failure)
+    {
+        var client = MovieFailureClient(() => failure switch
+        {
+            "rate-limit" => new TMDbLib.Objects.Exceptions.GeneralHttpException(HttpStatusCode.TooManyRequests),
+            "http-503" => new TMDbLib.Objects.Exceptions.GeneralHttpException(HttpStatusCode.ServiceUnavailable),
+            _ => new TimeoutException()
+        });
+        await Assert.ThrowsAsync<MovieDataUnavailableException>(() => client.GetMovieByIdAsync(42));
+    }
+
+    [Fact]
+    public async Task TmdbMovieClient_CancellationAndUnexpectedErrors_PropagateUnchanged()
+    {
+        var cancellation = new OperationCanceledException();
+        var client = MovieFailureClient(() => cancellation);
+        Assert.Same(cancellation, await Assert.ThrowsAsync<OperationCanceledException>(() => client.GetMovieByIdAsync(42)));
+        var unexpected = new InvalidOperationException();
+        client = MovieFailureClient(() => unexpected);
+        Assert.Same(unexpected, await Assert.ThrowsAsync<InvalidOperationException>(() => client.GetMovieByIdAsync(42)));
+    }
+
+    private static TmdbMovieClient MovieFailureClient(Func<Exception> failure) =>
+        new(new TmdbOptions { ApiKey = "test-key", MaxRetryAttempts = 1 }, null, null,
+            _ => throw failure(), null, null, null, null);
+
     [Theory]
     [InlineData("""{"imdbRating":"8.4"}""", "8.4")]
     [InlineData("""{"imdbRating":"N/A"}""", null)]
@@ -63,7 +106,7 @@ public class ExternalMovieClientTests
             getMovieWatchProviders: null,
             getPerson: null);
 
-        var exception = await Assert.ThrowsAsync<HttpRequestException>(() => client.GetMovieByIdAsync(42));
+        var exception = await Assert.ThrowsAsync<MovieDataUnavailableException>(() => client.GetMovieByIdAsync(42));
 
         Assert.Equal(2, attempts);
         Assert.Contains("TMDb request failed while getting movie 42 after 2 attempts.", exception.Message);

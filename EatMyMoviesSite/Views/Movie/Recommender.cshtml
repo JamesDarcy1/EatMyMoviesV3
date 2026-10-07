@@ -1,5 +1,4 @@
-<title>Find me a movie</title>
-<meta name="description" content="We ask several questions, you tell us what you're looking for and we find the perfect movie recommendation" />
+@inject EatMyMoviesSite.Services.SeoMetadataService Seo
 
 <div id="recommenderApp" class="recommender-panel recommender-marquee-page" v-cloak>
     <svg class="recommender-icon-sprite" aria-hidden="true" focusable="false">
@@ -557,7 +556,7 @@
                 },
                 shareOnWhatsApp() {
                     const releaseYear = this.recommendedMovie.releaseDate.slice(-4);
-                    const movieUrl = `www.eatmymovies.com/movie/detail?tmdbId=${this.recommendedMovie.tmdbId}`;
+                    const movieUrl = `@Seo.PublicOrigin/movie/detail?tmdbId=${this.recommendedMovie.tmdbId}`;
                     const message = `Check out this movie: ${this.recommendedMovie.title} (${releaseYear}) - ${movieUrl}`;
                     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
                     window.open(url, '_blank', 'noopener');

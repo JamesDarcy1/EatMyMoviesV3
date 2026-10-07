@@ -196,7 +196,7 @@ namespace EatMyMoviesSite.Services
 
             var totalMovies = await _rankingRepository.GetListCountAsync(listTitle, cancellationToken);
             var totalPages = Math.Max(1, (int)Math.Ceiling((double)totalMovies / _moviesPerPage));
-            page = Math.Max(1, Math.Min(page, totalPages));
+            if (page < 1 || page > totalPages) throw new InvalidListPageException();
             var moviesForPage = await _rankingRepository.GetMoviesForListByPageAsync(listTitle, page, _moviesPerPage, cancellationToken);
 
             moviesList.TotalPages = totalPages;
@@ -494,7 +494,7 @@ namespace EatMyMoviesSite.Services
             var searchResults = await _tmdbClient.SearchMoviesAsync(title);
             var bestResult = searchResults.Results.FirstOrDefault();
 
-            if (bestResult == null) throw new Exception("Movie not found");
+            if (bestResult == null) throw new MovieNotFoundException("Movie not found.");
 
             return await _tmdbClient.GetMovieByIdAsync(bestResult.Id);
         }

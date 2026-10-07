@@ -1,4 +1,4 @@
-﻿@using EatMyMoviesSite.DTOs;
+@using EatMyMoviesSite.DTOs;
 @model MovieDetail;
 
 @if (Model != null)
@@ -13,9 +13,6 @@
 
         formattedRuntime = $"{hrs}h {mins}m";
     }
-
-    <meta name="description" content="@Model.Overview" />
-    <title>@Model.Title</title>
 
     <article class="marquee-result detail-marquee-detail" style="--poster-backdrop: url('@posterUrl')">
         <section class="marquee-hero detail-marquee-hero" aria-labelledby="movie-detail-title">

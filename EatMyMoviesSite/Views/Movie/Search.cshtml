@@ -135,7 +135,7 @@
                         });
                 },
                 selectMovie(movie) {
-                    window.location.href = `/Movie/Detail?title=${encodeURIComponent(movie.title)}&tmdbId=${movie.id}`;
+                    window.location.href = `/movie/detail?tmdbId=${movie.id}`;
                 },
                 handleSearch() {
                     if (!this.searchQuery) {
@@ -147,7 +147,7 @@
                         return;
                     }
 
-                    window.location.href = `/Movie/Detail?title=${encodeURIComponent(this.searchQuery)}`;
+                    window.location.href = `/movie/detail?title=${encodeURIComponent(this.searchQuery)}`;
                 },
                 moveSelection(direction) {
                     if (!this.searchResults.length) {

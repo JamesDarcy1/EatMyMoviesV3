@@ -62,7 +62,15 @@ $hash = $derive.GetBytes(32)
 [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr)
 ```
 
-## Azure App Service
+## Search metadata and canonical URLs
+
+`Seo:PublicOrigin` defaults to `https://eatmymovies.com`. An override must contain only an HTTPS origin (no credentials, custom port, path, query or fragment). Use `Seo__PublicOrigin` in Azure App Service. Public canonical URLs, Open Graph URLs and recommendation sharing use this value instead of the incoming Host header.
+
+In Production, requests on the known `www.eatmymovies.com` alias receive a method-preserving 308 redirect to the configured origin. Localhost and staging hosts are not redirected to production. Keep the existing IIS/Azure trusted proxy integration for HTTPS scheme detection; do not enable blanket trust of forwarded headers. The application retains HTTPS redirection after the hostname redirect.
+
+After deployment, check HTTP/HTTPS and www/non-www variants for correct redirects and no loops, inspect home/list/movie URLs in Search Console, and monitor indexing errors and click-through rates after recrawling. Metadata influences Google's presentation but does not guarantee a particular snippet or ranking. No deployment or Search Console changes are performed by the SEO tests.
+
+## Azure App Service settings
 
 Configure production values in Azure App Service Configuration or deployment secrets. Use double underscores for nested keys:
 
