@@ -97,7 +97,7 @@ The app expects:
 
 `TmdbOptions`, `OmdbOptions`, `AdminAuthOptions`, and `MovieExternalApiOptions` bind optional retry, timeout, cache, concurrency, query-limit, and watch-provider region settings while preserving defaults when the optional keys are absent. Watch-provider defaults select `GB`, cache successful data for six hours, no-data results for 30 minutes, and failures for 15 minutes. Startup validates required API keys/admin credentials through options validation and validates the database connection string explicitly.
 
-Use `EatMyMoviesSite/Config/README.md` as the source of truth for local user-secrets setup and Azure App Service environment variable names.
+Use `EatMyMoviesSite/Config/README.md` as the source of truth for local user-secrets and production hosting configuration. The website runs on SmarterASP.NET; its database is hosted by Azure.
 
 ## SEO and Public URLs
 
@@ -105,7 +105,7 @@ Use `EatMyMoviesSite/Config/README.md` as the source of truth for local user-sec
 
 Public discovery routes include `/list` (the directory), `/privacy`, `/sitemap.xml`, and `/robots.txt`. The sitemap includes canonical static pages, existing lists and their valid pagination, and detail pages for ranked films or the current Movie of the Week. Keep search, admin, redirects, JSON and error responses out of it. The search HTML page has a `noindex` meta tag, and search JSON responses have `X-Robots-Tag: noindex`; do not block them in robots.txt because crawlers need access to see those directives. Directory, list and movie detail views show visible breadcrumbs. Keep a server-rendered recommender heading and explanation outside Vue.
 
-Use lowercase public HTML routes and `/movie/detail?tmdbId=<positive ID>` for movie links. Production redirects the known `www.eatmymovies.com` alias with HTTP 308; local/staging hosts stay local. Do not add blanket forwarding-header trust or redirect all hosts to production. Existing IIS/Azure trusted proxy integration supplies the request scheme for HTTPS redirection.
+Use lowercase public HTML routes and `/movie/detail?tmdbId=<positive ID>` for movie links. Production redirects the known `www.eatmymovies.com` alias with HTTP 308; local/staging hosts stay local. Do not add blanket forwarding-header trust or redirect all hosts to production. Verify the IIS hosting integration and HTTPS scheme/redirect behavior on SmarterASP.NET.
 
 List metadata and pagination use action/route identity rather than editable list names. Page one uses the bare list URL; later pages have their own canonical with `?page=N`. Invalid/out-of-range pages return 404 before external detail fetches. Title-only movie links resolve then redirect temporarily; ID-plus-title links redirect permanently to ID-only links. Missing movies and invalid list pages use typed exceptions; essential upstream failures become 503, unexpected errors remain 500, and request cancellation must propagate. Preserve optional movie-data fallbacks.
 

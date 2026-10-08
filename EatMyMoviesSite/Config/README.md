@@ -64,17 +64,17 @@ $hash = $derive.GetBytes(32)
 
 ## Search metadata and canonical URLs
 
-`Seo:PublicOrigin` defaults to `https://eatmymovies.com`. An override must contain only an HTTPS origin (no credentials, custom port, path, query or fragment). Use `Seo__PublicOrigin` in Azure App Service. Public canonical URLs, Open Graph URLs and recommendation sharing use this value instead of the incoming Host header.
+`Seo:PublicOrigin` defaults to `https://eatmymovies.com`. An override must contain only an HTTPS origin (no credentials, custom port, path, query or fragment). If the SmarterASP.NET deployment uses environment variables, set `Seo__PublicOrigin` there. Public canonical URLs, Open Graph URLs and recommendation sharing use this value instead of the incoming Host header.
 
-In Production, requests on the known `www.eatmymovies.com` alias receive a method-preserving 308 redirect to the configured origin. Localhost and staging hosts are not redirected to production. Keep the existing IIS/Azure trusted proxy integration for HTTPS scheme detection; do not enable blanket trust of forwarded headers. The application retains HTTPS redirection after the hostname redirect.
+In Production, requests on the known `www.eatmymovies.com` alias receive a method-preserving 308 redirect to the configured origin. Localhost and staging hosts are not redirected to production. Keep the existing IIS hosting integration for HTTPS scheme detection; do not enable blanket trust of forwarded headers. The application retains HTTPS redirection after the hostname redirect. Verify redirect behavior on the SmarterASP.NET deployment.
 
 After deployment, check HTTP/HTTPS and www/non-www variants for correct redirects and no loops, inspect home/list/movie URLs in Search Console, and monitor indexing errors and click-through rates after recrawling. Metadata influences Google's presentation but does not guarantee a particular snippet or ranking. No deployment or Search Console changes are performed by the SEO tests.
 
-The XML sitemap is served at `/sitemap.xml` and is listed in `/robots.txt`; it uses `Seo:PublicOrigin`. Once the reviewed release is live and the database migrations have run, submit that URL in Search Console. Record Page indexing counts and Search results queries, impressions, clicks and click-through rate for a 28-day baseline and the next comparable 28-day period. Capture mobile PageSpeed Insights reports for home, a list, a detail page and the recommender with the URLs and measurement date. Apply `AddMovieOfTheWeekEditorialNote` and `PublishApprovedListIntroductions` only to the intended database after checking the active connection string. The latter updates the nine list introductions only if their prior descriptions still exactly match the 8 October 2026 live copy.
+The XML sitemap is served at `/sitemap.xml` and is listed in `/robots.txt`; it uses `Seo:PublicOrigin`. Once the reviewed release is live and the database migrations have run, submit that URL in Search Console and monitor indexing and search results. A mobile PageSpeed Insights baseline for home, a list, a detail page and the recommender was recorded on 8 October 2026; repeat the same URLs after release to evaluate loading changes. Apply `AddMovieOfTheWeekEditorialNote` and `PublishApprovedListIntroductions` only to the intended Azure database after checking the active connection string. The latter updates the nine list introductions only if their prior descriptions still exactly match the 8 October 2026 live copy.
 
-## Azure App Service settings
+## Production hosting settings
 
-Configure production values in Azure App Service Configuration or deployment secrets. Use double underscores for nested keys:
+The application is hosted by SmarterASP.NET and uses an Azure-hosted database. Configure production values through the hosting environment or deployment secrets. If using environment variables, use double underscores for nested keys:
 
 - `ConnectionStrings__DbConnection`
 - `Tmdb__ApiKey`
