@@ -35,12 +35,11 @@ test('tracking stays unloaded without consent and after rejection', () => {
     assert.equal(start('rejected').scripts.length, 0);
 });
 
-test('acceptance loads each service once and withdrawal reloads without them', () => {
+test('acceptance loads Google Analytics only and withdrawal reloads without tracking', () => {
     const page = start();
     page.handlers['tracking-accept']();
-    assert.equal(page.scripts.length, 2);
+    assert.equal(page.scripts.length, 1);
     assert.match(page.scripts[0].src, /googletagmanager/);
-    assert.match(page.scripts[1].src, /hotjar/);
     page.handlers['privacy-settings']();
     page.handlers['tracking-reject']();
     assert.equal(page.reloads, 1);

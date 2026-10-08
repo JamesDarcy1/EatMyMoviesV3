@@ -6,6 +6,8 @@
     const reject = document.getElementById('tracking-reject');
     if (!panel || !settings || !accept || !reject) return;
 
+    // Keep the integration ready, but do not load Hotjar while it is paused.
+    const hotjarEnabled = false;
     let loaded = false;
     const readChoice = () => {
         try { return localStorage.getItem(key); }
@@ -27,21 +29,24 @@
         analytics.src = 'https://www.googletagmanager.com/gtag/js?id=G-QGZDZJ5HW2';
         document.head.appendChild(analytics);
 
-        window.hj = window.hj || function () { (window.hj.q = window.hj.q || []).push(arguments); };
-        window._hjSettings = { hjid: 5171442, hjsv: 6 };
-        const hotjar = document.createElement('script');
-        hotjar.async = true;
-        hotjar.src = 'https://static.hotjar.com/c/hotjar-5171442.js?sv=6';
-        document.head.appendChild(hotjar);
+        if (hotjarEnabled) {
+            window.hj = window.hj || function () { (window.hj.q = window.hj.q || []).push(arguments); };
+            window._hjSettings = { hjid: 5171442, hjsv: 6 };
+            const hotjar = document.createElement('script');
+            hotjar.async = true;
+            hotjar.src = 'https://static.hotjar.com/c/hotjar-5171442.js?sv=6';
+            document.head.appendChild(hotjar);
+        }
     };
-    const clearFirstPartyTrackingCookies = () => {
+    const clearFirstPartyTrackingCookies = (namePattern = /^(_ga|_gid|_gat|_hj)/) => {
         document.cookie.split(';').forEach((part) => {
             const name = part.split('=')[0].trim();
-            if (!/^(_ga|_gid|_gat|_hj)/.test(name)) return;
+            if (!namePattern.test(name)) return;
             document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`;
             document.cookie = `${name}=; Max-Age=0; Path=/; Domain=.eatmymovies.com; SameSite=Lax`;
         });
     };
+    if (!hotjarEnabled) clearFirstPartyTrackingCookies(/^_hj/);
     const choose = (choice) => {
         saveChoice(choice);
         panel.hidden = true;
