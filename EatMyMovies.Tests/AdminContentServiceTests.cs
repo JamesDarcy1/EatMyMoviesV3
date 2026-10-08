@@ -153,6 +153,9 @@ public class AdminContentServiceTests
             It.IsAny<CancellationToken>()),
             Times.Never);
         movieOfTheWeekRepository.Verify(repository => repository.SetSelectionAsync(movie.MovieId, "A landmark science-fiction thriller.", It.IsAny<CancellationToken>()), Times.Once);
+
+        await service.SetMovieOfTheWeekAsync(348, null);
+        movieOfTheWeekRepository.Verify(repository => repository.SetSelectionAsync(movie.MovieId, null, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

@@ -71,7 +71,7 @@ There is one static-file middleware registration. Assets with an ASP.NET `?v=` f
 
 `MovieService` owns movie caching, recommendation/list-building behavior, movie-of-the-week homepage composition, and movie detail composition. This includes the compact United Kingdom streaming availability displayed on movie details: combine TMDb's JustWatch-powered subscription, free, and ad-supported offers, exclude rent/buy and providers without logos, deduplicate them, and expose at most the three highest-priority providers. Keep failures non-blocking and preserve the shorter no-data/failure cache durations. TMDb and OMDb transport logic belongs behind `ITmdbMovieClient` and `IOmdbClient`; keep external movie API orchestration in services rather than moving it into controllers.
 
-`AdminContentService` owns content-management workflows such as creating/updating lists, searching stored movies, selecting TMDb movies by TMDb ID, adding movies to lists, moving rankings, removing list memberships while closing rank gaps, and setting or clearing the current Movie of the Week through `/admin/movie-of-the-week`. The Movie of the Week selection requires a 20–1500 character editorial note. The note can be edited independently, is replaced with a new selection, and is cleared with the selection.
+`AdminContentService` owns content-management workflows such as creating/updating lists, searching stored movies, selecting TMDb movies by TMDb ID, adding movies to lists, moving rankings, removing list memberships while closing rank gaps, and setting or clearing the current Movie of the Week through `/admin/movie-of-the-week`. The Movie of the Week editorial note is optional; when supplied it must be 20–1500 characters. It can be added, edited or cleared independently, and a new selection replaces the previous note.
 
 ## Configuration and Secrets
 
@@ -124,6 +124,8 @@ Repository reads should use async EF Core APIs, materialize bounded results insi
 Movie/list/genre/list-ranking invariants are enforced by database constraints and unique indexes, not only repository checks. Keep list names, movie titles, non-null TMDb IDs, genre names, list rank slots, list movie memberships, and movie/genre links unique. Rankings and TMDb IDs must be positive. Use the transactional ranking repository methods for inserting, moving, or removing movies in lists so temporary reordering does not violate unique rank slots and removals close rank gaps.
 
 `MovieOfTheWeekSelection` is a singleton table keyed by `MovieOfTheWeekSelectionId = 1` and points at a stored movie. It also has a nullable `EditorialNote` added by migration `AddMovieOfTheWeekEditorialNote`; existing selections remain valid until edited. Use `IMovieOfTheWeekRepository` to read, set, or clear the selection; do not reintroduce hardcoded homepage movie titles.
+
+`PublishApprovedListIntroductions` changes the nine existing list descriptions only when each still exactly matches the older live copy reviewed on 8 October 2026. Its rollback likewise changes only untouched approved copy; preserve later admin edits.
 
 Migrations are stored in `EatMyMovies.DataAccess/Migrations`. If adding or changing persisted models, add a migration from the repository root:
 

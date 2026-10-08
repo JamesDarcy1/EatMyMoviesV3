@@ -22,7 +22,7 @@ namespace EatMyMovies.DataAccess.Repositories
                     cancellationToken);
         }
 
-        public async Task SetSelectionAsync(Guid movieId, string editorialNote, CancellationToken cancellationToken = default)
+        public async Task SetSelectionAsync(Guid movieId, string? editorialNote, CancellationToken cancellationToken = default)
         {
             if (movieId == Guid.Empty)
             {
@@ -64,7 +64,7 @@ namespace EatMyMovies.DataAccess.Repositories
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task UpdateEditorialNoteAsync(string editorialNote, CancellationToken cancellationToken = default)
+        public async Task UpdateEditorialNoteAsync(string? editorialNote, CancellationToken cancellationToken = default)
         {
             editorialNote = NormalizeEditorialNote(editorialNote);
             var selection = await _dbContext.MovieOfTheWeekSelections
@@ -75,11 +75,12 @@ namespace EatMyMovies.DataAccess.Repositories
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        private static string NormalizeEditorialNote(string note)
+        private static string? NormalizeEditorialNote(string? note)
         {
             var result = note?.Trim() ?? string.Empty;
+            if (result.Length == 0) return null;
             if (result.Length is < 20 or > 1500)
-                throw new ArgumentException("The editorial note must be between 20 and 1500 characters.", nameof(note));
+                throw new ArgumentException("When provided, the editorial note must be between 20 and 1500 characters.", nameof(note));
             return result;
         }
 

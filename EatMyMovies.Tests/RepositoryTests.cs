@@ -183,6 +183,12 @@ public class RepositoryTests
         Assert.Equal("A gripping crime drama worth revisiting.", secondSelection.EditorialNote);
         await repository.UpdateEditorialNoteAsync("The performances make this one unforgettable.");
         Assert.Equal("The performances make this one unforgettable.", (await repository.GetSelectionAsync())!.EditorialNote);
+        await repository.UpdateEditorialNoteAsync(string.Empty);
+        Assert.Null((await repository.GetSelectionAsync())!.EditorialNote);
+        await repository.UpdateEditorialNoteAsync("A second look at a great crime drama.");
+        await repository.SetSelectionAsync(firstMovie.MovieId, null);
+        Assert.Null((await repository.GetSelectionAsync())!.EditorialNote);
+        await Assert.ThrowsAsync<ArgumentException>(() => repository.UpdateEditorialNoteAsync("Too short"));
         Assert.Single(context.MovieOfTheWeekSelections);
 
         await repository.ClearSelectionAsync();

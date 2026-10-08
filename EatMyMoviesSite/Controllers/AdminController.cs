@@ -101,7 +101,7 @@ namespace EatMyMoviesSite.Controllers
         [HttpPost("movie-of-the-week")]
         public async Task<IActionResult> SetMovieOfTheWeek(
             int tmdbId,
-            string editorialNote,
+            string? editorialNote,
             string? tmdbQuery,
             CancellationToken cancellationToken)
         {
@@ -113,7 +113,7 @@ namespace EatMyMoviesSite.Controllers
         }
 
         [HttpPost("movie-of-the-week/note")]
-        public async Task<IActionResult> UpdateMovieOfTheWeekNote(string editorialNote, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateMovieOfTheWeekNote(string? editorialNote, CancellationToken cancellationToken)
         {
             await RunAdminActionAsync(
                 () => _adminContentService.UpdateMovieOfTheWeekNoteAsync(editorialNote, cancellationToken),
