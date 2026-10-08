@@ -67,6 +67,16 @@ namespace EatMyMovies.DataAccess.Repositories
                 .CountAsync(cancellationToken);
         }
 
+        public Task<List<int>> GetCuratedTmdbIdsAsync(CancellationToken cancellationToken = default)
+        {
+            return _dbContext.ListRankings.AsNoTracking()
+                .Where(ranking => ranking.Movie.TmdbId.HasValue)
+                .Select(ranking => ranking.Movie.TmdbId!.Value)
+                .Distinct()
+                .OrderBy(id => id)
+                .ToListAsync(cancellationToken);
+        }
+
         public Task<List<AdminListMovieRow>> GetListMovieRowsAsync(Guid listId, CancellationToken cancellationToken = default)
         {
             return _dbContext.ListRankings

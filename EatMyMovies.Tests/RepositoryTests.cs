@@ -165,20 +165,24 @@ public class RepositoryTests
         context.SaveChanges();
         var repository = new MovieOfTheWeekRepository(context);
 
-        await repository.SetSelectionAsync(firstMovie.MovieId);
+        await repository.SetSelectionAsync(firstMovie.MovieId, "A chilling science-fiction favourite.");
         var firstSelection = await repository.GetSelectionAsync();
 
         Assert.NotNull(firstSelection);
         Assert.Equal(firstMovie.MovieId, firstSelection.MovieId);
         Assert.Equal("Alien", firstSelection.Movie.Title);
+        Assert.Equal("A chilling science-fiction favourite.", firstSelection.EditorialNote);
         Assert.Single(context.MovieOfTheWeekSelections);
 
-        await repository.SetSelectionAsync(secondMovie.MovieId);
+        await repository.SetSelectionAsync(secondMovie.MovieId, "A gripping crime drama worth revisiting.");
         var secondSelection = await repository.GetSelectionAsync();
 
         Assert.NotNull(secondSelection);
         Assert.Equal(secondMovie.MovieId, secondSelection.MovieId);
         Assert.Equal("Heat", secondSelection.Movie.Title);
+        Assert.Equal("A gripping crime drama worth revisiting.", secondSelection.EditorialNote);
+        await repository.UpdateEditorialNoteAsync("The performances make this one unforgettable.");
+        Assert.Equal("The performances make this one unforgettable.", (await repository.GetSelectionAsync())!.EditorialNote);
         Assert.Single(context.MovieOfTheWeekSelections);
 
         await repository.ClearSelectionAsync();

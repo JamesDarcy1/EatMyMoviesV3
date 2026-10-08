@@ -14,18 +14,18 @@ public sealed class SeoMetadataService(IOptions<SeoOptions> options)
     public static string MoviePath(int id) => $"/movie/detail?tmdbId={id.ToString(CultureInfo.InvariantCulture)}";
 
     // Route/action identity is stable even when an administrator edits a list's display name.
-    internal static readonly IReadOnlyDictionary<string, (string Path, string Title)> Lists =
-        new Dictionary<string, (string, string)>(StringComparer.OrdinalIgnoreCase)
+    internal static readonly IReadOnlyDictionary<string, (string Path, string Title, string ListName)> Lists =
+        new Dictionary<string, (string, string, string)>(StringComparer.OrdinalIgnoreCase)
         {
-            ["Top100"] = ("/list/top-100", "Top 100 Movies"),
-            ["Comedies"] = ("/list/comedies", "Comedy Movies"),
-            ["ForeignFilms"] = ("/list/foreign-films", "Foreign Language Films"),
-            ["Documentaries"] = ("/list/documentaries", "Documentary Movies"),
-            ["Christmas"] = ("/list/christmas", "Christmas Movies"),
-            ["StandoutSoundtracks"] = ("/list/standout-soundtracks", "Movies with Standout Soundtracks"),
-            ["Iconic80s"] = ("/list/iconic-80s", "Iconic 80s Movies"),
-            ["Disney"] = ("/list/disney", "Disney Movies"),
-            ["Horrors"] = ("/list/horrors", "Horror Movies")
+            ["Top100"] = ("/list/top-100", "Top 100 Movies", "Top 100"),
+            ["Comedies"] = ("/list/comedies", "Comedy Movies", "Comedies"),
+            ["ForeignFilms"] = ("/list/foreign-films", "Foreign Language Films", "Foreign Films"),
+            ["Documentaries"] = ("/list/documentaries", "Documentary Movies", "Documentaries"),
+            ["Christmas"] = ("/list/christmas", "Christmas Movies", "Christmas"),
+            ["StandoutSoundtracks"] = ("/list/standout-soundtracks", "Movies with Standout Soundtracks", "Standout Soundtracks"),
+            ["Iconic80s"] = ("/list/iconic-80s", "Iconic 80s Movies", "Iconic 80s"),
+            ["Disney"] = ("/list/disney", "Disney Movies", "Disney"),
+            ["Horrors"] = ("/list/horrors", "Horror Movies", "Horrors")
         };
 
     public PageMetadata Build(string controller, string action, object? model, string? existingTitle = null)
@@ -64,9 +64,11 @@ public sealed class SeoMetadataService(IOptions<SeoOptions> options)
             ("Home", "Index") => Public("Eat My Movies | Find Your Next Movie", "Not sure what to watch? Find a movie for your mood, explore curated movie lists, or let the wheel choose your next movie night.", "/") with { IsHome = true },
             ("Home", "About") => Public("About | Eat My Movies", "Meet Eat My Movies: discover movies through recommendations tailored to your taste and carefully curated movie lists.", "/about"),
             ("Home", "Contact") => Public("Contact | Eat My Movies", "Get in touch with Eat My Movies with questions, feedback or enquiries about our movie recommendations and lists.", "/contact"),
+            ("Home", "Privacy") => Public("Privacy | Eat My Movies", "How Eat My Movies handles contact messages, essential cookies and optional analytics.", "/privacy"),
+            ("List", "Index") => Public("Movie Lists | Eat My Movies", "Browse James's curated movie lists and find a film for your next movie night.", "/list"),
             ("Movie", "Recommender") => Public("What Should I Watch? Movie Quiz | Eat My Movies", "Answer a few questions about your mood, available time and movie preferences to find something to watch tonight.", "/movie/recommender"),
             ("Movie", "SpinTheWheel") => Public("Movie Picker Wheel | Eat My Movies", "Can't choose a movie? Add your movie night contenders and spin the wheel to pick what to watch.", "/movie/spin-the-wheel"),
-            ("Movie", "Search") => Public("Movie Search | Eat My Movies", "Search for a movie by title and explore its synopsis, cast and movie details on Eat My Movies.", "/movie/search"),
+            ("Movie", "Search") => new PageMetadata("Movie Search | Eat My Movies", "Search for a movie by title and explore its details.", NoIndex: true),
             _ => new PageMetadata(existingTitle ?? "Eat My Movies")
         };
     }

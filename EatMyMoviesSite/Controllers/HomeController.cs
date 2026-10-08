@@ -42,6 +42,9 @@ namespace EatMyMoviesSite.Controllers
             return View();
         }
 
+        [HttpGet("privacy")]
+        public IActionResult Privacy() => View();
+
         [Route("error/{statusCode:int}")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error(int statusCode = 500)

@@ -5,6 +5,9 @@ using EatMyMoviesSite;
 using EatMyMoviesSite.DTOs;
 using EatMyMoviesSite.Models.Admin;
 using EatMyMoviesSite.Services;
+using EatMyMovies.DataAccess.Models;
+using EatMyMovies.DataAccess.Repositories;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -33,9 +36,10 @@ public class SeoIntegrationTests : IClassFixture<SeoApplication>
     [InlineData("/", "Eat My Movies | Find Your Next Movie")]
     [InlineData("/about", "About | Eat My Movies")]
     [InlineData("/contact", "Contact | Eat My Movies")]
+    [InlineData("/privacy", "Privacy | Eat My Movies")]
+    [InlineData("/list", "Movie Lists | Eat My Movies")]
     [InlineData("/movie/recommender", "What Should I Watch? Movie Quiz | Eat My Movies")]
     [InlineData("/movie/spin-the-wheel", "Movie Picker Wheel | Eat My Movies")]
-    [InlineData("/movie/search", "Movie Search | Eat My Movies")]
     [InlineData("/list/top-100", "Top 100 Movies | Eat My Movies")]
     [InlineData("/list/comedies", "Comedy Movies | Eat My Movies")]
     [InlineData("/list/foreign-films", "Foreign Language Films | Eat My Movies")]
@@ -77,6 +81,54 @@ public class SeoIntegrationTests : IClassFixture<SeoApplication>
         var recommender = await _client.GetStringAsync("/movie/recommender");
         Assert.Contains("https://eatmymovies.com/movie/detail?tmdbId=", recommender);
         Assert.DoesNotContain("www.eatmymovies.com", recommender);
+    }
+
+    [Fact]
+    public async Task Sitemap_ContainsOnlySelectedCanonicalPages()
+    {
+        var response = await _client.GetAsync("/sitemap.xml");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("application/xml", response.Content.Headers.ContentType?.MediaType);
+        var xml = XDocument.Parse(await response.Content.ReadAsStringAsync());
+        var locations = xml.Descendants().Where(element => element.Name.LocalName == "loc")
+            .Select(element => element.Value).ToArray();
+        Assert.Contains("https://eatmymovies.com/list", locations);
+        Assert.Contains("https://eatmymovies.com/list/top-100?page=3", locations);
+        Assert.Contains("https://eatmymovies.com/movie/detail?tmdbId=42", locations);
+        Assert.Contains("https://eatmymovies.com/movie/detail?tmdbId=99", locations);
+        Assert.DoesNotContain(locations, url => url.Contains("/admin") || url.Contains("/movie/search"));
+        Assert.Equal(locations.Length, locations.Distinct().Count());
+        var robots = await _client.GetStringAsync("/robots.txt");
+        Assert.Contains("Sitemap: https://eatmymovies.com/sitemap.xml", robots);
+        Assert.DoesNotContain("Disallow: /admin", robots);
+    }
+
+    [Fact]
+    public async Task SearchAndJsonResponses_AreNoIndex_AndBreadcrumbsAreVisible()
+    {
+        var search = Head(await _client.GetStringAsync("/movie/search"));
+        Assert.Contains("name=\"robots\" content=\"noindex\"", search);
+        Assert.DoesNotContain("rel=\"canonical\"", search);
+        var json = await _client.GetAsync("/movie/SearchForMovie?titleSearch=Alien");
+        Assert.Equal("noindex", json.Headers.GetValues("X-Robots-Tag").Single());
+        foreach (var path in new[] { "/list", "/list/top-100", "/movie/detail?tmdbId=42" })
+            Assert.Contains("aria-label=\"Breadcrumb\"", await _client.GetStringAsync(path));
+        var recommender = await _client.GetStringAsync("/movie/recommender");
+        Assert.True(recommender.IndexOf("Find a movie for tonight", StringComparison.Ordinal) < recommender.IndexOf("id=\"recommenderApp\"", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task TrackingRequiresChoice_AndStaticCachingDependsOnVersioning()
+    {
+        var home = await _client.GetStringAsync("/");
+        Assert.Contains("id=\"tracking-accept\"", home);
+        Assert.Contains("id=\"tracking-reject\"", home);
+        Assert.DoesNotContain("src=\"https://www.googletagmanager.com", home);
+        Assert.DoesNotContain("src=\"https://static.hotjar.com", home);
+        var versioned = await _client.GetAsync("/css/site.css?v=test");
+        var unversioned = await _client.GetAsync("/favicon/site.webmanifest");
+        Assert.Contains("max-age=31536000", versioned.Headers.CacheControl?.ToString());
+        Assert.Contains("max-age=86400", unversioned.Headers.CacheControl?.ToString());
     }
 
     [Theory]
@@ -268,6 +320,22 @@ public sealed class SeoApplication : WebApplicationFactory<Program>
             admin.Setup(x => x.BuildDashboardAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new AdminDashboardViewModel());
             services.RemoveAll<IAdminContentService>();
             services.AddSingleton(admin.Object);
+            var lists = new Mock<IListRepository>();
+            lists.Setup(repository => repository.GetAllListsAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync([new List { Name = "Top 100" }, new List { Name = "Comedies" }]);
+            services.RemoveAll<IListRepository>();
+            services.AddSingleton(lists.Object);
+            var rankings = new Mock<IRankingRepository>();
+            rankings.Setup(repository => repository.GetListCountAsync("Top 100", It.IsAny<CancellationToken>())).ReturnsAsync(21);
+            rankings.Setup(repository => repository.GetListCountAsync("Comedies", It.IsAny<CancellationToken>())).ReturnsAsync(1);
+            rankings.Setup(repository => repository.GetCuratedTmdbIdsAsync(It.IsAny<CancellationToken>())).ReturnsAsync([42]);
+            services.RemoveAll<IRankingRepository>();
+            services.AddSingleton(rankings.Object);
+            var weekly = new Mock<IMovieOfTheWeekRepository>();
+            weekly.Setup(repository => repository.GetSelectionAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new MovieOfTheWeekSelection { Movie = new Movie { TmdbId = 99 } });
+            services.RemoveAll<IMovieOfTheWeekRepository>();
+            services.AddSingleton(weekly.Object);
         });
     }
 }

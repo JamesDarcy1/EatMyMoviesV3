@@ -1,0 +1,20 @@
+@model IReadOnlyList<EatMyMoviesSite.Models.ListDirectoryEntry>
+
+<nav class="page-breadcrumbs" aria-label="Breadcrumb">
+    <ol><li><a asp-controller="Home" asp-action="Index">Home</a></li><li aria-current="page">Movie Lists</li></ol>
+</nav>
+<section class="directory-page" aria-labelledby="directory-title">
+    <header class="directory-header">
+        <span class="marquee-kicker">Curated by James</span>
+        <h1 id="directory-title">Movie Lists</h1>
+        <p>Explore personally selected and ranked films, from comedies and documentaries to enduring favourites.</p>
+    </header>
+    <div class="directory-grid">
+        @foreach (var list in Model)
+        {
+            <a class="directory-card" href="@list.Path">
+                <span>@list.Title</span><span aria-hidden="true">→</span>
+            </a>
+        }
+    </div>
+</section>

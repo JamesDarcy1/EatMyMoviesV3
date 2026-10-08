@@ -67,9 +67,11 @@ Admin content management lives under `/admin` and is protected by the `AdminOnly
 - renders typed SEO metadata in the shared layout and normalises public page URLs;
 - serves static files, including a long-lived cache header for static asset responses.
 
+There is one static-file middleware registration. Assets with an ASP.NET `?v=` fingerprint or a `-vN` filename use a one-year immutable cache; other files use a one-day cache. Change the filename or version query when changing an immutable asset.
+
 `MovieService` owns movie caching, recommendation/list-building behavior, movie-of-the-week homepage composition, and movie detail composition. This includes the compact United Kingdom streaming availability displayed on movie details: combine TMDb's JustWatch-powered subscription, free, and ad-supported offers, exclude rent/buy and providers without logos, deduplicate them, and expose at most the three highest-priority providers. Keep failures non-blocking and preserve the shorter no-data/failure cache durations. TMDb and OMDb transport logic belongs behind `ITmdbMovieClient` and `IOmdbClient`; keep external movie API orchestration in services rather than moving it into controllers.
 
-`AdminContentService` owns content-management workflows such as creating/updating lists, searching stored movies, selecting TMDb movies by TMDb ID, adding movies to lists, moving rankings, removing list memberships while closing rank gaps, and setting or clearing the current Movie of the Week through `/admin/movie-of-the-week`.
+`AdminContentService` owns content-management workflows such as creating/updating lists, searching stored movies, selecting TMDb movies by TMDb ID, adding movies to lists, moving rankings, removing list memberships while closing rank gaps, and setting or clearing the current Movie of the Week through `/admin/movie-of-the-week`. The Movie of the Week selection requires a 20–1500 character editorial note. The note can be edited independently, is replaced with a new selection, and is cleared with the selection.
 
 ## Configuration and Secrets
 
@@ -101,6 +103,8 @@ Use `EatMyMoviesSite/Config/README.md` as the source of truth for local user-sec
 
 `Seo:PublicOrigin` defaults to `https://eatmymovies.com` and must be a bare HTTPS origin. `SeoMetadataService` builds typed `PageMetadata`; `_PageMetadata.cshtml` renders it inside the shared layout's `<head>`. Do not put title, description or canonical tags in page bodies. Admin views may set `ViewData["Title"]`; they remain `noindex` without canonical/Open Graph metadata. Error pages have accurate HTTP statuses and no canonical; only 404 errors receive `noindex`. The homepage emits `WebSite` JSON-LD using the configured origin.
 
+Public discovery routes include `/list` (the directory), `/privacy`, `/sitemap.xml`, and `/robots.txt`. The sitemap includes canonical static pages, existing lists and their valid pagination, and detail pages for ranked films or the current Movie of the Week. Keep search, admin, redirects, JSON and error responses out of it. The search HTML page has a `noindex` meta tag, and search JSON responses have `X-Robots-Tag: noindex`; do not block them in robots.txt because crawlers need access to see those directives. Directory, list and movie detail views show visible breadcrumbs. Keep a server-rendered recommender heading and explanation outside Vue.
+
 Use lowercase public HTML routes and `/movie/detail?tmdbId=<positive ID>` for movie links. Production redirects the known `www.eatmymovies.com` alias with HTTP 308; local/staging hosts stay local. Do not add blanket forwarding-header trust or redirect all hosts to production. Existing IIS/Azure trusted proxy integration supplies the request scheme for HTTPS redirection.
 
 List metadata and pagination use action/route identity rather than editable list names. Page one uses the bare list URL; later pages have their own canonical with `?page=N`. Invalid/out-of-range pages return 404 before external detail fetches. Title-only movie links resolve then redirect temporarily; ID-plus-title links redirect permanently to ID-only links. Missing movies and invalid list pages use typed exceptions; essential upstream failures become 503, unexpected errors remain 500, and request cancellation must propagate. Preserve optional movie-data fallbacks.
@@ -119,7 +123,7 @@ Repository reads should use async EF Core APIs, materialize bounded results insi
 
 Movie/list/genre/list-ranking invariants are enforced by database constraints and unique indexes, not only repository checks. Keep list names, movie titles, non-null TMDb IDs, genre names, list rank slots, list movie memberships, and movie/genre links unique. Rankings and TMDb IDs must be positive. Use the transactional ranking repository methods for inserting, moving, or removing movies in lists so temporary reordering does not violate unique rank slots and removals close rank gaps.
 
-`MovieOfTheWeekSelection` is a singleton table keyed by `MovieOfTheWeekSelectionId = 1` and points at a stored movie. Use `IMovieOfTheWeekRepository` to read, set, or clear the selection; do not reintroduce hardcoded homepage movie titles.
+`MovieOfTheWeekSelection` is a singleton table keyed by `MovieOfTheWeekSelectionId = 1` and points at a stored movie. It also has a nullable `EditorialNote` added by migration `AddMovieOfTheWeekEditorialNote`; existing selections remain valid until edited. Use `IMovieOfTheWeekRepository` to read, set, or clear the selection; do not reintroduce hardcoded homepage movie titles.
 
 Migrations are stored in `EatMyMovies.DataAccess/Migrations`. If adding or changing persisted models, add a migration from the repository root:
 
@@ -141,6 +145,8 @@ When changing the frontend:
 - Reuse the existing classes and CSS utilities before introducing new patterns. Add a base primitive only when a view needs it.
 - Check both desktop and mobile breakpoints; `site.css` has explicit rules around `768px`.
 - Keep static assets under `wwwroot`.
+- The homepage hero uses separate desktop and mobile WebP files with matching preloads. The prominent movie detail poster loads eagerly with dimensions and high fetch priority.
+- `privacy-consent.js` is the only loader for Google Analytics and Hotjar. Optional tracking must wait for an explicit accepted choice; keep equally accessible accept/reject controls and the footer preference control. The `/privacy` copy and editorial drafts require the owner's factual review before deployment.
 - Preserve local vendored assets under `wwwroot/lib`; do not replace them with CDN-only dependencies unless the user explicitly wants that. The Bangers display font is preloaded from the shared layout and served locally with its OFL license; keep it local to avoid a fallback-font flash.
 - The visible header logo is `wwwroot/brand/bitten-o-red-my.png`. The shared layout uses root `wwwroot/favicon.ico` for browser tabs and `wwwroot/favicon/bitten-o-180x180.png` for Apple touch icons; the web manifest uses the matching 192px and 512px icons. Preserve `wwwroot/no_background_logo.png`, `wwwroot/legacy-favicon.ico`, and the older files under `wwwroot/favicon` as prior artwork.
 - `EatMyMoviesSite/wwwroot/lib/README.md` documents frontend vendor versions, source URLs, licenses, and the manual update process. Update it whenever vendored frontend assets change.
@@ -170,10 +176,13 @@ Before handing off changes, run at least:
 ```powershell
 dotnet build EatMyMoviesV3.sln
 dotnet test EatMyMoviesV3.sln
-node --test EatMyMovies.Tests/Frontend/*.test.cjs
+node EatMyMovies.Tests/Frontend/recommender.test.cjs
+node EatMyMovies.Tests/Frontend/privacy-consent.test.cjs
 ```
 
 The current test suite covers repositories, `MovieService`, `AdminContentService`, mapper behavior, and list/admin controllers. Add or update focused tests when changing those areas.
+
+On restricted Windows runners, `node --test` may fail with a child-process `EPERM` error. Running each `.test.cjs` file directly exercises the same Node test cases without spawning a worker.
 
 The test project explicitly references `SQLitePCLRaw.lib.e_sqlite3` 3.53.3 to override EF Core SQLite's vulnerable transitive 2.1.11 native library (CVE-2025-6965). Keep this override until the upstream dependency resolves a patched native version. After SQLite dependency updates, run the relational tests and `dotnet list EatMyMoviesV3.sln package --include-transitive --vulnerable`.
 

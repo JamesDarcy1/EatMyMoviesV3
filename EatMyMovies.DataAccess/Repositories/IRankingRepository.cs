@@ -7,6 +7,7 @@ namespace EatMyMovies.DataAccess.Repositories
 	{
         Task<ListRanking> AddMovieToListAtRankingAsync(Guid movieId, Guid listId, int ranking, CancellationToken cancellationToken = default);
         Task<int> CountRankingsAsync(CancellationToken cancellationToken = default);
+        Task<List<int>> GetCuratedTmdbIdsAsync(CancellationToken cancellationToken = default);
 		Task<bool> FilmExistsInListAsync(Guid movieId, Guid listId, CancellationToken cancellationToken = default);
         Task<List<StoredMovieSummary>> GetMovieSummariesInListAsync(string listName, CancellationToken cancellationToken = default);
         Task<int> GetListCountAsync(string listName, CancellationToken cancellationToken = default);

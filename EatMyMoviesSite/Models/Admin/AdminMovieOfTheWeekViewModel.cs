@@ -9,6 +9,7 @@ namespace EatMyMoviesSite.Models.Admin
         public int? CurrentTmdbId { get; set; }
 
         public DateTime? UpdatedUtc { get; set; }
+        public string? EditorialNote { get; set; }
 
         public string? TmdbQuery { get; set; }
 

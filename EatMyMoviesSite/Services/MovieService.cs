@@ -24,7 +24,7 @@ namespace EatMyMoviesSite.Services
         private readonly IListRepository _listRepository;
         private readonly IMovieRepository _movieRepository;
         private readonly IMovieOfTheWeekRepository _movieOfTheWeekRepository;
-        private readonly int _moviesPerPage = 10;
+        internal const int ListPageSize = 10;
         private readonly IMemoryCache _cache;
         private readonly ILogger<MovieService> _logger;
 
@@ -61,7 +61,9 @@ namespace EatMyMoviesSite.Services
             var director = await GetDirector(tmdbMovie.Id);
             var imdbRating = await GetImdbRating(tmdbMovie.Title);
 
-            return Mapper.MapToMovieSummary(tmdbMovie, imdbRating, director.Name);
+            var movie = Mapper.MapToMovieSummary(tmdbMovie, imdbRating, director.Name);
+            movie.EditorialNote = selection.EditorialNote;
+            return movie;
         }
 
         public async Task<Movie> GetMovieByTitle(string title)
@@ -195,9 +197,9 @@ namespace EatMyMoviesSite.Services
             };
 
             var totalMovies = await _rankingRepository.GetListCountAsync(listTitle, cancellationToken);
-            var totalPages = Math.Max(1, (int)Math.Ceiling((double)totalMovies / _moviesPerPage));
+            var totalPages = Math.Max(1, (int)Math.Ceiling((double)totalMovies / ListPageSize));
             if (page < 1 || page > totalPages) throw new InvalidListPageException();
-            var moviesForPage = await _rankingRepository.GetMoviesForListByPageAsync(listTitle, page, _moviesPerPage, cancellationToken);
+            var moviesForPage = await _rankingRepository.GetMoviesForListByPageAsync(listTitle, page, ListPageSize, cancellationToken);
 
             moviesList.TotalPages = totalPages;
             moviesList.CurrentPage = page;

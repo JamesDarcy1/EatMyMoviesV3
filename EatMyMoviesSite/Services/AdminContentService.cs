@@ -88,6 +88,7 @@ namespace EatMyMoviesSite.Services
                 CurrentTitle = currentSelection?.Movie.Title,
                 CurrentTmdbId = currentSelection?.Movie.TmdbId,
                 UpdatedUtc = currentSelection?.UpdatedUtc,
+                EditorialNote = currentSelection?.EditorialNote,
                 TmdbQuery = tmdbQuery,
                 TmdbSearchResults = tmdbResults
             };
@@ -136,11 +137,14 @@ namespace EatMyMoviesSite.Services
             return _listRepository.UpdateListAsync(listId, listName, description, cancellationToken);
         }
 
-        public async Task SetMovieOfTheWeekAsync(int tmdbId, CancellationToken cancellationToken = default)
+        public async Task SetMovieOfTheWeekAsync(int tmdbId, string editorialNote, CancellationToken cancellationToken = default)
         {
             var movie = await EnsureStoredTmdbMovieAsync(tmdbId, cancellationToken);
-            await _movieOfTheWeekRepository.SetSelectionAsync(movie.MovieId, cancellationToken);
+            await _movieOfTheWeekRepository.SetSelectionAsync(movie.MovieId, editorialNote, cancellationToken);
         }
+
+        public Task UpdateMovieOfTheWeekNoteAsync(string editorialNote, CancellationToken cancellationToken = default) =>
+            _movieOfTheWeekRepository.UpdateEditorialNoteAsync(editorialNote, cancellationToken);
 
         public Task ClearMovieOfTheWeekAsync(CancellationToken cancellationToken = default)
         {

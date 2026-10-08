@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            if (dropdown.classList.contains('is-active')) return;
             event.preventDefault();
             const isActive = dropdown.classList.toggle('is-active');
             toggle.setAttribute('aria-expanded', isActive.toString());

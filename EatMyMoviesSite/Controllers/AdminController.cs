@@ -101,14 +101,24 @@ namespace EatMyMoviesSite.Controllers
         [HttpPost("movie-of-the-week")]
         public async Task<IActionResult> SetMovieOfTheWeek(
             int tmdbId,
+            string editorialNote,
             string? tmdbQuery,
             CancellationToken cancellationToken)
         {
             await RunAdminActionAsync(
-                () => _adminContentService.SetMovieOfTheWeekAsync(tmdbId, cancellationToken),
+                () => _adminContentService.SetMovieOfTheWeekAsync(tmdbId, editorialNote, cancellationToken),
                 "Movie of the Week updated.");
 
             return RedirectToAction(nameof(MovieOfTheWeek), new { tmdbQuery });
+        }
+
+        [HttpPost("movie-of-the-week/note")]
+        public async Task<IActionResult> UpdateMovieOfTheWeekNote(string editorialNote, CancellationToken cancellationToken)
+        {
+            await RunAdminActionAsync(
+                () => _adminContentService.UpdateMovieOfTheWeekNoteAsync(editorialNote, cancellationToken),
+                "Editorial note updated.");
+            return RedirectToAction(nameof(MovieOfTheWeek));
         }
 
         [HttpPost("movie-of-the-week/clear")]

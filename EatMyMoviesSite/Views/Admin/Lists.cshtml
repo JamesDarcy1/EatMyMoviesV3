@@ -23,8 +23,8 @@
                 <input id="new-list-name" class="input" name="listName" required />
             </div>
             <div class="field admin-field-grow">
-                <label class="label" for="new-list-description">Description</label>
-                <input id="new-list-description" class="input" name="description" />
+                <label class="label" for="new-list-description">Editorial introduction</label>
+                <textarea id="new-list-description" class="textarea" name="description" rows="4"></textarea>
             </div>
             <button type="submit" class="button is-primary admin-form-button">Create</button>
         </div>
@@ -37,7 +37,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Description</th>
+                        <th>Editorial introduction</th>
                         <th>Movies</th>
                         <th>Actions</th>
                     </tr>
@@ -50,7 +50,7 @@
                                 <form method="post" asp-controller="Admin" asp-action="UpdateList" asp-route-listId="@list.ListId" class="admin-row-form">
                                     @Html.AntiForgeryToken()
                                     <input class="input admin-row-name" name="listName" value="@list.Name" aria-label="List name" />
-                                    <input class="input admin-row-description" name="description" value="@list.Description" aria-label="List description" />
+                                    <textarea class="textarea admin-row-description" name="description" rows="3" aria-label="Editorial introduction for @list.Name">@list.Description</textarea>
                                     <span class="admin-count-pill">@list.MovieCount</span>
                                     <div class="admin-row-actions">
                                         <a class="button is-small is-light" asp-controller="Admin" asp-action="ListDetail" asp-route-listId="@list.ListId">Open</a>

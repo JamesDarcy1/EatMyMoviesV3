@@ -36,21 +36,23 @@ namespace EatMyMoviesSite
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    var versioned = ctx.Context.Request.Query.ContainsKey("v") ||
+                        System.Text.RegularExpressions.Regex.IsMatch(
+                            ctx.Context.Request.Path.Value ?? string.Empty, @"-v\d+(?:-|\.)");
+                    ctx.Context.Response.Headers.CacheControl = versioned
+                        ? "public,max-age=31536000,immutable"
+                        : "public,max-age=86400";
+                }
+            });
 
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                OnPrepareResponse = ctx =>
-                {
-                    ctx.Context.Response.Headers.Append(
-                        "Cache-Control", "public,max-age=31536000");
-                }
-            });
-
             app.MapControllers();
 
 			app.Run();

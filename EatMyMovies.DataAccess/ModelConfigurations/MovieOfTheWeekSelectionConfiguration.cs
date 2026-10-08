@@ -14,6 +14,9 @@ namespace EatMyMovies.DataAccess.ModelConfigurations
             builder.Property(selection => selection.UpdatedUtc)
                 .IsRequired();
 
+            builder.Property(selection => selection.EditorialNote)
+                .HasMaxLength(1500);
+
             builder.HasOne(selection => selection.Movie)
                 .WithMany()
                 .HasForeignKey(selection => selection.MovieId)

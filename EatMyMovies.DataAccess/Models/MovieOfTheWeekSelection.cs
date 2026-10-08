@@ -14,5 +14,6 @@ namespace EatMyMovies.DataAccess.Models
         public Movie Movie { get; set; } = null!;
 
         public DateTime UpdatedUtc { get; set; }
+        public string? EditorialNote { get; set; }
     }
 }

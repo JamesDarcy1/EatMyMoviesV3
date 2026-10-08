@@ -20,6 +20,11 @@
 	<link rel="preconnect" href="https://image.tmdb.org" crossorigin>
 	<link rel="dns-prefetch" href="https://image.tmdb.org">
 	<link rel="preload" href="~/lib/bangers/Bangers-Regular.ttf" as="font" type="font/ttf" crossorigin />
+	@if (isHomeActive)
+	{
+		<link rel="preload" href="~/home-cinema-hero-v2-desktop.webp" as="image" type="image/webp" media="(min-width: 769px)" />
+		<link rel="preload" href="~/home-cinema-hero-v2-mobile.webp" as="image" type="image/webp" media="(max-width: 768px)" />
+	}
 
 	<meta charset="utf-8" />
     @await Html.PartialAsync("_PageMetadata", Seo.Build(currentController ?? "", currentAction ?? "", (object?)Model, ViewData["Title"]?.ToString()))
@@ -30,25 +35,6 @@
 	<link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
 	<link rel="manifest" href="/favicon/site.webmanifest">
 
-	<!-- Hotjar Tracking Code for https://eatmymovies.com -->
-	<script>
-		(function (h, o, t, j, a, r) {
-			h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments) };
-			h._hjSettings = { hjid: 5171442, hjsv: 6 };
-			a = o.getElementsByTagName('head')[0];
-			r = o.createElement('script'); r.async = 1;
-			r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
-			a.appendChild(r);
-		})(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
-	</script>
-	<!-- Google Analytics Tracking Code -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-QGZDZJ5HW2"></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag() { dataLayer.push(arguments); }
-		gtag('js', new Date());
-		gtag('config', 'G-QGZDZJ5HW2');
-	</script>
 </head>
 <body class="bg mb-0">
 	<header>
@@ -70,10 +56,11 @@
 					<a class="navbar-item @(isRecommenderActive ? "is-active" : null)" asp-controller="Movie" asp-action="Recommender" aria-current="@(isRecommenderActive ? "page" : null)">Find a movie</a>
 					<a class="navbar-item @(isSpinTheWheelActive ? "is-active" : null)" asp-controller="Movie" asp-action="SpinTheWheel" aria-current="@(isSpinTheWheelActive ? "page" : null)">Spin the Wheel</a>
 					<div class="navbar-item has-dropdown is-hoverable nav-list-dropdown @(isListActive ? "is-active-route" : null)">
-						<a class="navbar-link nav-list-toggle" role="button" aria-expanded="false" tabindex="0" aria-current="@(isListActive ? "page" : null)">
+						<a class="navbar-link nav-list-toggle" asp-controller="List" asp-action="Index" aria-expanded="false" aria-current="@(isListActive ? "page" : null)">
 							Movie Lists
 						</a>
 						<div class="navbar-dropdown nav-list-menu">
+							<a class="navbar-item" asp-controller="List" asp-action="Index">All Movie Lists</a>
 							<a class="navbar-item" asp-controller="List" asp-action="Top100">
 								Top 100
 							</a>
@@ -120,11 +107,19 @@
 
 	<footer class="footer">
 		<div class="has-text-centered">
+			<p class="footer-links"><a asp-controller="Home" asp-action="Contact">Contact</a> · <a asp-controller="Home" asp-action="Privacy">Privacy</a> · <button type="button" id="privacy-settings" class="footer-settings">Tracking preferences</button></p>
 			<strong>Eat My Movies</strong>. All rights reserved. <br />
 				This product uses the TMDB API but is not endorsed or certified by TMDB
 				<img class="tmdb-logo mt-3" src="~/TMDB_logo.svg" alt="Tmdb logo" />
 		</div>
 	</footer>
+	<div id="tracking-consent" class="tracking-consent" role="region" aria-label="Tracking preferences" hidden>
+		<p><strong>Your privacy choices</strong> We use optional Google Analytics and Hotjar tools to understand how people use the site. You can use Eat My Movies without them. <a asp-controller="Home" asp-action="Privacy">Read our privacy information</a>.</p>
+		<div class="tracking-consent-actions">
+			<button type="button" id="tracking-reject" class="button is-light">Reject optional tracking</button>
+			<button type="button" id="tracking-accept" class="button is-primary">Accept optional tracking</button>
+		</div>
+	</div>
 
 	<environment include="Development">
 		<script src="~/lib/jquery/dist/jquery.js"></script>
@@ -133,6 +128,7 @@
 		<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	</environment>
 	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="~/js/privacy-consent.js" asp-append-version="true"></script>
 	@await RenderSectionAsync("Scripts", required: false)
 	@RenderSection("VueComponents", required: false)
 

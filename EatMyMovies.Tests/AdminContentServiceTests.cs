@@ -143,7 +143,7 @@ public class AdminContentServiceTests
             movieService: movieService,
             movieOfTheWeekRepository: movieOfTheWeekRepository);
 
-        await service.SetMovieOfTheWeekAsync(348);
+        await service.SetMovieOfTheWeekAsync(348, "A landmark science-fiction thriller.");
 
         movieService.Verify(service => service.GetMovieById(It.IsAny<int>()), Times.Never);
         movieRepository.Verify(repository => repository.SaveTmdbMovieAsync(
@@ -152,7 +152,7 @@ public class AdminContentServiceTests
             It.IsAny<decimal?>(),
             It.IsAny<CancellationToken>()),
             Times.Never);
-        movieOfTheWeekRepository.Verify(repository => repository.SetSelectionAsync(movie.MovieId, It.IsAny<CancellationToken>()), Times.Once);
+        movieOfTheWeekRepository.Verify(repository => repository.SetSelectionAsync(movie.MovieId, "A landmark science-fiction thriller.", It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -176,14 +176,14 @@ public class AdminContentServiceTests
             movieService: movieService,
             movieOfTheWeekRepository: movieOfTheWeekRepository);
 
-        await service.SetMovieOfTheWeekAsync(348);
+        await service.SetMovieOfTheWeekAsync(348, "A landmark science-fiction thriller.");
 
         movieRepository.Verify(repository => repository.SaveGenresAsync(
             savedMovie.MovieId,
             It.Is<IEnumerable<string>>(genres => genres.SequenceEqual(new[] { "Horror", "Science Fiction" })),
             It.IsAny<CancellationToken>()),
             Times.Once);
-        movieOfTheWeekRepository.Verify(repository => repository.SetSelectionAsync(savedMovie.MovieId, It.IsAny<CancellationToken>()), Times.Once);
+        movieOfTheWeekRepository.Verify(repository => repository.SetSelectionAsync(savedMovie.MovieId, "A landmark science-fiction thriller.", It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

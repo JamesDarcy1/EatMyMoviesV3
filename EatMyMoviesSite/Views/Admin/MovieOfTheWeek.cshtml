@@ -35,6 +35,12 @@
                     <button type="submit" class="button is-danger">Clear</button>
                 </form>
             </div>
+            <form method="post" asp-controller="Admin" asp-action="UpdateMovieOfTheWeekNote" class="field mt-4">
+                @Html.AntiForgeryToken()
+                <label class="label" for="current-editorial-note">Why we picked it</label>
+                <textarea id="current-editorial-note" class="textarea" name="editorialNote" minlength="20" maxlength="1500" required>@Model.EditorialNote</textarea>
+                <button type="submit" class="button is-info mt-3">Save note</button>
+            </form>
         }
         else
         {
@@ -64,6 +70,8 @@
                         <span class="admin-search-title">@movie.Title</span>
                         <input type="hidden" name="tmdbId" value="@movie.Id" />
                         <input type="hidden" name="tmdbQuery" value="@Model.TmdbQuery" />
+                        <label class="label" for="editorial-note-@movie.Id">Why we picked it</label>
+                        <textarea id="editorial-note-@movie.Id" class="textarea" name="editorialNote" minlength="20" maxlength="1500" required></textarea>
                         <button type="submit" class="button is-small is-primary">Select</button>
                     </form>
                 }

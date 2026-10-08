@@ -1,4 +1,5 @@
 using EatMyMoviesSite.Services;
+using EatMyMoviesSite.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EatMyMoviesSite.Controllers
@@ -12,6 +13,11 @@ namespace EatMyMoviesSite.Controllers
         {
             _movieService = movieService;
 		}
+
+        [HttpGet("")]
+        public IActionResult Index() => View(SeoMetadataService.Lists.Values
+            .Select(list => new ListDirectoryEntry(list.Path, list.Title))
+            .ToList());
 
 
         [Route("top-100")]

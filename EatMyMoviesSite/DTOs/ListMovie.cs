@@ -25,5 +25,6 @@ namespace EatMyMoviesSite.DTOs
 		public int TmdbId { get; set; }
 
 		public string Director {  get; set; }
+        public string? EditorialNote { get; set; }
     }
 }

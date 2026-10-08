@@ -23,8 +23,8 @@
                 <input id="list-name" class="input" name="listName" value="@Model.Name" required />
             </div>
             <div class="field admin-field-grow">
-                <label class="label" for="list-description">Description</label>
-                <input id="list-description" class="input" name="description" value="@Model.Description" />
+                <label class="label" for="list-description">Editorial introduction</label>
+                <textarea id="list-description" class="textarea" name="description" rows="5">@Model.Description</textarea>
             </div>
             <button type="submit" class="button is-info admin-form-button">Save</button>
         </div>

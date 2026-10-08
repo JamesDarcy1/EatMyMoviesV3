@@ -6,6 +6,7 @@ namespace EatMyMovies.DataAccess.Repositories
     {
         Task ClearSelectionAsync(CancellationToken cancellationToken = default);
         Task<MovieOfTheWeekSelection?> GetSelectionAsync(CancellationToken cancellationToken = default);
-        Task SetSelectionAsync(Guid movieId, CancellationToken cancellationToken = default);
+        Task SetSelectionAsync(Guid movieId, string editorialNote, CancellationToken cancellationToken = default);
+        Task UpdateEditorialNoteAsync(string editorialNote, CancellationToken cancellationToken = default);
     }
 }

@@ -62,6 +62,7 @@ namespace EatMyMoviesSite.Controllers
         [HttpGet("SearchForMovie")]
         public async Task<List<MovieDropdown>> SearchForMovie(string titleSearch)
         {
+            Response.Headers["X-Robots-Tag"] = "noindex";
             var results = await _movieService.SearchMoviesByTitle(titleSearch);
             return results;
         }
@@ -82,6 +83,7 @@ namespace EatMyMoviesSite.Controllers
         [HttpGet("GetGenres")]
         public async Task<List<string>> GetGenres(CancellationToken cancellationToken = default)
         {
+            Response.Headers["X-Robots-Tag"] = "noindex";
             var genres = await _movieService.GetAllGenresAsync(cancellationToken);
             var shuffledGenres = _movieService.ShuffleList<Genre>(genres);
             return genres.Select(x => x.Name).ToList();
@@ -90,6 +92,7 @@ namespace EatMyMoviesSite.Controllers
         [HttpGet("GetFeelings")]
         public List<string> GetFeelings()
         {
+            Response.Headers["X-Robots-Tag"] = "noindex";
             var feelings = Enum.GetNames(typeof(Feeling)).ToList();
             return feelings;
         }
@@ -97,6 +100,7 @@ namespace EatMyMoviesSite.Controllers
         [HttpGet("GetRecommendations")]
         public async Task<List<MovieDetail>> GetRecommendations(string feelings, string duration, bool openToForeignFilm, string yearRange, CancellationToken cancellationToken = default)
         {
+            Response.Headers["X-Robots-Tag"] = "noindex";
             var recommendations = await _movieService.GetFastRecommendations(feelings, duration, openToForeignFilm, yearRange, cancellationToken);
             var movieDetails = await Task.WhenAll(recommendations.Select(movie =>
                 _movieService.BuildMovieDetail(movie.Title, movie.Id, includeListContext: false, cancellationToken)));

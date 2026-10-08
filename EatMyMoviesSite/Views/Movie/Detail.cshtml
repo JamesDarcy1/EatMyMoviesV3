@@ -14,12 +14,15 @@
         formattedRuntime = $"{hrs}h {mins}m";
     }
 
+    <nav class="page-breadcrumbs" aria-label="Breadcrumb">
+        <ol><li><a asp-controller="Home" asp-action="Index">Home</a></li><li aria-current="page">@Model.Title</li></ol>
+    </nav>
     <article class="marquee-result detail-marquee-detail" style="--poster-backdrop: url('@posterUrl')">
         <section class="marquee-hero detail-marquee-hero" aria-labelledby="movie-detail-title">
             <div class="marquee-hero-glow detail-marquee-glow" aria-hidden="true"></div>
 
             <div class="marquee-poster-frame detail-poster-frame">
-                <img class="poster poster-on-detail marquee-poster detail-marquee-poster" src="@posterUrl" alt="@Model.Title poster" loading="lazy" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
+                <img class="poster poster-on-detail marquee-poster detail-marquee-poster" src="@posterUrl" alt="@Model.Title poster" width="500" height="750" loading="eager" fetchpriority="high" onerror="this.src='/icon_only.png'; this.classList.add('poster-fallback');" />
             </div>
 
             <div class="marquee-hero-copy detail-hero-copy movie-detail-copy">

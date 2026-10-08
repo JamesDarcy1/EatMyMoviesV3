@@ -22,12 +22,13 @@ namespace EatMyMovies.DataAccess.Repositories
                     cancellationToken);
         }
 
-        public async Task SetSelectionAsync(Guid movieId, CancellationToken cancellationToken = default)
+        public async Task SetSelectionAsync(Guid movieId, string editorialNote, CancellationToken cancellationToken = default)
         {
             if (movieId == Guid.Empty)
             {
                 throw new ArgumentException("Movie id cannot be empty.", nameof(movieId));
             }
+            editorialNote = NormalizeEditorialNote(editorialNote);
 
             var movieExists = await _dbContext.Movies
                 .AsNoTracking()
@@ -49,16 +50,37 @@ namespace EatMyMovies.DataAccess.Repositories
                 {
                     MovieOfTheWeekSelectionId = MovieOfTheWeekSelection.SingletonId,
                     MovieId = movieId,
+                    EditorialNote = editorialNote,
                     UpdatedUtc = DateTime.UtcNow
                 });
             }
             else
             {
                 selection.MovieId = movieId;
+                selection.EditorialNote = editorialNote;
                 selection.UpdatedUtc = DateTime.UtcNow;
             }
 
             await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task UpdateEditorialNoteAsync(string editorialNote, CancellationToken cancellationToken = default)
+        {
+            editorialNote = NormalizeEditorialNote(editorialNote);
+            var selection = await _dbContext.MovieOfTheWeekSelections
+                .FirstOrDefaultAsync(current => current.MovieOfTheWeekSelectionId == MovieOfTheWeekSelection.SingletonId, cancellationToken)
+                ?? throw new InvalidOperationException("No Movie of the Week is selected.");
+            selection.EditorialNote = editorialNote;
+            selection.UpdatedUtc = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        private static string NormalizeEditorialNote(string note)
+        {
+            var result = note?.Trim() ?? string.Empty;
+            if (result.Length is < 20 or > 1500)
+                throw new ArgumentException("The editorial note must be between 20 and 1500 characters.", nameof(note));
+            return result;
         }
 
         public async Task ClearSelectionAsync(CancellationToken cancellationToken = default)
