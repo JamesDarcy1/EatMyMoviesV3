@@ -114,7 +114,8 @@ public class SeoIntegrationTests : IClassFixture<SeoApplication>
         foreach (var path in new[] { "/list", "/list/top-100", "/movie/detail?tmdbId=42" })
             Assert.Contains("aria-label=\"Breadcrumb\"", await _client.GetStringAsync(path));
         var recommender = await _client.GetStringAsync("/movie/recommender");
-        Assert.True(recommender.IndexOf("Find a movie for tonight", StringComparison.Ordinal) < recommender.IndexOf("id=\"recommenderApp\"", StringComparison.Ordinal));
+        Assert.DoesNotContain("recommender-static-intro", recommender);
+        Assert.Contains("Marquee Ticket Booth", recommender);
     }
 
     [Fact]

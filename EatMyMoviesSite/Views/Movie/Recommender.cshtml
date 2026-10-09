@@ -1,10 +1,5 @@
 @inject EatMyMoviesSite.Services.SeoMetadataService Seo
 
-<header class="recommender-static-intro">
-    <h1>Find a movie for tonight</h1>
-    <p>Tell us your mood, available time and preferences. We’ll suggest films from James’s curated selection.</p>
-</header>
-
 <div id="recommenderApp" class="recommender-panel recommender-marquee-page" v-cloak>
     <svg class="recommender-icon-sprite" aria-hidden="true" focusable="false">
         <symbol id="reco-icon-smile" viewBox="0 0 24 24">
@@ -308,7 +303,7 @@
 
                     <div class="marquee-hero-copy">
                         <span class="marquee-kicker">Tonight's pick</span>
-                        <h2 id="recommendation-title" ref="resultHeading" tabindex="-1" class="marquee-title recommender-focus-heading">{{ recommendedMovie.title }}</h2>
+                        <h1 id="recommendation-title" ref="resultHeading" tabindex="-1" class="marquee-title recommender-focus-heading">{{ recommendedMovie.title }}</h1>
                         <p class="marquee-genres">{{ recommendedMovie.genres }}</p>
                         <div class="recommendation-controls" role="group" aria-label="Recommendation actions">
                             <button type="button" class="button recommendation-control" :aria-disabled="(!hasPreviousRecommendation).toString()" v-on:click="loadPreviousRecommendation">
@@ -440,7 +435,11 @@
                     if (!heading) return;
                     this.pendingFocus = false;
                     heading.focus({ preventScroll: true });
-                    heading.scrollIntoView({ block: 'start', behavior: 'instant' });
+                    if (this.showRecommendationBox) {
+                        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                    } else {
+                        heading.scrollIntoView({ block: 'start', behavior: 'instant' });
+                    }
                 },
                 toggleFeeling(feeling) {
                     const index = this.selectedFeelings.indexOf(feeling);

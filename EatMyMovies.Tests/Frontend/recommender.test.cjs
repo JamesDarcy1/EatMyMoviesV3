@@ -5,9 +5,9 @@ const path=require('node:path');
 const vm=require('node:vm');
 const source=fs.readFileSync(path.resolve(__dirname,'../../EatMyMoviesSite/Views/Movie/Recommender.cshtml'),'utf8');
 const script=source.match(/<script>\s*([\s\S]*?)<\/script>/)[1];
-function app(fetchImpl=async()=>({ok:true,json:async()=>[]})) {
+function app(fetchImpl=async()=>({ok:true,json:async()=>[]}),windowImpl={scrollTo(){}}) {
     let options;
-    vm.runInNewContext(script,{Vue:{createApp(o){options=o;return {mount(){}};}},LoadingSpinner:{},fetch:fetchImpl});
+    vm.runInNewContext(script,{Vue:{createApp(o){options=o;return {mount(){}};}},LoadingSpinner:{},fetch:fetchImpl,window:windowImpl});
     const a={...options.data(),$refs:{},$nextTick:fn=>Promise.resolve().then(fn)};
     for(const [name,fn] of Object.entries(options.methods)) a[name]=fn.bind(a);
     for(const [name,fn] of Object.entries(options.computed)) Object.defineProperty(a,name,{get:fn.bind(a)});
@@ -54,4 +54,23 @@ test('Focus waits for a mounted destination and works after the transition hook 
     let focused=false,scrolled=false;
     a.$refs.questionHeading={focus(){focused=true;},scrollIntoView(){scrolled=true;}};
     a.focusCurrentView(); assert.equal(focused,true); assert.equal(scrolled,true); assert.equal(a.pendingFocus,false);
+});
+
+test('Results open at the page top after mounting without scrolling past the mobile poster',async()=>{
+    for (const movies of [[{title:'First'}],[]]) {
+        let scrollOptions,focusOptions;
+        const a=app(async()=>({ok:true,json:async()=>movies}),{scrollTo(options){scrollOptions=options;}});
+        await a.fetchRecommendedMovie();
+        assert.equal(a.pendingFocus,true);
+        assert.equal(scrollOptions,undefined);
+        a.$refs[movies.length?'resultHeading':'emptyHeading']={
+            focus(options){focusOptions=options;},
+            scrollIntoView(){assert.fail('Result headings must not scroll past the poster');}
+        };
+        a.focusCurrentView();
+        assert.equal(focusOptions.preventScroll,true);
+        assert.equal(scrollOptions.top,0);
+        assert.equal(scrollOptions.behavior,'instant');
+        assert.equal(a.pendingFocus,false);
+    }
 });

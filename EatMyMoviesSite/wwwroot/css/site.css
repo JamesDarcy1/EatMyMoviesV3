@@ -5560,11 +5560,11 @@ main {
 .page-breadcrumbs ol { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
 .page-breadcrumbs li + li::before { content: '/'; margin-right: 0.5rem; opacity: 0.65; }
 .page-breadcrumbs a { color: inherit; text-decoration: underline; }
-.directory-page, .editorial-page, .recommender-static-intro {
+.directory-page, .editorial-page {
     background: #151515; border: 1px solid rgba(231, 24, 55, 0.4);
     color: var(--emm-cream); margin: 1rem auto 2rem; max-width: 70rem; padding: clamp(1.25rem, 4vw, 3rem);
 }
-.directory-page h1, .editorial-page h1, .recommender-static-intro h1 { color: var(--emm-cream); font-family: 'Bangers', cursive; font-size: clamp(2.4rem, 6vw, 4rem); }
+.directory-page h1, .editorial-page h1 { color: var(--emm-cream); font-family: 'Bangers', cursive; font-size: clamp(2.4rem, 6vw, 4rem); }
 .directory-page h1, .editorial-page h1 {
     font-family: system-ui, sans-serif;
     font-size: clamp(2rem, 5vw, 3.25rem);
@@ -5575,15 +5575,13 @@ main {
     text-shadow: none;
     text-transform: none;
 }
-.directory-page p, .editorial-page p, .recommender-static-intro p { color: var(--emm-cream); }
+.directory-page p, .editorial-page p { color: var(--emm-cream); }
 .editorial-page { max-width: 52rem; line-height: 1.65; }
 .editorial-page h2 { color: var(--emm-cream); margin-top: 1.5rem; }
-.editorial-page a, .recommender-static-intro a { color: #ffd2ce; text-decoration: underline; }
+.editorial-page a { color: #ffd2ce; text-decoration: underline; }
 .directory-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); margin-top: 1.5rem; }
 .directory-card { align-items: center; background: #fff8eb; border-left: 5px solid var(--emm-red); color: #211515; display: flex; font-weight: 800; justify-content: space-between; min-height: 5rem; padding: 1rem; }
 .directory-card:hover, .directory-card:focus-visible { background: #ffe7d9; color: #211515; }
-.recommender-static-intro { margin-bottom: 0.5rem; text-align: center; }
-.recommender-static-intro p { margin: 0 auto; max-width: 44rem; }
 .home-week-editorial { border-left: 3px solid var(--emm-red); margin: 0.8rem 0; padding-left: 0.8rem; }
 .footer-links { margin-bottom: 1rem; }
 .footer-links a, .footer-settings { color: inherit; text-decoration: underline; }
