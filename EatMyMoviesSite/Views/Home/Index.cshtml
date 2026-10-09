@@ -7,13 +7,27 @@
     <section class="home-cinema-hero" aria-labelledby="home-hero-title">
         <div class="home-hero-copy">
             <h1 id="home-hero-title" class="home-hero-title">
-                Discover Your Next Cinematic Obsession
+                <span class="home-title-line">Don’t know what</span>
+                <span class="home-title-line">to watch <span class="home-title-ending">tonight?</span></span>
             </h1>
             <p class="home-hero-subtitle">
-                Don't know what to watch tonight?
+                Movie picks matched to your taste.
             </p>
-            <a class="button is-primary home-hero-cta" asp-controller="Movie" asp-action="Recommender">
-                Find me a movie
+            <a class="home-recommender-ticket" asp-controller="Movie" asp-action="Recommender"
+               aria-labelledby="home-recommender-label" aria-describedby="home-recommender-helper">
+                <span class="home-ticket-paper" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                </span>
+                <span class="home-ticket-heading">Your next movie night</span>
+                <span class="home-ticket-action">
+                    <span id="home-recommender-label">Find me a movie</span>
+                    <svg class="home-ticket-arrow" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                        <path d="M5 24h36M27 10l14 14-14 14" />
+                    </svg>
+                </span>
+                <span id="home-recommender-helper" class="home-ticket-helper">
+                    <span>Answer 4 quick questions.</span> <span>Get your movie recommendations.</span>
+                </span>
             </a>
         </div>
     </section>
@@ -34,9 +48,7 @@
                         <path d="M28 27v20M39 27v20" />
                     </svg>
                 </span>
-                <span class="home-step-number">1</span>
                 <strong>Tell us what you like</strong>
-                <small>Answer a few quick questions about your taste in movies.</small>
             </li>
             <li class="home-step-card">
                 <span class="home-step-icon" aria-hidden="true">
@@ -47,9 +59,7 @@
                         <path d="m29 31 12 7-12 7V31Z" />
                     </svg>
                 </span>
-                <span class="home-step-number">2</span>
-                <strong>We find the perfect match</strong>
-                <small>Our algorithm analyzes your preferences to find movies you'll love.</small>
+                <strong>Find your match</strong>
             </li>
             <li class="home-step-card">
                 <span class="home-step-icon" aria-hidden="true">
@@ -59,9 +69,7 @@
                         <path d="M24 20h16M24 27h16" />
                     </svg>
                 </span>
-                <span class="home-step-number">3</span>
                 <strong>Enjoy your movie</strong>
-                <small>Get your recommendation and enjoy your next great movie night.</small>
             </li>
         </ol>
     </section>
