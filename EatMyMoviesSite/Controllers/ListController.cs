@@ -16,7 +16,7 @@ namespace EatMyMoviesSite.Controllers
 
         [HttpGet("")]
         public IActionResult Index() => View(SeoMetadataService.Lists.Values
-            .Select(list => new ListDirectoryEntry(list.Path, list.Title))
+            .Select(list => new ListDirectoryEntry(list.Path, list.ListName))
             .ToList());
 
 
