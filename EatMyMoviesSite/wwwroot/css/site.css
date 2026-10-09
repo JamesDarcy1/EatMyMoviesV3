@@ -5565,6 +5565,16 @@ main {
     color: var(--emm-cream); margin: 1rem auto 2rem; max-width: 70rem; padding: clamp(1.25rem, 4vw, 3rem);
 }
 .directory-page h1, .editorial-page h1, .recommender-static-intro h1 { color: var(--emm-cream); font-family: 'Bangers', cursive; font-size: clamp(2.4rem, 6vw, 4rem); }
+.directory-page h1, .editorial-page h1 {
+    font-family: system-ui, sans-serif;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+    text-align: left;
+    text-shadow: none;
+    text-transform: none;
+}
 .directory-page p, .editorial-page p, .recommender-static-intro p { color: var(--emm-cream); }
 .editorial-page { max-width: 52rem; line-height: 1.65; }
 .editorial-page h2 { color: var(--emm-cream); margin-top: 1.5rem; }
@@ -5578,8 +5588,17 @@ main {
 .footer-links { margin-bottom: 1rem; }
 .footer-links a, .footer-settings { color: inherit; text-decoration: underline; }
 .footer-settings { background: none; border: 0; cursor: pointer; font: inherit; padding: 0; }
-.tracking-consent { background: #fff8eb; border-top: 4px solid var(--emm-red); bottom: 0; box-shadow: 0 -0.4rem 1.5rem #0005; color: #211515; left: 0; padding: 1rem clamp(1rem, 4vw, 3rem); position: fixed; right: 0; z-index: 1000; }
+.tracking-consent { background: #fff8eb; border-top: 4px solid var(--emm-red); bottom: 0; box-shadow: 0 -0.4rem 1.5rem #0005; color: #211515; left: 0; max-height: 50vh; overflow-y: auto; padding: 0.85rem clamp(1rem, 4vw, 3rem); position: fixed; right: 0; z-index: 1000; }
 .tracking-consent[hidden] { display: none; }
-.tracking-consent p { margin-bottom: 0.7rem; }
-.tracking-consent-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-.tracking-consent-actions .button { min-height: 44px; }
+.tracking-consent p { color: #211515; font-size: 0.95rem; font-weight: 400; line-height: 1.4; margin: 0 auto 0.6rem; max-width: 72rem; padding: 0; }
+.tracking-consent p strong { color: inherit; }
+.tracking-consent a { color: #a32334; }
+.tracking-consent-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0 auto; max-width: 72rem; }
+.tracking-consent-actions .button { background: #932333; border: 2px solid #932333; color: #fff; min-height: 44px; }
+.tracking-consent-actions .button:hover, .tracking-consent-actions .button:focus-visible { background: #751927; border-color: #751927; color: #fff; }
+@media (max-width: 600px) {
+    .tracking-consent { max-height: 45vh; padding: 0.65rem 0.75rem calc(0.65rem + env(safe-area-inset-bottom)); }
+    .tracking-consent p { font-size: 0.875rem; line-height: 1.35; margin-bottom: 0.5rem; }
+    .tracking-consent-actions { display: grid; gap: 0.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tracking-consent-actions .button { font-size: 0.875rem; font-weight: 700; padding-inline: 0.35rem; white-space: normal; width: 100%; }
+}

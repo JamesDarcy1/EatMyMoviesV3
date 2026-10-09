@@ -107,17 +107,17 @@
 
 	<footer class="footer">
 		<div class="has-text-centered">
-			<p class="footer-links"><a asp-controller="Home" asp-action="Contact">Contact</a> · <a asp-controller="Home" asp-action="Privacy">Privacy</a> · <button type="button" id="privacy-settings" class="footer-settings">Tracking preferences</button></p>
+			<p class="footer-links"><a asp-controller="Home" asp-action="Contact">Contact</a> · <a asp-controller="Home" asp-action="Privacy">Privacy</a> · <button type="button" id="privacy-settings" class="footer-settings">Analytics choices</button></p>
 			<strong>Eat My Movies</strong>. All rights reserved. <br />
 				This product uses the TMDB API but is not endorsed or certified by TMDB
 				<img class="tmdb-logo mt-3" src="~/TMDB_logo.svg" alt="Tmdb logo" />
 		</div>
 	</footer>
-	<div id="tracking-consent" class="tracking-consent" role="region" aria-label="Tracking preferences" hidden>
-		<p><strong>Your privacy choices</strong> We use optional Google Analytics to understand how people use the site. You can use Eat My Movies without it. <a asp-controller="Home" asp-action="Privacy">Read our privacy information</a>.</p>
+	<div id="tracking-consent" class="tracking-consent" role="region" aria-label="Analytics choices" hidden>
+		<p><strong>Analytics choice.</strong> We'd like to use Google Analytics cookies to see how people use the site. You can say no. <a asp-controller="Home" asp-action="Privacy">Privacy details</a>.</p>
 		<div class="tracking-consent-actions">
-			<button type="button" id="tracking-reject" class="button is-light">Reject optional tracking</button>
-			<button type="button" id="tracking-accept" class="button is-primary">Accept optional tracking</button>
+			<button type="button" id="tracking-reject" class="button">Reject analytics</button>
+			<button type="button" id="tracking-accept" class="button">Allow analytics</button>
 		</div>
 	</div>
 
